@@ -7,6 +7,16 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MonoZombie
 {
+    public enum TurretType
+    {
+        Cannon,
+        Archer,
+        Magic,
+        Trap,
+        Buff,//these work diffrently than the rest 
+        DeBuff//these work diffrently then the rest 
+    }
+
     public class Turret
     {
         private int range;
@@ -15,16 +25,7 @@ namespace MonoZombie
         private int price;
         private Texture2D turret;//the image of the turret
         private Rectangle Holder;//the location and size of the turret
-        public enum TurretType
-        {
-            Cannon,
-            Archer,
-            Magic,
-            Trap,
-            Buff,//these work diffrently than the rest 
-            DeBuff//these work diffrently then the rest 
-        }
-
+        
         public int X
         {
             get { return Holder.X; }
@@ -47,7 +48,7 @@ namespace MonoZombie
         {
             get { return price; }
         }
-        public Turret(TurretType type,Texture2D Image)
+        public Turret(TurretType type,Texture2D Image,int X,int Y)
         {
             //goes through each of the diffrent turret types and then sets stats accordingly 
 
