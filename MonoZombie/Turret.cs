@@ -51,9 +51,9 @@ namespace MonoZombie
         {
             //goes through each of the diffrent turret types and then sets stats accordingly 
 
-            //Holder.X=X;
-            //Holder.Y=Y;
-            //turret = Image
+            Holder.X=X;
+            Holder.Y=Y;
+            turret = Image;
             switch (type)
             {
                 
