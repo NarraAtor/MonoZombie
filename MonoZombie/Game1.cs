@@ -4,11 +4,39 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MonoZombie
 {
+    public enum MenuState
+    {
+        MainMenu,
+        Game,
+        GameOver
+    }
+
+    public enum GameState
+    {
+        Playing,
+        Pause,
+        Shop
+    }
+
+    /// <summary>
+    /// Author: Eric Fotang
+    /// Purpose: Manages game states and calls other classes and methods to do their job. 
+    /// Restrictions:
+    /// </summary>
     public class Game1 : Game
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private MenuState menuState;
+        private GameState gameState;
+        private KeyboardState ks;
+        private KeyboardState previousks;
 
+        //Test variables
+        private SpriteFont spriteFontTEST;
+        private string currentStateTEST;
+        private Texture2D turretImage;
+        private Turret turret;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -19,7 +47,8 @@ namespace MonoZombie
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
+            menuState = MenuState.MainMenu;
+            gameState = GameState.Playing;
             base.Initialize();
         }
 
@@ -28,14 +57,78 @@ namespace MonoZombie
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            spriteFontTEST = Content.Load<SpriteFont>("File");
+            turretImage = Content.Load<Texture2D>("external-content.duckduckgo.com");
+            turret = new Turret(TurretType.Archer, turretImage, 100, 100);
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            //    Exit();
 
             // TODO: Add your update logic here
+            ks = Keyboard.GetState();
+            switch (menuState)
+            {
+                case MenuState.MainMenu:
+                    currentStateTEST = "MainMenu";
+                    //Single press bool so that you don't switch states twice.
+                    if (ks.IsKeyDown(Keys.Enter) && !previousks.IsKeyDown(Keys.Enter))
+                    {
+                        menuState = MenuState.Game;
+                        gameState = GameState.Playing;
+                    }
+                    break;
+
+                case MenuState.Game:
+                    currentStateTEST = "Game -";
+                    switch (gameState)
+                    {
+                        case GameState.Playing:
+                            currentStateTEST = "Game - Playing";
+                            //Single press bool so that you don't switch states twice.
+                            if (ks.IsKeyDown(Keys.Escape) && !previousks.IsKeyDown(Keys.Escape))
+                            {
+                                gameState = GameState.Pause;
+                            }
+
+                            //Single press bool so that you don't switch states twice.
+                            if (ks.IsKeyDown(Keys.Tab) && !previousks.IsKeyDown(Keys.Tab))
+                            {
+                                gameState = GameState.Shop;
+                            }
+                            break;
+                        case GameState.Pause:
+                            currentStateTEST = "Game - Pause";
+                            //Single press bool so that you don't switch states twice.
+                            if (ks.IsKeyDown(Keys.Escape) && !previousks.IsKeyDown(Keys.Escape))
+                            {
+                                gameState = GameState.Playing;
+                            }
+                            break;
+                        case GameState.Shop:
+                            currentStateTEST = "Game - Shop";
+                            //Single press bool so that you don't switch states twice.
+                            if (ks.IsKeyDown(Keys.Tab) && !previousks.IsKeyDown(Keys.Tab))
+                            {
+                                gameState = GameState.Playing;
+                            }
+                            break;
+                    }
+                    break;
+
+                case MenuState.GameOver:
+                    currentStateTEST = "GameOver";
+                    //Single press bool so that you don't switch states twice.
+                    if (ks.IsKeyDown(Keys.Enter) && !previousks.IsKeyDown(Keys.Enter))
+                    {
+                        menuState = MenuState.MainMenu;
+                    }
+                    break;
+            }
+
+            previousks = ks;
 
             base.Update(gameTime);
         }
@@ -45,6 +138,29 @@ namespace MonoZombie
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            _spriteBatch.Begin();
+            switch (menuState)
+            {
+                case MenuState.MainMenu:
+                    break;
+                case MenuState.Game:
+                    switch (gameState)
+                    {
+                        case GameState.Playing:
+                            
+                            break;
+                        case GameState.Pause:
+                            break;
+                        case GameState.Shop:
+                            break;
+                    }
+                    break;
+                case MenuState.GameOver:
+                    break;
+            }
+            turret.Draw(_spriteBatch, Color.White);
+            _spriteBatch.DrawString(spriteFontTEST, currentStateTEST, new Vector2(100, 100), Color.White);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
