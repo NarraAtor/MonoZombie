@@ -7,10 +7,10 @@ using System.Text;
 
 namespace MonoZombie {
 	public abstract class GameObject {
-		private Texture2D texture;
-		private Point centerPosition;
-		private Point drawPosition;
-		private double angle;
+		protected Texture2D texture;
+		protected Point centerPosition;
+		protected Point drawPosition;
+		protected double angle;
 
 		public int X {
 			get {
@@ -57,6 +57,9 @@ namespace MonoZombie {
 				return angle;
 			}
 		}
+
+
+///###################################################################################################################
 
 		public GameObject (Texture2D texture, int x, int y) {
 			this.texture = texture;
