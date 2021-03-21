@@ -34,45 +34,19 @@ namespace MonoZombie
         /// <param name="key"></param>
         public void Move(KeyboardState key)
         {
-            /* Check for collision in Main()
-             * Cycle through objects, can't here */
+            // Get which direction the player is trying to move
+            int moveX = (key.IsKeyDown(Keys.D) ? 1 : 0) + (key.IsKeyDown(Keys.A) ? -1 : 0);
+            int moveY = (key.IsKeyDown(Keys.W) ? -1 : 0) + (key.IsKeyDown(Keys.S) ? 1 : 0);
 
-            if (key.IsKeyDown(Keys.D))
-            {
-                if (key.IsKeyDown(Keys.W))
-                {
-                    X += playerSpeed;
-                    Y -= playerSpeed;
-                }
-                else if (key.IsKeyDown(Keys.S))
-                {
-                    X += playerSpeed;
-                    Y += playerSpeed;
-                }
-                else
-                    X += playerSpeed * playerSpeed;
-            }
-            if(key.IsKeyDown(Keys.A))
-            {
-                if (key.IsKeyDown(Keys.W))
-                {
-                    X -= playerSpeed;
-                    Y -= playerSpeed;
-                }
-                else if (key.IsKeyDown(Keys.S))
-                {
-                    X -= playerSpeed;
-                    Y += playerSpeed;
-                }
-                else
-                {
-                    X -= playerSpeed * playerSpeed;
-                }
-            }
-            if (key.IsKeyDown(Keys.S))
-                Y -= playerSpeed * playerSpeed;
-            if (key.IsKeyDown(Keys.W))
-                Y += playerSpeed * playerSpeed;
+            // Get the movement vector of the player and make sure it is normalized
+            // Normalizing the vector makes sure that when the player is moving diagonally they are moving the same
+            // speed as if the player was just moving in 1 direction
+            Vector2 normMovement = new Vector2(moveX, moveY);
+            normMovement.Normalize( );
+
+            // Move the position of the player
+            X += (int) (normMovement.X * playerSpeed);
+            Y += (int) (normMovement.Y * playerSpeed);
         }
 
 
