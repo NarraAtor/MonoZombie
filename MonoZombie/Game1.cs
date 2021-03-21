@@ -147,7 +147,7 @@ namespace MonoZombie
                     switch (gameState)
                     {
                         case GameState.Playing:
-                            
+                            turret.Draw(_spriteBatch, Color.White);
                             break;
                         case GameState.Pause:
                             break;
@@ -158,7 +158,7 @@ namespace MonoZombie
                 case MenuState.GameOver:
                     break;
             }
-            turret.Draw(_spriteBatch, Color.White);
+            
             _spriteBatch.DrawString(spriteFontTEST, currentStateTEST, new Vector2(100, 100), Color.White);
             _spriteBatch.End();
 
