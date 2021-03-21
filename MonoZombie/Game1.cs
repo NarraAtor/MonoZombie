@@ -36,6 +36,7 @@ namespace MonoZombie
         private SpriteFont spriteFontTEST;
         private string currentStateTEST;
         private Texture2D turretImage;
+        private Texture2D baseImage;
         private Texture2D playerImage;
         private Turret turret;
         private Player player;
@@ -60,10 +61,11 @@ namespace MonoZombie
 
             // TODO: use this.Content to load your game content here
             spriteFontTEST = Content.Load<SpriteFont>("File");
-            turretImage = Content.Load<Texture2D>("external-content.duckduckgo.com");
-            playerImage = Content.Load<Texture2D>("mario");
-            turret = new Turret(TurretType.Archer, turretImage, 100, 100);
-            player = new Player(100, 100, playerImage, 150, 150);
+            baseImage = Content.Load<Texture2D>("TurretBase");
+            turretImage = Content.Load<Texture2D>("TurretHead");
+            playerImage = Content.Load<Texture2D>("playerproto");
+            turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
+            player = new Player(100, 100, playerImage, 150, 150, 1);
         }
 
         protected override void Update(GameTime gameTime)
@@ -91,6 +93,7 @@ namespace MonoZombie
                     {
                         case GameState.Playing:
                             currentStateTEST = "Game - Playing";
+                            player.Move(ks);
                             //Single press bool so that you don't switch states twice.
                             if (ks.IsKeyDown(Keys.Escape) && !previousks.IsKeyDown(Keys.Escape))
                             {
