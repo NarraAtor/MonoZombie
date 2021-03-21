@@ -17,13 +17,14 @@ namespace MonoZombie
         DeBuff//these work diffrently then the rest 
     }
 
-    public class Turret
+    public class Turret :GameObject
     {
         private int range;
         private int timer;//use later
         private int damage;
         private int price;
-        private Texture2D turret;//the image of the turret
+        private Texture2D turret;//the base image of the turret
+        private Texture2D GunPart;//The  rotating head of the turret
         private Rectangle Holder;//the location and size of the turret
         
         public int X
@@ -48,7 +49,7 @@ namespace MonoZombie
         {
             get { return price; }
         }
-        public Turret(TurretType type,Texture2D Image,int X,int Y)
+        public Turret(TurretType type,Texture2D Base, Texture2D Head,int X,int Y) :base(Base,X,Y)
         {
             //goes through each of the diffrent turret types and then sets stats accordingly 
 
@@ -56,7 +57,8 @@ namespace MonoZombie
             Holder.Y=Y;
             Holder.Width = 50;
             Holder.Height = 50;
-            turret = Image;
+            turret = Base;
+            GunPart = Head;
             switch (type)
             {
                 
@@ -109,16 +111,16 @@ namespace MonoZombie
 
             }
         }
-
         /*
-        public Attack(Zombie target)
+        public Attack(Enemy target)
         {
             float dx = Holder.X - target.X;
             float dy = Holder.Y - target.Y;
             double dist = Math.Sqrt(dx * dx + dy * dy); 
             if(dist<=this.range)
               {
-                 Zombie.Health-=damage; 
+                 RotateTo(target.Center);
+                 target.Health-=damage; 
               }
            else
             {
@@ -130,6 +132,7 @@ namespace MonoZombie
         public void Draw(SpriteBatch sb, Color tint)
         {
             sb.Draw(turret, Holder, tint);
+            sb.Draw(GunPart, Holder, tint);
         }
     }
 }
