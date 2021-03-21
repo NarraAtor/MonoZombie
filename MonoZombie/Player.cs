@@ -16,11 +16,12 @@ namespace MonoZombie
         public int Health { get { return health; } }
 
 
-        public Player(int health, int attackSpd, Texture2D texture, int x, int y) 
+        public Player(int health, int attackSpd, Texture2D texture, int x, int y, int playerSpeed) 
             : base (texture, x, y)
         { 
             this.health = health;
             this.attackSpd = attackSpd;
+            this.playerSpeed = playerSpeed;
         }
 
 
@@ -41,12 +42,12 @@ namespace MonoZombie
                 if (key.IsKeyDown(Keys.W))
                 {
                     X += playerSpeed;
-                    Y += playerSpeed;
+                    Y -= playerSpeed;
                 }
                 else if (key.IsKeyDown(Keys.S))
                 {
                     X += playerSpeed;
-                    Y -= playerSpeed;
+                    Y += playerSpeed;
                 }
                 else
                     X += playerSpeed * playerSpeed;
@@ -56,12 +57,12 @@ namespace MonoZombie
                 if (key.IsKeyDown(Keys.W))
                 {
                     X -= playerSpeed;
-                    Y += playerSpeed;
+                    Y -= playerSpeed;
                 }
                 else if (key.IsKeyDown(Keys.S))
                 {
                     X -= playerSpeed;
-                    Y -= playerSpeed;
+                    Y += playerSpeed;
                 }
                 else
                 {

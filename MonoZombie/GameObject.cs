@@ -11,6 +11,7 @@ namespace MonoZombie {
 		protected Point centerPosition;
 		protected Point drawPosition;
 		protected double angle;
+		protected float radius;
 
 		public int X {
 			get {
@@ -21,6 +22,8 @@ namespace MonoZombie {
 				centerPosition.X = value;
 			}
 		}
+
+		public float Radius { get { return radius; } }
 
 		public int Y {
 			get {
@@ -152,7 +155,7 @@ namespace MonoZombie {
 		 * 
 		 * return double			: The distance (in pixels) between the two points
 		 */
-		private double Distance (Point point1, Point point2) {
+		protected double Distance (Point point1, Point point2) {
 			return Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y, 2));
 		}
 	}
