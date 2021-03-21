@@ -90,7 +90,7 @@ namespace MonoZombie {
 		 * 
 		 * return					:
 		 */
-		public virtual void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
+		public virtual void Draw (SpriteBatch spriteBatch) {
 			spriteBatch.Draw(texture, drawPosition.ToVector2( ), Color.White);
 		}
 

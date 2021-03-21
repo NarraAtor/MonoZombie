@@ -36,7 +36,9 @@ namespace MonoZombie
         private SpriteFont spriteFontTEST;
         private string currentStateTEST;
         private Texture2D turretImage;
+        private Texture2D playerImage;
         private Turret turret;
+        private Player player;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -59,7 +61,9 @@ namespace MonoZombie
             // TODO: use this.Content to load your game content here
             spriteFontTEST = Content.Load<SpriteFont>("File");
             turretImage = Content.Load<Texture2D>("external-content.duckduckgo.com");
+            playerImage = Content.Load<Texture2D>("mario");
             turret = new Turret(TurretType.Archer, turretImage, 100, 100);
+            player = new Player(100, 100, playerImage, 150, 150);
         }
 
         protected override void Update(GameTime gameTime)
@@ -148,6 +152,7 @@ namespace MonoZombie
                     {
                         case GameState.Playing:
                             turret.Draw(_spriteBatch, Color.White);
+                            player.Draw(_spriteBatch);
                             break;
                         case GameState.Pause:
                             break;
