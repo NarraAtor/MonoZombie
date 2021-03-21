@@ -38,6 +38,7 @@ namespace MonoZombie
         private Texture2D turretImage;
         private Texture2D baseImage;
         private Texture2D playerImage;
+        private Texture2D enemyImage;
         private Turret turret;
         private Player player;
         public Game1()
@@ -65,7 +66,7 @@ namespace MonoZombie
             turretImage = Content.Load<Texture2D>("TurretHead");
             playerImage = Content.Load<Texture2D>("playerproto");
             turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
-            player = new Player(100, 100, playerImage, 150, 150, 1);
+            player = new Player(100, 100, playerImage, 150, 150, 3);
         }
 
         protected override void Update(GameTime gameTime)
