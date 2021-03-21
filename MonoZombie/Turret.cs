@@ -54,6 +54,8 @@ namespace MonoZombie
 
             Holder.X=X;
             Holder.Y=Y;
+            Holder.Width = 50;
+            Holder.Height = 50;
             turret = Image;
             switch (type)
             {
