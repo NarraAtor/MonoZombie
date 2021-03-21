@@ -9,7 +9,6 @@ namespace MonoZombie {
 	public abstract class GameObject {
 		protected Texture2D texture;
 		protected Point centerPosition;
-		protected Point drawPosition;
 		protected double angle;
 		protected float radius;
 
@@ -37,21 +36,13 @@ namespace MonoZombie {
 
 		public int DrawX {
 			get {
-				return drawPosition.X;
-			}
-
-			set {
-				drawPosition.X = value;
+				return centerPosition.X - (texture.Width / 2);
 			}
 		}
 
 		public int DrawY {
 			get {
-				return drawPosition.Y;
-			}
-
-			set {
-				drawPosition.Y = value;
+				return centerPosition.Y - (texture.Height / 2);
 			}
 		}
 
@@ -62,13 +53,12 @@ namespace MonoZombie {
 		}
 
 
-///###################################################################################################################
+		///###################################################################################################################
 
 		public GameObject (Texture2D texture, int x, int y) {
 			this.texture = texture;
 
 			centerPosition = new Point(x, y);
-			drawPosition = new Point(x - texture.Width / 2, y - texture.Height / 2);
 		}
 
 		/*
@@ -94,7 +84,7 @@ namespace MonoZombie {
 		 * return					:
 		 */
 		public virtual void Draw (SpriteBatch spriteBatch) {
-			spriteBatch.Draw(texture, drawPosition.ToVector2( ), Color.White);
+			spriteBatch.Draw(texture, new Vector2(DrawX, DrawY), Color.White);
 		}
 
 		/*
