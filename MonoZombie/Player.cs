@@ -24,6 +24,14 @@ namespace MonoZombie
             this.playerSpeed = playerSpeed;
         }
 
+        public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
+            // Move the player based on keyboard input
+            Move(keyboard);
+
+            // Rotate the player to look at the mouse
+            RotateTo(mouse.Position);
+		}
+
 
         /// <summary>
         /// Moves the player depending on keys pressed;
@@ -42,7 +50,9 @@ namespace MonoZombie
             // Normalizing the vector makes sure that when the player is moving diagonally they are moving the same
             // speed as if the player was just moving in 1 direction
             Vector2 normMovement = new Vector2(moveX, moveY);
-            normMovement.Normalize( );
+            if (normMovement != Vector2.Zero) {
+                normMovement.Normalize( );
+            }
 
             // Move the position of the player
             X += (int) (normMovement.X * playerSpeed);

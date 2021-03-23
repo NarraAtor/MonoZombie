@@ -9,7 +9,7 @@ namespace MonoZombie {
 	public abstract class GameObject {
 		protected Texture2D texture;
 		protected Point centerPosition;
-		protected double angle;
+		protected float angle;
 		protected float radius;
 
 		public int X {
@@ -46,7 +46,7 @@ namespace MonoZombie {
 			}
 		}
 
-		public double Angle {
+		public float Angle {
 			get {
 				return angle;
 			}
@@ -84,18 +84,7 @@ namespace MonoZombie {
 		 * return					:
 		 */
 		public virtual void Draw (SpriteBatch spriteBatch) {
-			spriteBatch.Draw(texture, new Vector2(DrawX, DrawY), Color.White);
-		}
-
-		/*
-		 * Rotate the game object to face the current mouse position
-		 * 
-		 * MouseState mouseState	: The current state of the mouse
-		 * 
-		 * return					: 
-		 */
-		private void RotateToMouse (MouseState mouseState) {
-			RotateTo(mouseState.Position);
+			spriteBatch.Draw(texture, new Rectangle(DrawX, DrawY, texture.Width, texture.Height), null, Color.White, angle, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 1f);
 		}
 
 		/*
@@ -113,14 +102,14 @@ namespace MonoZombie {
 			// This is to make sure we don't divide by 0 and crash the game
 			if (posObjectAsOrigin != Vector2.Zero) {
 				// Get this distance between the player and the other position
-				double distanceToMouse = Distance(face, centerPosition);
+				float distanceToPoint = Distance(face, centerPosition);
 
 				// Calculate the angle between the other point and the player
 				// The reason this is done twice is because Cos is always positive and Sin is both positive and negative.
 				// Sin is used to determine how much to adjust the Cos angle because Cos only goes from 0-3.14 (PI) when we need it
 				// to go all the way from 0-6.28 (2PI)
-				double sinAngle = Math.Asin(posObjectAsOrigin.Y / distanceToMouse);
-				double cosAngle = Math.Acos(posObjectAsOrigin.X / distanceToMouse);
+				float sinAngle = (float) Math.Asin(posObjectAsOrigin.Y / distanceToPoint);
+				float cosAngle = (float) Math.Acos(posObjectAsOrigin.X / distanceToPoint);
 
 				// The is used to determine whether the sin angle is positive or negative
 				int sinMod = (int) -(sinAngle / Math.Abs(sinAngle));
@@ -128,7 +117,7 @@ namespace MonoZombie {
 				// If either of the angles are negative, do not calculate the angle because it will just be 0
 				if (sinAngle != 0 && cosAngle != 0) {
 					// Set the rotation based on the calculated angle
-					angle = (Math.PI / 2) + (sinMod * cosAngle);
+					angle = (float) (-Math.PI / 2) + (sinMod * cosAngle);
 				}
 			}
 		}
@@ -145,8 +134,8 @@ namespace MonoZombie {
 		 * 
 		 * return double			: The distance (in pixels) between the two points
 		 */
-		protected double Distance (Point point1, Point point2) {
-			return Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y, 2));
+		protected float Distance (Point point1, Point point2) {
+			return (float) Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y, 2));
 		}
 	}
 }
