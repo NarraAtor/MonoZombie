@@ -108,6 +108,7 @@ namespace MonoZombie
                             //foreach(Enemy zombie in zombieList)
                             //        {
                             //         
+                            player.Update(gameTime, Mouse.GetState(), ks);
                             //Single press bool so that you don't switch states twice.
                             if (ks.IsKeyDown(Keys.Escape) && !previousks.IsKeyDown(Keys.Escape))
                             {
