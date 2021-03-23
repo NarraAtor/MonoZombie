@@ -94,7 +94,7 @@ namespace MonoZombie
                     {
                         case GameState.Playing:
                             currentStateTEST = "Game - Playing";
-                            player.Move(ks);
+                            player.Update(gameTime, Mouse.GetState(), ks);
                             //Single press bool so that you don't switch states twice.
                             if (ks.IsKeyDown(Keys.Escape) && !previousks.IsKeyDown(Keys.Escape))
                             {
