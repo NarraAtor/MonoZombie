@@ -43,7 +43,7 @@ namespace MonoZombie
         private Player player;
         private int currency;
         private int roundNumber;
-        private bool zombiesAreSpawning;
+        private bool roundIsOngoing;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -90,7 +90,7 @@ namespace MonoZombie
                     {
                         menuState = MenuState.Game;
                         gameState = GameState.Playing;
-                        zombiesAreSpawning = true;
+                        roundIsOngoing = true;
                     }
                     break;
 
@@ -102,25 +102,46 @@ namespace MonoZombie
                             currentStateTEST = "Game - Playing";
                             player.Move(ks);
 
-                            //planned code for determining whether or not to end a round.
-                            //bool zombieIsAlive = false; (flag)
-                            //
-                            //foreach(Enemy zombie in zombieList)
-                            //        {
-                            //         
-                            player.Update(gameTime, Mouse.GetState(), ks);
-                            //Single press bool so that you don't switch states twice.
-                            if (ks.IsKeyDown(Keys.Escape) && !previousks.IsKeyDown(Keys.Escape))
-                            {
-                                gameState = GameState.Pause;
-                            }
+                            //planned code for determining whether or not to end a round and rewarding the player for killing zombies.
+                            bool aZombieIsAlive = false; //(flag)
 
-                            //Single press bool so that you don't switch states twice.
-                            if (ks.IsKeyDown(Keys.Tab) && !previousks.IsKeyDown(Keys.Tab))
-                            {
-                                gameState = GameState.Shop;
-                            }
-                            break;
+
+                            //foreach (Enemy zombie in zombieList)
+                            //{
+                            //    //If a zombie just died, set indicate that it is dead an increment currency.
+                            //    if(zombie.Health <= 0 && zombie.IsAlive == true)
+                            //    {
+                            //        zombie.IsAlive = false;
+                            //        currency++;
+                            //    }
+                            //
+                            //    
+                            //    if (zombie.IsAlive)
+                            //    {
+                            //        aZombieIsAlive = true;
+                            //    }
+                            //}
+                            //
+                            //if (aZombieIsAlive!)
+                            //{
+                            //    roundIsOngoing = false;
+                            //}
+
+
+
+                                player.Update(gameTime, Mouse.GetState(), ks);
+                                //Single press bool so that you don't switch states twice.
+                                if (ks.IsKeyDown(Keys.Escape) && !previousks.IsKeyDown(Keys.Escape))
+                                {
+                                    gameState = GameState.Pause;
+                                }
+
+                                //Single press bool so that you don't switch states twice.
+                                if (ks.IsKeyDown(Keys.Tab) && !previousks.IsKeyDown(Keys.Tab))
+                                {
+                                    gameState = GameState.Shop;
+                                }
+                                break;
                         case GameState.Pause:
                             currentStateTEST = "Game - Pause";
                             //Single press bool so that you don't switch states twice.
@@ -183,7 +204,7 @@ namespace MonoZombie
                 case MenuState.GameOver:
                     break;
             }
-            
+
             //Being used to test if states are switching properly.
             _spriteBatch.DrawString(spriteFontTEST, currentStateTEST, new Vector2(100, 100), Color.White);
 
