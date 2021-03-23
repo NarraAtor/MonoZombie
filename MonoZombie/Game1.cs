@@ -41,6 +41,9 @@ namespace MonoZombie
         private Texture2D enemyImage;
         private Turret turret;
         private Player player;
+        private int currency;
+        private int roundNumber;
+        private bool zombiesAreSpawning;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -53,6 +56,8 @@ namespace MonoZombie
             // TODO: Add your initialization logic here
             menuState = MenuState.MainMenu;
             gameState = GameState.Playing;
+            currency = 0;
+            roundNumber = 0;
             base.Initialize();
         }
 
@@ -85,6 +90,7 @@ namespace MonoZombie
                     {
                         menuState = MenuState.Game;
                         gameState = GameState.Playing;
+                        zombiesAreSpawning = true;
                     }
                     break;
 
@@ -95,6 +101,13 @@ namespace MonoZombie
                         case GameState.Playing:
                             currentStateTEST = "Game - Playing";
                             player.Move(ks);
+
+                            //planned code for determining whether or not to end a round.
+                            //bool zombieIsAlive = false; (flag)
+                            //
+                            //foreach(Enemy zombie in zombieList)
+                            //        {
+                            //         
                             //Single press bool so that you don't switch states twice.
                             if (ks.IsKeyDown(Keys.Escape) && !previousks.IsKeyDown(Keys.Escape))
                             {
@@ -157,6 +170,8 @@ namespace MonoZombie
                         case GameState.Playing:
                             turret.Draw(_spriteBatch, Color.White);
                             player.Draw(_spriteBatch);
+                            _spriteBatch.DrawString(spriteFontTEST, $"Currency: {currency}", new Vector2(10, 10), Color.White);
+                            _spriteBatch.DrawString(spriteFontTEST, $"Round Number: {roundNumber}", new Vector2(10, 30), Color.White);
                             break;
                         case GameState.Pause:
                             break;
@@ -168,7 +183,9 @@ namespace MonoZombie
                     break;
             }
             
+            //Being used to test if states are switching properly.
             _spriteBatch.DrawString(spriteFontTEST, currentStateTEST, new Vector2(100, 100), Color.White);
+
             _spriteBatch.End();
 
             base.Draw(gameTime);
