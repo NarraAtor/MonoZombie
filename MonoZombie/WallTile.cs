@@ -30,10 +30,26 @@ namespace MonoZombie
             get { return type; }
         }
 
-        public WallTile(Tile other)
-            {
+        public WallTile(Tile other, int x, int y)
+        {
             type = other;
+            location.X = x;
+            location.Y = y;
+            switch (other)
+            {
+
+                case Tile.Wall:
+                    {
+                        //Image = Game1.TESTGrassProperty;
+                        break;
+                    }
+                case Tile.Grass:
+                    {
+                        Image = Game1.TESTGrassProperty;
+                        break;
+                    }
             }
+        }
 
         /// <summary>
         /// checks for collision and then moves the player acordingly
