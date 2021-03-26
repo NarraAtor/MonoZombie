@@ -74,5 +74,10 @@ namespace MonoZombie
             }
             return false;
         }
+
+        public void Draw(SpriteBatch sb, Color tint)
+        {
+            sb.Draw(Image,location , tint);
+        }
     }
 }
