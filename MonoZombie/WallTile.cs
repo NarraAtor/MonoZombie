@@ -7,23 +7,21 @@ using System.Text;
 
 namespace MonoZombie
 {
+    public enum Tile
+    {
+        Grass,
+        Wall,
+        Gravel,
+        Lava,
+        Speed,
+        ZombieSpawn
+    }
     class WallTile
     {
         private Tile type;
         private Rectangle location;
         private Texture2D Image;
         private Texture2D RandImage;//To Give varaity and randomness to the stage
-
-
-        public enum Tile
-        {
-            Grass,
-            Wall,
-            Gravel,
-            Lava,
-            Speed,
-            ZombieSpawn
-        }
 
         public Tile Type
         {
