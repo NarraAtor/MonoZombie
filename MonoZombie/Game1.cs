@@ -77,7 +77,7 @@ namespace MonoZombie
             TESTGrassProperty = Content.Load<Texture2D>("GrassTESTImage");
             turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
             player = new Player(100, 100, playerImage, 150, 150, 3);
-            TESTTile = new WallTile(Tile.Grass, 160, 160);
+            TESTTile = new WallTile(Tile.Grass, 200, 200, 50, 50);
         }
 
         protected override void Update(GameTime gameTime)
