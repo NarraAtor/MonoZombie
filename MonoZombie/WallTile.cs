@@ -28,11 +28,13 @@ namespace MonoZombie
             get { return type; }
         }
 
-        public WallTile(Tile other, int x, int y)
+        public WallTile(Tile other, int x, int y,int width,int height)
         {
             type = other;
             location.X = x;
             location.Y = y;
+            location.Width = width;
+            location.Height = height;
             switch (other)
             {
 
