@@ -77,7 +77,7 @@ namespace MonoZombie
             TESTGrassProperty = Content.Load<Texture2D>("GrassTESTImage");
             turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
             player = new Player(100, 100, playerImage, 150, 150, 3);
-            TESTTile = new WallTile(Tile.Grass, 100, 100);
+            TESTTile = new WallTile(Tile.Grass, 160, 160);
         }
 
         protected override void Update(GameTime gameTime)
@@ -198,6 +198,7 @@ namespace MonoZombie
                         case GameState.Playing:
                             turret.Draw(_spriteBatch, Color.White);
                             player.Draw(_spriteBatch);
+                            TESTTile.Draw(_spriteBatch, Color.White);
                             _spriteBatch.DrawString(spriteFontTEST, $"Currency: {currency}", new Vector2(10, 10), Color.White);
                             _spriteBatch.DrawString(spriteFontTEST, $"Round Number: {roundNumber}", new Vector2(10, 30), Color.White);
                             break;
