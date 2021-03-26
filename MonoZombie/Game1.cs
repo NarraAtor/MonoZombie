@@ -35,8 +35,10 @@ namespace MonoZombie
         //Test variables
         private SpriteFont spriteFontTEST;
         private string currentStateTEST;
-        private WallTile TESTTile;
+        private WallTile TestGrassTile;
+        private WallTile TestWallTile;
         public static Texture2D TESTGrassProperty { get; set; }
+        public static Texture2D TESTWallProperty { get; set; }
 
         private Texture2D turretImage;
         private Texture2D baseImage;
@@ -75,9 +77,11 @@ namespace MonoZombie
             turretImage = Content.Load<Texture2D>("TurretHead");
             playerImage = Content.Load<Texture2D>("playerproto");
             TESTGrassProperty = Content.Load<Texture2D>("GrassTESTImage");
+            TESTWallProperty = Content.Load<Texture2D>("TESTWallImage");
             turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
             player = new Player(100, 100, playerImage, 150, 150, 3);
-            TESTTile = new WallTile(Tile.Grass, 200, 200, 50, 50);
+            TestGrassTile = new WallTile(Tile.Grass, 200, 200, 50, 50);
+            TestWallTile = new WallTile(Tile.Wall, 300, 300, 75, 75);
         }
 
         protected override void Update(GameTime gameTime)
@@ -198,7 +202,8 @@ namespace MonoZombie
                         case GameState.Playing:
                             turret.Draw(_spriteBatch, Color.White);
                             player.Draw(_spriteBatch);
-                            TESTTile.Draw(_spriteBatch, Color.White);
+                            TestGrassTile.Draw(_spriteBatch, Color.White);
+                            TestWallTile.Draw(_spriteBatch, Color.White);
                             _spriteBatch.DrawString(spriteFontTEST, $"Currency: {currency}", new Vector2(10, 10), Color.White);
                             _spriteBatch.DrawString(spriteFontTEST, $"Round Number: {roundNumber}", new Vector2(10, 30), Color.White);
                             break;
