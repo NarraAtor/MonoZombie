@@ -36,7 +36,7 @@ namespace MonoZombie
         private SpriteFont spriteFontTEST;
         private string currentStateTEST;
         private WallTile TESTTile;
-        public Texture2D TESTGrassProperty { get; }
+        public static Texture2D TESTGrassProperty { get; }
 
         private Texture2D turretImage;
         private Texture2D baseImage;
