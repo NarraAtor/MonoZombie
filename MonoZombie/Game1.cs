@@ -35,6 +35,9 @@ namespace MonoZombie
         //Test variables
         private SpriteFont spriteFontTEST;
         private string currentStateTEST;
+        private WallTile TESTTile;
+        public Texture2D TESTGrassProperty { get; }
+
         private Texture2D turretImage;
         private Texture2D baseImage;
         private Texture2D playerImage;
@@ -44,6 +47,7 @@ namespace MonoZombie
         private int currency;
         private int roundNumber;
         private bool roundIsOngoing;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -70,8 +74,10 @@ namespace MonoZombie
             baseImage = Content.Load<Texture2D>("TurretBase");
             turretImage = Content.Load<Texture2D>("TurretHead");
             playerImage = Content.Load<Texture2D>("playerproto");
+            TESTGrassProperty = 
             turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
             player = new Player(100, 100, playerImage, 150, 150, 3);
+            TESTTile = new WallTile();
         }
 
         protected override void Update(GameTime gameTime)
