@@ -45,21 +45,9 @@ namespace MonoZombie
                     }
                 case Tile.Grass:
                     {
-                        if(rng.Next(4)==1)
-                        {
+                        
                             Image = Game1.TESTGrassProperty;
-                            break;
-                        }
-                        else if(rng.Next(4) == 2)
-                        {
-                           // Image = Game1.TESTGrassProperty2;
-                            break;
-                        }
-                        else
-                        {
-                           // Image = Game1.TESTGrassProperty3;
-                            break;
-                        }
+                            break;                      
 
                     }
             }
