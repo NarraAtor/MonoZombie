@@ -18,10 +18,10 @@ namespace MonoZombie
     }
     class WallTile
     {
+        private Random rng=new Random();
         private Tile type;
         private Rectangle location;
         private Texture2D Image;
-        private Texture2D RandImage;//To Give varaity and randomness to the stage
 
         public Tile Type
         {
@@ -45,8 +45,22 @@ namespace MonoZombie
                     }
                 case Tile.Grass:
                     {
-                        Image = Game1.TESTGrassProperty;
-                        break;
+                        if(rng.Next(4)==1)
+                        {
+                            Image = Game1.TESTGrassProperty;
+                            break;
+                        }
+                        else if(rng.Next(4) == 2)
+                        {
+                           // Image = Game1.TESTGrassProperty2;
+                            break;
+                        }
+                        else
+                        {
+                           // Image = Game1.TESTGrassProperty3;
+                            break;
+                        }
+
                     }
             }
         }
@@ -63,28 +77,47 @@ namespace MonoZombie
             double dist = Math.Sqrt(dx * dx + dy * dy);
             switch (type)
             {
-                case 0:
-                    return false;
-
 
                 case Tile.Wall:
-                    if(dist>other.Radius+location.Width)
                     {
-                        return true;
-                    }
-                    return false;
+                        if (dist < other.Radius + location.Width)
+                        {
 
+                            return true;
+                        }
+                        return false;
+                    }
                 case Tile.Gravel:
                     {
-                        other.PlayerSpeed = other.PlayerSpeed - 5;
+                        if (dist < other.Radius + location.Width)
+                        {
+                            other.PlayerSpeed = other.PlayerSpeed - 5;
+                        }
                         return true;
                     }
 
                 case Tile.Lava:
                 {
-                    
+                        if (dist < other.Radius + location.Width)
+                        {
+                            other.Health = other.Health - 5;
+                        }
                     return true;
                 }
+
+                case Tile.Speed:
+                    {
+                        if (dist < other.Radius + location.Width)
+                        {
+                            other.PlayerSpeed = other.PlayerSpeed + 5;
+                        }
+                        return true;
+                    }
+
+                case Tile.Grass:
+                    {
+                        return false;
+                    }
             }
             return false;
         }
