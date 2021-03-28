@@ -50,6 +50,7 @@ namespace MonoZombie
         private int currency;
         private int roundNumber;
         private bool roundIsOngoing;
+        private int scale;
 
         public Game1()
         {
@@ -67,7 +68,35 @@ namespace MonoZombie
             roundNumber = 0;
 
             //Load the map;
-            StreamReader reader = new StreamReader("/../..")
+            StreamReader reader = new StreamReader("../../../MapLevels\\CurrentMapDesign.level");
+
+            string currentLine;
+            //Used for quickly changing the map's scale;
+            scale = 45;
+
+            //Get the dimensions
+            currentLine = reader.ReadLine();
+            string[] mapDimensionStrings = currentLine.Split("|");
+            int[] mapDimensions = new int[] { int.Parse(mapDimensionStrings[0]), int.Parse(mapDimensionStrings[1]) };
+            _graphics.PreferredBackBufferWidth = mapDimensions[0] * scale;
+            _graphics.PreferredBackBufferHeight = mapDimensions[1] * scale;
+            _graphics.ApplyChanges();
+
+            //while ((currentLine = reader.ReadLine()) != null)
+            //{
+            //    switch (currentLine)
+            //    {
+            //        case "Grass":
+            //
+            //            break;
+            //
+            //        case "Wall":
+            //            break;
+            //    }
+            //}
+            //
+            reader.Close();
+
             base.Initialize();
         }
 
