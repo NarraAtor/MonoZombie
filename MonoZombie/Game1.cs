@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.IO;
 
 namespace MonoZombie
 {
@@ -64,6 +65,9 @@ namespace MonoZombie
             gameState = GameState.Playing;
             currency = 0;
             roundNumber = 0;
+
+            //Load the map;
+            StreamReader reader = new StreamReader("/../..")
             base.Initialize();
         }
 

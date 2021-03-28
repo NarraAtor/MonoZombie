@@ -15,7 +15,7 @@ namespace MonoZombie
 
         public int Health { get { return health; } }
 
-
+        public int PlayerSpeed { get { return playerSpeed; } set { playerSpeed = value; } }
         public Player(int health, int attackSpd, Texture2D texture, int x, int y, int playerSpeed) 
             : base (texture, x, y)
         { 
