@@ -73,6 +73,18 @@ namespace MonoZombie
                         return true;
                     }
                     return false;
+
+                case Tile.Gravel:
+                    {
+                        other.PlayerSpeed = other.PlayerSpeed - 5;
+                        return true;
+                    }
+
+                case Tile.Lava:
+                {
+                    
+                    return true;
+                }
             }
             return false;
         }

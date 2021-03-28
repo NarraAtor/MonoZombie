@@ -13,7 +13,7 @@ namespace MonoZombie
         private int health;
         private int attackSpd;
 
-        public int Health { get { return health; } }
+        public int Health { get { return health; } set { health = value; } }
 
         public int PlayerSpeed { get { return playerSpeed; } set { playerSpeed = value; } }
         public Player(int health, int attackSpd, Texture2D texture, int x, int y, int playerSpeed) 
