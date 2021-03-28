@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.IO;
+using System.Collections.Generic;
 
 namespace MonoZombie
 {
@@ -45,12 +46,15 @@ namespace MonoZombie
         private Texture2D baseImage;
         private Texture2D playerImage;
         private Texture2D enemyImage;
+        private List<WallTile> listOfTiles;
         private Turret turret;
         private Player player;
         private int currency;
         private int roundNumber;
         private bool roundIsOngoing;
-        private int scale;
+
+        //Adjustment Variables
+        private int tileWidth;
 
         public Game1()
         {
@@ -66,35 +70,47 @@ namespace MonoZombie
             gameState = GameState.Playing;
             currency = 0;
             roundNumber = 0;
+            listOfTiles = new List<WallTile>();
 
             //Load the map;
             StreamReader reader = new StreamReader("../../../MapLevels\\CurrentMapDesign.level");
 
             string currentLine;
             //Used for quickly changing the map's scale;
-            scale = 45;
+            tileWidth = 45;
 
             //Get the dimensions
             currentLine = reader.ReadLine();
             string[] mapDimensionStrings = currentLine.Split("|");
             int[] mapDimensions = new int[] { int.Parse(mapDimensionStrings[0]), int.Parse(mapDimensionStrings[1]) };
-            _graphics.PreferredBackBufferWidth = mapDimensions[0] * scale;
-            _graphics.PreferredBackBufferHeight = mapDimensions[1] * scale;
+            _graphics.PreferredBackBufferWidth = mapDimensions[0] * tileWidth;
+            _graphics.PreferredBackBufferHeight = mapDimensions[1] * tileWidth;
             _graphics.ApplyChanges();
 
-            //while ((currentLine = reader.ReadLine()) != null)
-            //{
-            //    switch (currentLine)
-            //    {
-            //        case "Grass":
-            //
-            //            break;
-            //
-            //        case "Wall":
-            //            break;
-            //    }
-            //}
-            //
+            while ((currentLine = reader.ReadLine()) != null)
+            {
+                switch (currentLine)
+                {
+                    case "Grass":
+                        listOfTiles.Add(new WallTile(Tile.Grass,
+                            _graphics.PreferredBackBufferWidth / mapDimensions[0],
+                            _graphics.PreferredBackBufferWidth / mapDimensions[1],
+                            tileWidth,
+                            tileWidth
+                            ));
+                        break;
+            
+                    case "Wall":
+                        listOfTiles.Add(new WallTile(Tile.Wall,
+                            _graphics.PreferredBackBufferWidth / mapDimensions[0],
+                            _graphics.PreferredBackBufferWidth / mapDimensions[1],
+                            tileWidth,
+                            tileWidth
+                            ));
+                        break;
+                }
+            }
+            
             reader.Close();
 
             base.Initialize();
@@ -145,6 +161,11 @@ namespace MonoZombie
                             currentStateTEST = "Game - Playing";
                             player.Move(ks);
 
+                            //This section of code draws each WallTile
+                            foreach(WallTile tile in listOfTiles)
+                            {
+                                tile.Draw(_spriteBatch, Color.White);
+                            }
                             //planned code for determining whether or not to end a round and rewarding the player for killing zombies.
                             bool aZombieIsAlive = false; //(flag)
 
