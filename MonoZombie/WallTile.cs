@@ -40,13 +40,14 @@ namespace MonoZombie
 
                 case Tile.Wall:
                     {
-                        Image = Game1.TESTWallProperty;
+                        Image = Game1.WallProperty1;
                         break;
                     }
                 case Tile.Grass:
-                    {                       
-                      Image = Game1.TESTGrassProperty;
-                      break;                      
+                    {
+                        
+                            Image = Game1.GrassProperty1;
+                            break;                      
 
                     }
             }

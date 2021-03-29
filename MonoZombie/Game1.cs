@@ -37,10 +37,14 @@ namespace MonoZombie
         //Test variables
         private SpriteFont spriteFontTEST;
         private string currentStateTEST;
-        private WallTile TestGrassTile;
-        private WallTile TestWallTile;
-        public static Texture2D TESTGrassProperty { get; set; }
-        public static Texture2D TESTWallProperty { get; set; }
+
+        //Properties for WallTile
+        public static Texture2D GrassProperty1 { get; set; }
+        public static Texture2D GrassProperty2 { get; set; }
+        public static Texture2D GrassProperty3 { get; set; }
+        public static Texture2D WallProperty1 { get; set; }
+        public static Texture2D WallProperty2 { get; set; }
+        public static Texture2D WallProperty3 { get; set; }
 
         private Texture2D turretImage;
         private Texture2D baseImage;
@@ -72,6 +76,29 @@ namespace MonoZombie
             roundNumber = 0;
             listOfTiles = new List<WallTile>();
 
+
+            base.Initialize();
+        }
+
+        protected override void LoadContent()
+        {
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            // TODO: use this.Content to load your game content here
+            spriteFontTEST = Content.Load<SpriteFont>("File");
+            baseImage = Content.Load<Texture2D>("TurretBase");
+            turretImage = Content.Load<Texture2D>("TurretHead");
+            playerImage = Content.Load<Texture2D>("playerproto");
+            GrassProperty1 = Content.Load<Texture2D>("GrassTile1");
+            GrassProperty2 = Content.Load<Texture2D>("GrassTile2");
+            GrassProperty3 = Content.Load<Texture2D>("GrassTile3");
+            WallProperty1 = Content.Load<Texture2D>("WallTile1");
+            WallProperty2 = Content.Load<Texture2D>("WallTile2");
+            WallProperty3 = Content.Load<Texture2D>("WallTile3");
+            turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
+            player = new Player(100, 100, playerImage, 150, 150, 3);
+
+
             //Load the map;
             StreamReader reader = new StreamReader("../../../MapLevels\\CurrentMapDesign.level");
 
@@ -87,50 +114,43 @@ namespace MonoZombie
             _graphics.PreferredBackBufferHeight = mapDimensions[1] * tileWidth;
             _graphics.ApplyChanges();
 
+            int xPosition = 0;
+            int yPosition = 0;
             while ((currentLine = reader.ReadLine()) != null)
             {
                 switch (currentLine)
                 {
                     case "Grass":
                         listOfTiles.Add(new WallTile(Tile.Grass,
-                            _graphics.PreferredBackBufferWidth / mapDimensions[0],
-                            _graphics.PreferredBackBufferWidth / mapDimensions[1],
+                            (_graphics.PreferredBackBufferWidth / mapDimensions[0]) * xPosition,
+                            (_graphics.PreferredBackBufferHeight / mapDimensions[1]) * yPosition,
                             tileWidth,
                             tileWidth
                             ));
                         break;
-            
+
                     case "Wall":
                         listOfTiles.Add(new WallTile(Tile.Wall,
-                            _graphics.PreferredBackBufferWidth / mapDimensions[0],
-                            _graphics.PreferredBackBufferWidth / mapDimensions[1],
+                            (_graphics.PreferredBackBufferWidth / mapDimensions[0]) * xPosition,
+                            (_graphics.PreferredBackBufferHeight / mapDimensions[1]) * yPosition,
                             tileWidth,
                             tileWidth
                             ));
                         break;
                 }
+
+                //The map editor saves files by column,left to right.
+                if (yPosition % mapDimensions[1] == 0 && yPosition != 0)
+                {
+                    yPosition = 0;
+                    xPosition++;
+                }
+
+                yPosition++;
             }
-            
+
             reader.Close();
 
-            base.Initialize();
-        }
-
-        protected override void LoadContent()
-        {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
-            spriteFontTEST = Content.Load<SpriteFont>("File");
-            baseImage = Content.Load<Texture2D>("TurretBase");
-            turretImage = Content.Load<Texture2D>("TurretHead");
-            playerImage = Content.Load<Texture2D>("playerproto");
-            TESTGrassProperty = Content.Load<Texture2D>("GrassTESTImage");
-            TESTWallProperty = Content.Load<Texture2D>("TESTWallImage");
-            turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
-            player = new Player(100, 100, playerImage, 150, 150, 3);
-            TestGrassTile = new WallTile(Tile.Grass, 200, 200, 50, 50);
-            TestWallTile = new WallTile(Tile.Wall, 300, 300, 75, 75);
         }
 
         protected override void Update(GameTime gameTime)
@@ -161,11 +181,6 @@ namespace MonoZombie
                             currentStateTEST = "Game - Playing";
                             player.Move(ks);
 
-                            //This section of code draws each WallTile
-                            foreach(WallTile tile in listOfTiles)
-                            {
-                                tile.Draw(_spriteBatch, Color.White);
-                            }
                             //planned code for determining whether or not to end a round and rewarding the player for killing zombies.
                             bool aZombieIsAlive = false; //(flag)
 
@@ -193,19 +208,19 @@ namespace MonoZombie
 
 
 
-                                player.Update(gameTime, Mouse.GetState(), ks);
-                                //Single press bool so that you don't switch states twice.
-                                if (ks.IsKeyDown(Keys.Escape) && !previousks.IsKeyDown(Keys.Escape))
-                                {
-                                    gameState = GameState.Pause;
-                                }
+                            player.Update(gameTime, Mouse.GetState(), ks);
+                            //Single press bool so that you don't switch states twice.
+                            if (ks.IsKeyDown(Keys.Escape) && !previousks.IsKeyDown(Keys.Escape))
+                            {
+                                gameState = GameState.Pause;
+                            }
 
-                                //Single press bool so that you don't switch states twice.
-                                if (ks.IsKeyDown(Keys.Tab) && !previousks.IsKeyDown(Keys.Tab))
-                                {
-                                    gameState = GameState.Shop;
-                                }
-                                break;
+                            //Single press bool so that you don't switch states twice.
+                            if (ks.IsKeyDown(Keys.Tab) && !previousks.IsKeyDown(Keys.Tab))
+                            {
+                                gameState = GameState.Shop;
+                            }
+                            break;
                         case GameState.Pause:
                             currentStateTEST = "Game - Pause";
                             //Single press bool so that you don't switch states twice.
@@ -256,8 +271,12 @@ namespace MonoZombie
                         case GameState.Playing:
                             turret.Draw(_spriteBatch, Color.White);
                             player.Draw(_spriteBatch);
-                            TestGrassTile.Draw(_spriteBatch, Color.White);
-                            TestWallTile.Draw(_spriteBatch, Color.White);
+
+                            foreach (WallTile tile in listOfTiles)
+                            {
+                                tile.Draw(_spriteBatch, Color.White);
+                            }
+
                             _spriteBatch.DrawString(spriteFontTEST, $"Currency: {currency}", new Vector2(10, 10), Color.White);
                             _spriteBatch.DrawString(spriteFontTEST, $"Round Number: {roundNumber}", new Vector2(10, 30), Color.White);
                             break;
