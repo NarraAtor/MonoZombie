@@ -47,20 +47,20 @@ namespace MonoZombie
         public static Texture2D WallProperty2 { get; set; }
         public static Texture2D WallProperty3 { get; set; }
 
-        private Texture2D turretImage;
-        private Texture2D baseImage;
-        private Texture2D playerImage;
-        private Texture2D enemyImage;
-        private List<WallTile> listOfTiles;
-        private List<Enemy> listOfZombies;
-        private Turret turret;
-        private Player player;
-        private Enemy zombie;
-        private int currency;
-        private int roundNumber;
-        private bool roundIsOngoing;
-
-        public Player Player { get { return player; } }
+        private static Texture2D turretImage;
+        private static Texture2D baseImage;
+        private static Texture2D playerImage;
+        private static Texture2D enemyImage;
+        private static List<WallTile> listOfTiles;
+        private static List<Enemy> listOfZombies;
+        private static Turret turret;
+        private static Player player;
+        private static Enemy zombie;
+        private static int currency;
+        private static int roundNumber;
+        private static bool roundIsOngoing;
+                 
+        public static Player Player { get { return player; } }
 
         //Adjustment Variables
         private int tileWidth;
