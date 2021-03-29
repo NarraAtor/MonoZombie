@@ -35,8 +35,11 @@ namespace MonoZombie
         private KeyboardState previousks;
 
         //Test variables
-        private SpriteFont spriteFontTEST;
         private string currentStateTEST;
+
+        // Fonts
+        private SpriteFont dogicaPixel;
+        private SpriteFont dogicaPixelBold;
 
         //Properties for WallTile
         public static Texture2D GrassProperty1 { get; set; }
@@ -85,7 +88,9 @@ namespace MonoZombie
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            spriteFontTEST = Content.Load<SpriteFont>("File");
+            dogicaPixel = Content.Load<SpriteFont>("DogicaPixel");
+            dogicaPixelBold = Content.Load<SpriteFont>("DogicaPixelBold");
+
             baseImage = Content.Load<Texture2D>("TurretBase");
             turretImage = Content.Load<Texture2D>("TurretHead");
             playerImage = Content.Load<Texture2D>("playerproto");
@@ -277,8 +282,8 @@ namespace MonoZombie
                                 tile.Draw(_spriteBatch, Color.White);
                             }
 
-                            _spriteBatch.DrawString(spriteFontTEST, $"Currency: {currency}", new Vector2(10, 10), Color.White);
-                            _spriteBatch.DrawString(spriteFontTEST, $"Round Number: {roundNumber}", new Vector2(10, 30), Color.White);
+                            _spriteBatch.DrawString(dogicaPixel, $"Currency: {currency}", new Vector2(10, 10), Color.White);
+                            _spriteBatch.DrawString(dogicaPixel, $"Round Number: {roundNumber}", new Vector2(10, 30), Color.White);
                             break;
                         case GameState.Pause:
                             break;
@@ -291,7 +296,7 @@ namespace MonoZombie
             }
 
             //Being used to test if states are switching properly.
-            _spriteBatch.DrawString(spriteFontTEST, currentStateTEST, new Vector2(100, 100), Color.White);
+            _spriteBatch.DrawString(dogicaPixel, currentStateTEST, new Vector2(100, 100), Color.White);
 
             _spriteBatch.End();
 
