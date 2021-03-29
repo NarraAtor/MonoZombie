@@ -54,11 +54,13 @@ namespace MonoZombie
         private List<WallTile> listOfTiles;
         private List<Enemy> listOfZombies;
         private Turret turret;
-        public Player player;
+        private Player player;
         private Enemy zombie;
         private int currency;
         private int roundNumber;
         private bool roundIsOngoing;
+
+        public Player Player { get { return player; } }
 
         //Adjustment Variables
         private int tileWidth;
