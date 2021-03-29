@@ -55,6 +55,8 @@ namespace MonoZombie
             Y += (int)speedY;
         }
 
-        
+        /// Don't check for collision here
+        /// Because we will need to remove
+        /// Bullets from list in Game1
     }
 }
