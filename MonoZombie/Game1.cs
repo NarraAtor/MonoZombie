@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.IO;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace MonoZombie
 {
@@ -36,21 +38,30 @@ namespace MonoZombie
         //Test variables
         private SpriteFont spriteFontTEST;
         private string currentStateTEST;
-        private WallTile TestGrassTile;
-        private WallTile TestWallTile;
-        public static Texture2D TESTGrassProperty { get; set; }
-        public static Texture2D TESTWallProperty { get; set; }
+
+        //Properties for WallTile
+        public static Texture2D GrassProperty1 { get; set; }
+        public static Texture2D GrassProperty2 { get; set; }
+        public static Texture2D GrassProperty3 { get; set; }
+        public static Texture2D WallProperty1 { get; set; }
+        public static Texture2D WallProperty2 { get; set; }
+        public static Texture2D WallProperty3 { get; set; }
 
         private Texture2D turretImage;
         private Texture2D baseImage;
         private Texture2D playerImage;
         private Texture2D enemyImage;
+        private List<WallTile> listOfTiles;
+        private List<Enemy> listOfZombies;
         private Turret turret;
         private Player player;
+        private Enemy zombie;
         private int currency;
         private int roundNumber;
         private bool roundIsOngoing;
-        private int scale;
+
+        //Adjustment Variables
+        private int tileWidth;
 
         public Game1()
         {
@@ -66,36 +77,9 @@ namespace MonoZombie
             gameState = GameState.Playing;
             currency = 0;
             roundNumber = 0;
+            listOfTiles = new List<WallTile>();
+            listOfZombies = new List<Enemy>();
 
-            //Load the map;
-            StreamReader reader = new StreamReader("../../../MapLevels\\CurrentMapDesign.level");
-
-            string currentLine;
-            //Used for quickly changing the map's scale;
-            scale = 45;
-
-            //Get the dimensions
-            currentLine = reader.ReadLine();
-            string[] mapDimensionStrings = currentLine.Split("|");
-            int[] mapDimensions = new int[] { int.Parse(mapDimensionStrings[0]), int.Parse(mapDimensionStrings[1]) };
-            _graphics.PreferredBackBufferWidth = mapDimensions[0] * scale;
-            _graphics.PreferredBackBufferHeight = mapDimensions[1] * scale;
-            _graphics.ApplyChanges();
-
-            //while ((currentLine = reader.ReadLine()) != null)
-            //{
-            //    switch (currentLine)
-            //    {
-            //        case "Grass":
-            //
-            //            break;
-            //
-            //        case "Wall":
-            //            break;
-            //    }
-            //}
-            //
-            reader.Close();
 
             base.Initialize();
         }
@@ -109,12 +93,79 @@ namespace MonoZombie
             baseImage = Content.Load<Texture2D>("TurretBase");
             turretImage = Content.Load<Texture2D>("TurretHead");
             playerImage = Content.Load<Texture2D>("playerproto");
-            TESTGrassProperty = Content.Load<Texture2D>("GrassTESTImage");
-            TESTWallProperty = Content.Load<Texture2D>("TESTWallImage");
+            enemyImage = Content.Load<Texture2D>("zombieproto");
+            GrassProperty1 = Content.Load<Texture2D>("GrassTile1");
+            GrassProperty2 = Content.Load<Texture2D>("GrassTile2");
+            GrassProperty3 = Content.Load<Texture2D>("GrassTile3");
+            WallProperty1 = Content.Load<Texture2D>("WallTile1");
+            WallProperty2 = Content.Load<Texture2D>("WallTile2");
+            WallProperty3 = Content.Load<Texture2D>("WallTile3");
+
+            //Texture reliant intitialization
             turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
             player = new Player(100, 100, playerImage, 150, 150, 3);
-            TestGrassTile = new WallTile(Tile.Grass, 200, 200, 50, 50);
-            TestWallTile = new WallTile(Tile.Wall, 300, 300, 75, 75);
+            zombie = new Enemy(enemyImage, 200, 200, 100, 1, 5);
+
+            //test zombie list
+            listOfZombies.Add(zombie);
+
+
+            //Load the map;
+            StreamReader reader = new StreamReader("../../../MapLevels\\CurrentMapDesign.level");
+
+            string currentLine;
+            //Used for quickly changing the map's scale;
+            tileWidth = 45;
+
+            //Get the dimensions
+            currentLine = reader.ReadLine();
+            string[] mapDimensionStrings = currentLine.Split("|");
+            int[] mapDimensions = new int[] { int.Parse(mapDimensionStrings[0]), int.Parse(mapDimensionStrings[1]) };
+            _graphics.PreferredBackBufferWidth = mapDimensions[0] * tileWidth;
+            _graphics.PreferredBackBufferHeight = mapDimensions[1] * tileWidth;
+            _graphics.ApplyChanges();
+
+            int xPosition = 0;
+            int yPosition = 0;
+            while ((currentLine = reader.ReadLine()) != null)
+            {
+                switch (currentLine)
+                {
+                    case "Grass":
+                        listOfTiles.Add(new WallTile(Tile.Grass,
+                            (_graphics.PreferredBackBufferWidth / mapDimensions[0]) * xPosition,
+                            (_graphics.PreferredBackBufferHeight / mapDimensions[1]) * yPosition,
+                            tileWidth,
+                            tileWidth
+                            ));
+                        break;
+
+                    case "Wall":
+                        listOfTiles.Add(new WallTile(Tile.Wall,
+                            (_graphics.PreferredBackBufferWidth / mapDimensions[0]) * xPosition,
+                            (_graphics.PreferredBackBufferHeight / mapDimensions[1]) * yPosition,
+                            tileWidth,
+                            tileWidth
+                            ));
+                        break;
+                }
+
+                //The map editor saves files by column,left to right.
+                if (yPosition == (mapDimensions[1] - 1))
+                {
+                    yPosition = 0;
+                    xPosition++;
+                }
+                else
+                {
+                    yPosition++;
+                }
+
+
+            }
+
+            reader.Close();
+
         }
 
         protected override void Update(GameTime gameTime)
@@ -149,42 +200,42 @@ namespace MonoZombie
                             bool aZombieIsAlive = false; //(flag)
 
 
-                            //foreach (Enemy zombie in zombieList)
-                            //{
-                            //    //If a zombie just died, set indicate that it is dead an increment currency.
-                            //    if(zombie.Health <= 0 && zombie.IsAlive == true)
-                            //    {
-                            //        zombie.IsAlive = false;
-                            //        currency++;
-                            //    }
-                            //
-                            //    
-                            //    if (zombie.IsAlive)
-                            //    {
-                            //        aZombieIsAlive = true;
-                            //    }
-                            //}
-                            //
-                            //if (aZombieIsAlive!)
-                            //{
-                            //    roundIsOngoing = false;
-                            //}
-
-
-
-                                player.Update(gameTime, Mouse.GetState(), ks);
-                                //Single press bool so that you don't switch states twice.
-                                if (ks.IsKeyDown(Keys.Escape) && !previousks.IsKeyDown(Keys.Escape))
+                            foreach (Enemy zombie in listOfZombies)
+                            {
+                                //If a zombie just died, set indicate that it is dead an increment currency.
+                                if (zombie.Health <= 0 && zombie.IsAlive)
                                 {
-                                    gameState = GameState.Pause;
+                                    zombie.Die();
+                                    currency++;
                                 }
 
-                                //Single press bool so that you don't switch states twice.
-                                if (ks.IsKeyDown(Keys.Tab) && !previousks.IsKeyDown(Keys.Tab))
+
+                                if (zombie.IsAlive)
                                 {
-                                    gameState = GameState.Shop;
+                                    aZombieIsAlive = true;
                                 }
-                                break;
+                            }
+
+                            if (aZombieIsAlive!)
+                            {
+                                roundIsOngoing = false;
+                            }
+
+
+
+                            player.Update(gameTime, Mouse.GetState(), ks);
+                            //Single press bool so that you don't switch states twice.
+                            if (ks.IsKeyDown(Keys.Escape) && !previousks.IsKeyDown(Keys.Escape))
+                            {
+                                gameState = GameState.Pause;
+                            }
+
+                            //Single press bool so that you don't switch states twice.
+                            if (ks.IsKeyDown(Keys.Tab) && !previousks.IsKeyDown(Keys.Tab))
+                            {
+                                gameState = GameState.Shop;
+                            }
+                            break;
                         case GameState.Pause:
                             currentStateTEST = "Game - Pause";
                             //Single press bool so that you don't switch states twice.
@@ -233,10 +284,21 @@ namespace MonoZombie
                     switch (gameState)
                     {
                         case GameState.Playing:
+
+                            foreach (WallTile tile in listOfTiles)
+                            {
+                                tile.Draw(_spriteBatch, Color.White);
+                            }
+
+                            foreach(Enemy zombie in listOfZombies)
+                            {
+                                zombie.Draw(_spriteBatch);
+                            }
+
                             turret.Draw(_spriteBatch, Color.White);
                             player.Draw(_spriteBatch);
-                            TestGrassTile.Draw(_spriteBatch, Color.White);
-                            TestWallTile.Draw(_spriteBatch, Color.White);
+
+
                             _spriteBatch.DrawString(spriteFontTEST, $"Currency: {currency}", new Vector2(10, 10), Color.White);
                             _spriteBatch.DrawString(spriteFontTEST, $"Round Number: {roundNumber}", new Vector2(10, 30), Color.White);
                             break;

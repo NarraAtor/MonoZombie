@@ -40,26 +40,14 @@ namespace MonoZombie
 
                 case Tile.Wall:
                     {
-                        Image = Game1.TESTWallProperty;
+                        Image = Game1.WallProperty1;
                         break;
                     }
                 case Tile.Grass:
                     {
-                        if(rng.Next(4)==1)
-                        {
-                            Image = Game1.TESTGrassProperty;
-                            break;
-                        }
-                        else if(rng.Next(4) == 2)
-                        {
-                           // Image = Game1.TESTGrassProperty2;
-                            break;
-                        }
-                        else
-                        {
-                           // Image = Game1.TESTGrassProperty3;
-                            break;
-                        }
+                        
+                            Image = Game1.GrassProperty1;
+                            break;                      
 
                     }
             }
@@ -72,46 +60,68 @@ namespace MonoZombie
         /// <returns></returns>
         public bool Collision(Player other)
         {
-            float dx = location.X - other.X;
-            float dy = location.Y - other.Y;
-            double dist = Math.Sqrt(dx * dx + dy * dy);
+            float dx = Math.Abs( other.X- location.X);
+            float dy = Math.Abs(other.Y - location.Y);
             switch (type)
             {
 
                 case Tile.Wall:
                     {
-                        if (dist < other.Radius + location.Width)
+                        if (dx<= (location.Width/2))
                         {
-
+                            System.Diagnostics.Debug.WriteLine("DONE");
+                            return true;
+                        }
+                        if(dy <= (location.Height / 2))
+                        {
+                            System.Diagnostics.Debug.WriteLine("DONE");
                             return true;
                         }
                         return false;
                     }
                 case Tile.Gravel:
                     {
-                        if (dist < other.Radius + location.Width)
+                        if (dx <= (location.Width / 2))
                         {
-                            other.PlayerSpeed = other.PlayerSpeed - 5;
+                            System.Diagnostics.Debug.WriteLine("DONE");
+                            return true;
                         }
-                        return true;
+                        if (dy <= (location.Height / 2))
+                        {
+                            System.Diagnostics.Debug.WriteLine("DONE");
+                            return true;
+                        }
+                        return false;
                     }
 
                 case Tile.Lava:
                 {
-                        if (dist < other.Radius + location.Width)
+                        if (dx <= (location.Width / 2))
                         {
-                            other.Health = other.Health - 5;
+                            System.Diagnostics.Debug.WriteLine("DONE");
+                            return true;
                         }
-                    return true;
-                }
+                        if (dy <= (location.Height / 2))
+                        {
+                            System.Diagnostics.Debug.WriteLine("DONE");
+                            return true;
+                        }
+                        return false;
+                    }
 
                 case Tile.Speed:
                     {
-                        if (dist < other.Radius + location.Width)
+                        if (dx <= (location.Width / 2))
                         {
-                            other.PlayerSpeed = other.PlayerSpeed + 5;
+                            System.Diagnostics.Debug.WriteLine("DONE");
+                            return true;
                         }
-                        return true;
+                        if (dy <= (location.Height / 2))
+                        {
+                            System.Diagnostics.Debug.WriteLine("DONE");
+                            return true;
+                        }
+                        return false;
                     }
 
                 case Tile.Grass:

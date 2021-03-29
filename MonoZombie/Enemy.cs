@@ -40,7 +40,8 @@ namespace MonoZombie
             health -= damage;
         }
 
-        public bool IsAlive { get { return IsAlive; } }
+        public bool IsAlive { get { return isAlive; } }
+        public int Health { get { return health; } set { health = value; } }
 
         public void Die() { isAlive = false; }
 
