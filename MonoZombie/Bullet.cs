@@ -54,5 +54,7 @@ namespace MonoZombie
             X += (int)speedX;
             Y += (int)speedY;
         }
+
+        
     }
 }
