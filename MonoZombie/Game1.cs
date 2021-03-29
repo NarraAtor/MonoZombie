@@ -42,14 +42,14 @@ namespace MonoZombie
         private SpriteFont dogicaPixel;
         private SpriteFont dogicaPixelBold;
 
-        private Vector2 screenDimensions;
+        private static Vector2 screenDimensions;
 
         // UI Variables
-        // private UIImage menuTitle;
+        private UIImage menuTitle;
         private UIButton menuPlayButton;
         private UIButton menuQuitButton;
 
-        // private UIImage gameUITab;
+        private UIImage gameUITab;
         // private UIProgressBar gameHealthBar;
 
         // SHOP UI OBJECTS (TO BE DETERMINED)
@@ -58,7 +58,7 @@ namespace MonoZombie
         private UIButton pauseResumeButton;
         private UIButton pauseMenuButton;
 
-        // private UIImage gameOverImage;
+        private UIImage gameOverImage;
         private UIText gameOverScore;
         private UIButton gameOverMenuButton;
 
@@ -96,8 +96,6 @@ namespace MonoZombie
         }
 
         protected override void Initialize() {
-            base.Initialize( );
-
             // TODO: Add your initialization logic here
             menuState = MenuState.MainMenu;
             gameState = GameState.Playing;
@@ -117,8 +115,12 @@ namespace MonoZombie
             currentLine = reader.ReadLine( );
             string[ ] mapDimensionStrings = currentLine.Split("|");
             int[ ] mapDimensions = new int[ ] { int.Parse(mapDimensionStrings[0]), int.Parse(mapDimensionStrings[1]) };
-            _graphics.PreferredBackBufferWidth = mapDimensions[0] * tileWidth;
-            _graphics.PreferredBackBufferHeight = mapDimensions[1] * tileWidth;
+
+            // Update the dimensions of the screen
+            screenDimensions = new Vector2(mapDimensions[0] * tileWidth, mapDimensions[1] * tileWidth);
+            
+            _graphics.PreferredBackBufferWidth = (int) screenDimensions.X;
+            _graphics.PreferredBackBufferHeight = (int) screenDimensions.Y;
             _graphics.ApplyChanges( );
 
             int xPosition = 0;
@@ -159,6 +161,8 @@ namespace MonoZombie
             }
 
             reader.Close( );
+
+            base.Initialize( );
         }
 
         protected override void LoadContent()
@@ -176,8 +180,6 @@ namespace MonoZombie
             WallProperty1 = Content.Load<Texture2D>("WallTile1");
             WallProperty2 = Content.Load<Texture2D>("WallTile2");
             WallProperty3 = Content.Load<Texture2D>("WallTile3");
-            turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
-            player = new Player(100, 100, playerImage, 150, 150, 3);
 
             // Load fonts
             dogicaPixel = Content.Load<SpriteFont>("DogicaPixel");
@@ -188,14 +190,11 @@ namespace MonoZombie
             Texture2D buttonTexture = Content.Load<Texture2D>("button");
             Texture2D tabTexture = Content.Load<Texture2D>("tab");
 
-            // Get the current screen dimensions
-            screenDimensions = new Vector2(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
-
             // Update the scale of the UI
             UIElement.UIScale = 5;
 
             // Create UI
-            // menuTitle
+            menuTitle = new UIImage(menuTitleTexture, new Point((int) screenDimensions.X / 2, (int) screenDimensions.Y / 4));
             menuPlayButton = UIElement.CreateButton(buttonTexture, new Point((int) screenDimensions.X / 2, (int) screenDimensions.Y / 2), ( ) => {
                 menuState = MenuState.Game;
                 gameState = GameState.Playing;
@@ -222,7 +221,7 @@ namespace MonoZombie
             zombie = new Enemy(enemyImage, 200, 200, 100, 1, 5);
 
             //test zombie list
-            listOfZombies.Add(zombie);
+            // listOfZombies.Add(zombie);
         }
 
         protected override void Update(GameTime gameTime)
@@ -237,17 +236,10 @@ namespace MonoZombie
                 case MenuState.MainMenu:
                     currentStateTEST = "MainMenu";
 
+                    // Update the menu UI elements
                     menuPlayButton.Update(gameTime, Mouse.GetState( ));
 
-                    //Single press bool so that you don't switch states twice.
-                    //if (ks.IsKeyDown(Keys.Enter) && !previousks.IsKeyDown(Keys.Enter))
-                    //{
-                    //    menuState = MenuState.Game;
-                    //    gameState = GameState.Playing;
-                    //    roundIsOngoing = true;
-                    //}
                     break;
-
                 case MenuState.Game:
                     currentStateTEST = "Game -";
                     switch (gameState)
@@ -345,7 +337,10 @@ namespace MonoZombie
             switch (menuState)
             {
                 case MenuState.MainMenu:
+                    // Draw menu UI objects
+                    menuTitle.Draw(_spriteBatch);
                     menuPlayButton.Draw(_spriteBatch);
+
                     break;
                 case MenuState.Game:
                     switch (gameState)
