@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.IO;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace MonoZombie
 {
