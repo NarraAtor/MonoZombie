@@ -52,8 +52,10 @@ namespace MonoZombie
         private Texture2D playerImage;
         private Texture2D enemyImage;
         private List<WallTile> listOfTiles;
+        private List<Enemy> listOfZombies;
         private Turret turret;
         private Player player;
+        private Enemy zombie;
         private int currency;
         private int roundNumber;
         private bool roundIsOngoing;
@@ -76,6 +78,7 @@ namespace MonoZombie
             currency = 0;
             roundNumber = 0;
             listOfTiles = new List<WallTile>();
+            listOfZombies = new List<Enemy>();
 
 
             base.Initialize();
@@ -97,8 +100,14 @@ namespace MonoZombie
             WallProperty1 = Content.Load<Texture2D>("WallTile1");
             WallProperty2 = Content.Load<Texture2D>("WallTile2");
             WallProperty3 = Content.Load<Texture2D>("WallTile3");
+
+            //Texture reliant intitialization
             turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
             player = new Player(100, 100, playerImage, 150, 150, 3);
+            zombie = new Enemy(enemyImage, 200, 200, 100, 1, 5);
+
+            //test zombie list
+            listOfZombies.Add(zombie);
 
 
             //Load the map;
@@ -191,26 +200,26 @@ namespace MonoZombie
                             bool aZombieIsAlive = false; //(flag)
 
 
-                            //foreach (Enemy zombie in zombieList)
-                            //{
-                            //    //If a zombie just died, set indicate that it is dead an increment currency.
-                            //    if(zombie.Health <= 0 && zombie.IsAlive == true)
-                            //    {
-                            //        zombie.IsAlive = false;
-                            //        currency++;
-                            //    }
-                            //
-                            //    
-                            //    if (zombie.IsAlive)
-                            //    {
-                            //        aZombieIsAlive = true;
-                            //    }
-                            //}
-                            //
-                            //if (aZombieIsAlive!)
-                            //{
-                            //    roundIsOngoing = false;
-                            //}
+                            foreach (Enemy zombie in listOfZombies)
+                            {
+                                //If a zombie just died, set indicate that it is dead an increment currency.
+                                if (zombie.Health <= 0 && zombie.IsAlive)
+                                {
+                                    zombie.Die();
+                                    currency++;
+                                }
+
+
+                                if (zombie.IsAlive)
+                                {
+                                    aZombieIsAlive = true;
+                                }
+                            }
+
+                            if (aZombieIsAlive!)
+                            {
+                                roundIsOngoing = false;
+                            }
 
 
 
@@ -281,8 +290,14 @@ namespace MonoZombie
                                 tile.Draw(_spriteBatch, Color.White);
                             }
 
+                            foreach(Enemy zombie in listOfZombies)
+                            {
+                                zombie.Draw(_spriteBatch);
+                            }
+
                             turret.Draw(_spriteBatch, Color.White);
                             player.Draw(_spriteBatch);
+
 
                             _spriteBatch.DrawString(spriteFontTEST, $"Currency: {currency}", new Vector2(10, 10), Color.White);
                             _spriteBatch.DrawString(spriteFontTEST, $"Round Number: {roundNumber}", new Vector2(10, 30), Color.White);
