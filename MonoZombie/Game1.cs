@@ -222,9 +222,9 @@ namespace MonoZombie
                                 roundIsOngoing = false;
                             }
 
-                            foreach(WallTile wall in listOfTiles)
+                            foreach(WallTile tile in listOfTiles)
                             {
-
+                                tile.
                             }
 
                             player.Update(gameTime, Mouse.GetState(), ks);
