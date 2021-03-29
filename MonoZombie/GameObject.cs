@@ -12,6 +12,8 @@ namespace MonoZombie {
 		protected float angle;
 		protected float radius;
 
+		//Rectangle collider code
+		public Rectangle RectangleCollider { get; set; }
 		public int X {
 			get {
 				return centerPosition.X;
@@ -59,6 +61,7 @@ namespace MonoZombie {
 			this.texture = texture;
 
 			centerPosition = new Point(x, y);
+			RectangleCollider = new Rectangle(x, y, texture.Width, texture.Height);
 		}
 
 		/*

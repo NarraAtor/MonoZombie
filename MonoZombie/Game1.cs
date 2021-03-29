@@ -224,7 +224,7 @@ namespace MonoZombie
 
                             foreach(WallTile tile in listOfTiles)
                             {
-                                tile.
+                                tile.Update();
                             }
 
                             player.Update(gameTime, Mouse.GetState(), ks);
