@@ -135,7 +135,7 @@ namespace MonoZombie {
 		 * return double			: The distance (in pixels) between the two points
 		 */
 		protected float Distance (Point point1, Point point2) {
-			return (float) Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y, 2));
+			return MathF.Sqrt(MathF.Pow(point1.X - point2.X, 2) + MathF.Pow(point1.Y - point2.Y, 2));
 		}
 	}
 }
