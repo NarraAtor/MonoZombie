@@ -50,12 +50,14 @@ namespace MonoZombie
         /// Update, make sure the time works 
         /// </summary>
         /// <param name="time"></param>
-/*        public void Update(GameTime time)
+        public void Update(GameTime time)
         {
-            double timeBetweenFrames = Double.TryParse(time.ToString()); //- timeAtLastFrame;
-            timer += (double)time.ElapsedGameTime;
+            double currentTime;
+            Double.TryParse(time.ToString(), out currentTime); //- timeAtLastFrame;
+            double timeBetweenFrames = currentTime - timeAtLastFrame;
+            timer += timeBetweenFrames;
 
-            Double.TryParse(time.ToString(), timeAtLastFrame);
-        }*/
+            timeAtLastFrame = currentTime;
+        }
     }
 }
