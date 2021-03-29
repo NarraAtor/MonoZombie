@@ -11,7 +11,7 @@ namespace MonoZombie {
 		private bool isPressed;
 		private UIText text;
 
-		public UIButton (Texture2D texture, UIText text, Rectangle rect, Action onClick) : base(texture, rect) {
+		public UIButton (Texture2D texture, UIText text, Point position, Action onClick) : base(texture, position) {
 			this.text = text;
 			this.onClick = onClick;
 

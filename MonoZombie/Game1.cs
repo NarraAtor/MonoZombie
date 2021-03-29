@@ -41,6 +41,26 @@ namespace MonoZombie
         private SpriteFont dogicaPixel;
         private SpriteFont dogicaPixelBold;
 
+        private Vector2 screenDimensions;
+
+        // UI Variables
+        // private UIImage menuTitle;
+        private UIButton menuPlayButton;
+        private UIButton menuQuitButton;
+
+        // private UIImage gameUITab;
+        // private UIProgressBar gameHealthBar;
+
+        // SHOP UI OBJECTS (TO BE DETERMINED)
+
+        private UIText pausePausedText;
+        private UIButton pauseResumeButton;
+        private UIButton pauseMenuButton;
+
+        // private UIImage gameOverImage;
+        private UIText gameOverScore;
+        private UIButton gameOverMenuButton;
+
         //Properties for WallTile
         public static Texture2D GrassProperty1 { get; set; }
         public static Texture2D GrassProperty2 { get; set; }
@@ -70,8 +90,9 @@ namespace MonoZombie
             IsMouseVisible = true;
         }
 
-        protected override void Initialize()
-        {
+        protected override void Initialize() {
+            base.Initialize( );
+
             // TODO: Add your initialization logic here
             menuState = MenuState.MainMenu;
             gameState = GameState.Playing;
@@ -79,32 +100,7 @@ namespace MonoZombie
             roundNumber = 0;
             listOfTiles = new List<WallTile>();
 
-
-            base.Initialize();
-        }
-
-        protected override void LoadContent()
-        {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
-            dogicaPixel = Content.Load<SpriteFont>("DogicaPixel");
-            dogicaPixelBold = Content.Load<SpriteFont>("DogicaPixelBold");
-
-            baseImage = Content.Load<Texture2D>("TurretBase");
-            turretImage = Content.Load<Texture2D>("TurretHead");
-            playerImage = Content.Load<Texture2D>("playerproto");
-            GrassProperty1 = Content.Load<Texture2D>("GrassTile1");
-            GrassProperty2 = Content.Load<Texture2D>("GrassTile2");
-            GrassProperty3 = Content.Load<Texture2D>("GrassTile3");
-            WallProperty1 = Content.Load<Texture2D>("WallTile1");
-            WallProperty2 = Content.Load<Texture2D>("WallTile2");
-            WallProperty3 = Content.Load<Texture2D>("WallTile3");
-            turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
-            player = new Player(100, 100, playerImage, 150, 150, 3);
-
-
-            //Load the map;
+            //Load the map
             StreamReader reader = new StreamReader("../../../MapLevels\\CurrentMapDesign.level");
 
             string currentLine;
@@ -112,19 +108,17 @@ namespace MonoZombie
             tileWidth = 45;
 
             //Get the dimensions
-            currentLine = reader.ReadLine();
-            string[] mapDimensionStrings = currentLine.Split("|");
-            int[] mapDimensions = new int[] { int.Parse(mapDimensionStrings[0]), int.Parse(mapDimensionStrings[1]) };
+            currentLine = reader.ReadLine( );
+            string[ ] mapDimensionStrings = currentLine.Split("|");
+            int[ ] mapDimensions = new int[ ] { int.Parse(mapDimensionStrings[0]), int.Parse(mapDimensionStrings[1]) };
             _graphics.PreferredBackBufferWidth = mapDimensions[0] * tileWidth;
             _graphics.PreferredBackBufferHeight = mapDimensions[1] * tileWidth;
-            _graphics.ApplyChanges();
+            _graphics.ApplyChanges( );
 
             int xPosition = 0;
             int yPosition = 0;
-            while ((currentLine = reader.ReadLine()) != null)
-            {
-                switch (currentLine)
-                {
+            while ((currentLine = reader.ReadLine( )) != null) {
+                switch (currentLine) {
                     case "Grass":
                         listOfTiles.Add(new WallTile(Tile.Grass,
                             (_graphics.PreferredBackBufferWidth / mapDimensions[0]) * xPosition,
@@ -145,8 +139,7 @@ namespace MonoZombie
                 }
 
                 //The map editor saves files by column,left to right.
-                if (yPosition % mapDimensions[1] == 0 && yPosition != 0)
-                {
+                if (yPosition % mapDimensions[1] == 0 && yPosition != 0) {
                     yPosition = 0;
                     xPosition++;
                 }
@@ -154,8 +147,63 @@ namespace MonoZombie
                 yPosition++;
             }
 
-            reader.Close();
+            reader.Close( );
+        }
 
+        protected override void LoadContent()
+        {
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            // TODO: use this.Content to load your game content here
+
+            baseImage = Content.Load<Texture2D>("TurretBase");
+            turretImage = Content.Load<Texture2D>("TurretHead");
+            playerImage = Content.Load<Texture2D>("playerproto");
+            GrassProperty1 = Content.Load<Texture2D>("GrassTile1");
+            GrassProperty2 = Content.Load<Texture2D>("GrassTile2");
+            GrassProperty3 = Content.Load<Texture2D>("GrassTile3");
+            WallProperty1 = Content.Load<Texture2D>("WallTile1");
+            WallProperty2 = Content.Load<Texture2D>("WallTile2");
+            WallProperty3 = Content.Load<Texture2D>("WallTile3");
+            turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
+            player = new Player(100, 100, playerImage, 150, 150, 3);
+
+            // Load fonts
+            dogicaPixel = Content.Load<SpriteFont>("DogicaPixel");
+            dogicaPixelBold = Content.Load<SpriteFont>("DogicaPixelBold");
+
+            // Load UI Textures
+            Texture2D menuTitleTexture = Content.Load<Texture2D>("title");
+            Texture2D buttonTexture = Content.Load<Texture2D>("button");
+            Texture2D tabTexture = Content.Load<Texture2D>("tab");
+
+            // Get the current screen dimensions
+            screenDimensions = new Vector2(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+
+            // Update the scale of the UI
+            UIElement.UIScale = 5;
+
+            // Create UI
+            // menuTitle
+            menuPlayButton = UIElement.CreateButton(buttonTexture, new Point((int) screenDimensions.X / 2, (int) screenDimensions.Y / 2), ( ) => {
+                menuState = MenuState.Game;
+                gameState = GameState.Playing;
+                roundIsOngoing = true;
+            }, dogicaPixel, "Play");
+            // menuQuitButton
+
+            // private UIImage gameUITab;
+            // private UIProgressBar gameHealthBar;
+    
+            // SHOP UI OBJECTS (TO BE DETERMINED)
+
+            // pausePausedText
+            // pauseResumeButton
+            // pauseMenuButton
+
+            // private UIImage gameOverImage;
+            // gameOverScore
+            // gameOverMenuButton
         }
 
         protected override void Update(GameTime gameTime)
@@ -169,13 +217,16 @@ namespace MonoZombie
             {
                 case MenuState.MainMenu:
                     currentStateTEST = "MainMenu";
+
+                    menuPlayButton.Update(gameTime, Mouse.GetState( ));
+
                     //Single press bool so that you don't switch states twice.
-                    if (ks.IsKeyDown(Keys.Enter) && !previousks.IsKeyDown(Keys.Enter))
-                    {
-                        menuState = MenuState.Game;
-                        gameState = GameState.Playing;
-                        roundIsOngoing = true;
-                    }
+                    //if (ks.IsKeyDown(Keys.Enter) && !previousks.IsKeyDown(Keys.Enter))
+                    //{
+                    //    menuState = MenuState.Game;
+                    //    gameState = GameState.Playing;
+                    //    roundIsOngoing = true;
+                    //}
                     break;
 
                 case MenuState.Game:
@@ -264,11 +315,15 @@ namespace MonoZombie
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
-            _spriteBatch.Begin();
+            // * These settings in SpriteBatch.Begin() prevent sprites from becoming blurry when scaled up. This
+            // means we can make pixel art images and import them into the game very small and then scale them up.
+            // This makes the images a lot easier to edit if we need to do that again.
+            _spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp);
+
             switch (menuState)
             {
                 case MenuState.MainMenu:
+                    menuPlayButton.Draw(_spriteBatch);
                     break;
                 case MenuState.Game:
                     switch (gameState)

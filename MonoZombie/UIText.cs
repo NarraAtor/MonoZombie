@@ -20,6 +20,12 @@ namespace MonoZombie {
 			}
 		}
 
+		public UIText (SpriteFont font, string text, Color color, Point position) : base(font.MeasureString(text), position) {
+			this.font = font;
+			this.text = text;
+			this.color = color;
+		}
+
 		public UIText (SpriteFont font, string text, Color color, Rectangle rect) : base(rect) {
 			this.font = font;
 			this.text = text;
@@ -29,7 +35,10 @@ namespace MonoZombie {
 		public override void Update (GameTime gameTime, MouseState mouse) { }
 
 		public override void Draw (SpriteBatch spriteBatch) {
-			spriteBatch.DrawString(font, text, rect.Location.ToVector2( ), color);
+			// Calculate the centered position of the text within its rectangle
+			Vector2 textPosition = new Vector2(rect.Center.X - (font.MeasureString(Text).X / 2), rect.Center.Y - (font.MeasureString(Text).Y / 2));
+			
+			spriteBatch.DrawString(font, text, textPosition, color);
 		}
 	}
 }
