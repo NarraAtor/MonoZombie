@@ -163,7 +163,7 @@ namespace MonoZombie
             //Texture reliant intitialization
             turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
             player = new Player(100, 100, playerImage, _graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, 3);
-            zombie = new Enemy(enemyImage, 200, 200, 100, 1, 5);
+            zombie = new Enemy(enemyImage, (_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2, 100, 1, 5);
 
             //test zombie list
             listOfZombies.Add(zombie);
@@ -214,6 +214,7 @@ namespace MonoZombie
                                 if (zombie.IsAlive)
                                 {
                                     aZombieIsAlive = true;
+                                    zombie.Update(gameTime);
                                 }
                             }
 
@@ -305,6 +306,7 @@ namespace MonoZombie
 
                             _spriteBatch.DrawString(spriteFontTEST, $"Currency: {currency}", new Vector2(10, 10), Color.White);
                             _spriteBatch.DrawString(spriteFontTEST, $"Round Number: {roundNumber}", new Vector2(10, 30), Color.White);
+                            _spriteBatch.DrawString(spriteFontTEST, $"Player Health: {player.Health}", new Vector2(10, 50), Color.White);
                             break;
                         case GameState.Pause:
                             break;

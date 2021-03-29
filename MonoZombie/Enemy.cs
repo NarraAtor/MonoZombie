@@ -67,7 +67,7 @@ namespace MonoZombie
             Double.TryParse(time.ToString(), out currentTime); //- timeAtLastFrame;
             double timeBetweenFrames = currentTime - timeAtLastFrame;
             timer += timeBetweenFrames;
-
+            Attack(Game1.Player);
             timeAtLastFrame = currentTime;
         }
     }
