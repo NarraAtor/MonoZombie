@@ -44,10 +44,9 @@ namespace MonoZombie
                         break;
                     }
                 case Tile.Grass:
-                    {
-                        
-                            Image = Game1.TESTGrassProperty;
-                            break;                      
+                    {                       
+                      Image = Game1.TESTGrassProperty;
+                      break;                      
 
                     }
             }
