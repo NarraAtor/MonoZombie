@@ -47,18 +47,20 @@ namespace MonoZombie
         public static Texture2D WallProperty2 { get; set; }
         public static Texture2D WallProperty3 { get; set; }
 
-        private Texture2D turretImage;
-        private Texture2D baseImage;
-        private Texture2D playerImage;
-        private Texture2D enemyImage;
-        private List<WallTile> listOfTiles;
-        private List<Enemy> listOfZombies;
-        private Turret turret;
-        private Player player;
-        private Enemy zombie;
-        private int currency;
-        private int roundNumber;
-        private bool roundIsOngoing;
+        private static Texture2D turretImage;
+        private static Texture2D baseImage;
+        private static Texture2D playerImage;
+        private static Texture2D enemyImage;
+        private static List<WallTile> listOfTiles;
+        private static List<Enemy> listOfZombies;
+        private static Turret turret;
+        private static Player player;
+        private static Enemy zombie;
+        private static int currency;
+        private static int roundNumber;
+        private static bool roundIsOngoing;
+                 
+        public static Player Player { get { return player; } }
 
         //Adjustment Variables
         private int tileWidth;
@@ -100,14 +102,6 @@ namespace MonoZombie
             WallProperty1 = Content.Load<Texture2D>("WallTile1");
             WallProperty2 = Content.Load<Texture2D>("WallTile2");
             WallProperty3 = Content.Load<Texture2D>("WallTile3");
-
-            //Texture reliant intitialization
-            turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
-            player = new Player(100, 100, playerImage, 150, 150, 3);
-            zombie = new Enemy(enemyImage, 200, 200, 100, 1, 5);
-
-            //test zombie list
-            listOfZombies.Add(zombie);
 
 
             //Load the map;
@@ -166,6 +160,13 @@ namespace MonoZombie
 
             reader.Close();
 
+            //Texture reliant intitialization
+            turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
+            player = new Player(100, 100, playerImage, _graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, 3);
+            zombie = new Enemy(enemyImage, 200, 200, 100, 1, 5);
+
+            //test zombie list
+            listOfZombies.Add(zombie);
         }
 
         protected override void Update(GameTime gameTime)
@@ -221,7 +222,10 @@ namespace MonoZombie
                                 roundIsOngoing = false;
                             }
 
-
+                            foreach(WallTile tile in listOfTiles)
+                            {
+                                tile.
+                            }
 
                             player.Update(gameTime, Mouse.GetState(), ks);
                             //Single press bool so that you don't switch states twice.

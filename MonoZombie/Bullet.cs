@@ -15,7 +15,7 @@ namespace MonoZombie
      * in Main(). 
      */
 
-    class Bullet : GameObject
+    public class Bullet : GameObject
     {
         
         int bulletSpeed;                    // the default bullet speed, as if it were moving in one direction
