@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MonoZombie
 {
-    class Player : GameObject
+    public class Player : GameObject
     {
         private int playerSpeed;              // defines how much player moves in one direction
         private int health;

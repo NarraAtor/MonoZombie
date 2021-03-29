@@ -27,11 +27,22 @@ namespace MonoZombie
             timer = 0;
         }
 
+
+        /// <summary>
+        /// Attacks the player every few seconds
+        /// Uses timer to calculate whether it can attack or not
+        /// Variable attack speed to be implemented
+        /// </summary>
+        /// <param name="player"></param>
         public void Attack(Player player)
         {
             if (Distance(new Point(X, Y), new Point(player.X, player.Y)) < radius)
             {
-                player.TakeDamage(10);
+                if (timer > 1) 
+                {
+                    player.TakeDamage(10);
+                    timer = 0;
+                }
             }
         }
 
@@ -40,7 +51,8 @@ namespace MonoZombie
             health -= damage;
         }
 
-        public bool IsAlive { get { return IsAlive; } }
+        public bool IsAlive { get { return isAlive; } }
+        public int Health { get { return health; } set { health = value; } }
 
         public void Die() { isAlive = false; }
 
@@ -49,12 +61,14 @@ namespace MonoZombie
         /// Update, make sure the time works 
         /// </summary>
         /// <param name="time"></param>
-/*        public void Update(GameTime time)
+        public void Update(GameTime time)
         {
-            double timeBetweenFrames = Double.TryParse(time.ToString()); //- timeAtLastFrame;
-            timer += (double)time.ElapsedGameTime;
+            double currentTime;
+            Double.TryParse(time.ToString(), out currentTime); //- timeAtLastFrame;
+            double timeBetweenFrames = currentTime - timeAtLastFrame;
+            timer += timeBetweenFrames;
 
-            Double.TryParse(time.ToString(), timeAtLastFrame);
-        }*/
+            timeAtLastFrame = currentTime;
+        }
     }
 }

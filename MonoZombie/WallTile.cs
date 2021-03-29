@@ -60,46 +60,68 @@ namespace MonoZombie
         /// <returns></returns>
         public bool Collision(Player other)
         {
-            float dx = location.X - other.X;
-            float dy = location.Y - other.Y;
-            double dist = Math.Sqrt(dx * dx + dy * dy);
+            float dx = Math.Abs( other.X- location.X);
+            float dy = Math.Abs(other.Y - location.Y);
             switch (type)
             {
 
                 case Tile.Wall:
                     {
-                        if (dist < other.Radius + location.Width)
+                        if (dx<= (location.Width/2))
                         {
-
+                            System.Diagnostics.Debug.WriteLine("DONE");
+                            return true;
+                        }
+                        if(dy <= (location.Height / 2))
+                        {
+                            System.Diagnostics.Debug.WriteLine("DONE");
                             return true;
                         }
                         return false;
                     }
                 case Tile.Gravel:
                     {
-                        if (dist < other.Radius + location.Width)
+                        if (dx <= (location.Width / 2))
                         {
-                            other.PlayerSpeed = other.PlayerSpeed - 5;
+                            System.Diagnostics.Debug.WriteLine("DONE");
+                            return true;
                         }
-                        return true;
+                        if (dy <= (location.Height / 2))
+                        {
+                            System.Diagnostics.Debug.WriteLine("DONE");
+                            return true;
+                        }
+                        return false;
                     }
 
                 case Tile.Lava:
                 {
-                        if (dist < other.Radius + location.Width)
+                        if (dx <= (location.Width / 2))
                         {
-                            other.Health = other.Health - 5;
+                            System.Diagnostics.Debug.WriteLine("DONE");
+                            return true;
                         }
-                    return true;
-                }
+                        if (dy <= (location.Height / 2))
+                        {
+                            System.Diagnostics.Debug.WriteLine("DONE");
+                            return true;
+                        }
+                        return false;
+                    }
 
                 case Tile.Speed:
                     {
-                        if (dist < other.Radius + location.Width)
+                        if (dx <= (location.Width / 2))
                         {
-                            other.PlayerSpeed = other.PlayerSpeed + 5;
+                            System.Diagnostics.Debug.WriteLine("DONE");
+                            return true;
                         }
-                        return true;
+                        if (dy <= (location.Height / 2))
+                        {
+                            System.Diagnostics.Debug.WriteLine("DONE");
+                            return true;
+                        }
+                        return false;
                     }
 
                 case Tile.Grass:
@@ -113,6 +135,11 @@ namespace MonoZombie
         public void Draw(SpriteBatch sb, Color tint)
         {
             sb.Draw(Image,location , tint);
+        }
+
+        public void Update()
+        {
+            this.Collision(Game1.Player);
         }
     }
 }

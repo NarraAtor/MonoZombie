@@ -15,7 +15,7 @@ namespace MonoZombie
      * in Main(). 
      */
 
-    class Bullet : GameObject
+    public class Bullet : GameObject
     {
         
         int bulletSpeed;                    // the default bullet speed, as if it were moving in one direction
@@ -54,5 +54,9 @@ namespace MonoZombie
             X += (int)speedX;
             Y += (int)speedY;
         }
+
+        /// Don't check for collision here
+        /// Because we will need to remove
+        /// Bullets from list in Game1
     }
 }

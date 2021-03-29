@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.IO;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace MonoZombie
 {
@@ -69,16 +70,20 @@ namespace MonoZombie
         public static Texture2D WallProperty2 { get; set; }
         public static Texture2D WallProperty3 { get; set; }
 
-        private Texture2D turretImage;
-        private Texture2D baseImage;
-        private Texture2D playerImage;
-        private Texture2D enemyImage;
-        private List<WallTile> listOfTiles;
-        private Turret turret;
-        private Player player;
-        private int currency;
-        private int roundNumber;
-        private bool roundIsOngoing;
+        private static Texture2D turretImage;
+        private static Texture2D baseImage;
+        private static Texture2D playerImage;
+        private static Texture2D enemyImage;
+        private static List<WallTile> listOfTiles;
+        private static List<Enemy> listOfZombies;
+        private static Turret turret;
+        private static Player player;
+        private static Enemy zombie;
+        private static int currency;
+        private static int roundNumber;
+        private static bool roundIsOngoing;
+                 
+        public static Player Player { get { return player; } }
 
         //Adjustment Variables
         private int tileWidth;
@@ -99,6 +104,7 @@ namespace MonoZombie
             currency = 0;
             roundNumber = 0;
             listOfTiles = new List<WallTile>();
+            listOfZombies = new List<Enemy>();
 
             //Load the map
             StreamReader reader = new StreamReader("../../../MapLevels\\CurrentMapDesign.level");
@@ -139,12 +145,17 @@ namespace MonoZombie
                 }
 
                 //The map editor saves files by column,left to right.
-                if (yPosition % mapDimensions[1] == 0 && yPosition != 0) {
+                if (yPosition == (mapDimensions[1] - 1))
+                {
                     yPosition = 0;
                     xPosition++;
                 }
+                else
+                {
+                    yPosition++;
+                }
 
-                yPosition++;
+
             }
 
             reader.Close( );
@@ -194,7 +205,7 @@ namespace MonoZombie
 
             // private UIImage gameUITab;
             // private UIProgressBar gameHealthBar;
-    
+
             // SHOP UI OBJECTS (TO BE DETERMINED)
 
             // pausePausedText
@@ -204,6 +215,14 @@ namespace MonoZombie
             // private UIImage gameOverImage;
             // gameOverScore
             // gameOverMenuButton
+
+            //Texture reliant intitialization
+            turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
+            player = new Player(100, 100, playerImage, _graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, 3);
+            zombie = new Enemy(enemyImage, 200, 200, 100, 1, 5);
+
+            //test zombie list
+            listOfZombies.Add(zombie);
         }
 
         protected override void Update(GameTime gameTime)
@@ -241,28 +260,31 @@ namespace MonoZombie
                             bool aZombieIsAlive = false; //(flag)
 
 
-                            //foreach (Enemy zombie in zombieList)
-                            //{
-                            //    //If a zombie just died, set indicate that it is dead an increment currency.
-                            //    if(zombie.Health <= 0 && zombie.IsAlive == true)
-                            //    {
-                            //        zombie.IsAlive = false;
-                            //        currency++;
-                            //    }
-                            //
-                            //    
-                            //    if (zombie.IsAlive)
-                            //    {
-                            //        aZombieIsAlive = true;
-                            //    }
-                            //}
-                            //
-                            //if (aZombieIsAlive!)
-                            //{
-                            //    roundIsOngoing = false;
-                            //}
+                            foreach (Enemy zombie in listOfZombies)
+                            {
+                                //If a zombie just died, set indicate that it is dead an increment currency.
+                                if (zombie.Health <= 0 && zombie.IsAlive)
+                                {
+                                    zombie.Die();
+                                    currency++;
+                                }
 
 
+                                if (zombie.IsAlive)
+                                {
+                                    aZombieIsAlive = true;
+                                }
+                            }
+
+                            if (aZombieIsAlive!)
+                            {
+                                roundIsOngoing = false;
+                            }
+
+                            foreach(WallTile tile in listOfTiles)
+                            {
+                                tile.Update();
+                            }
 
                             player.Update(gameTime, Mouse.GetState(), ks);
                             //Single press bool so that you don't switch states twice.
@@ -329,13 +351,19 @@ namespace MonoZombie
                     switch (gameState)
                     {
                         case GameState.Playing:
-                            turret.Draw(_spriteBatch, Color.White);
-                            player.Draw(_spriteBatch);
 
                             foreach (WallTile tile in listOfTiles)
                             {
                                 tile.Draw(_spriteBatch, Color.White);
                             }
+
+                            foreach(Enemy zombie in listOfZombies)
+                            {
+                                zombie.Draw(_spriteBatch);
+                            }
+
+                            turret.Draw(_spriteBatch, Color.White);
+                            player.Draw(_spriteBatch);
 
                             _spriteBatch.DrawString(dogicaPixel, $"Currency: {currency}", new Vector2(10, 10), Color.White);
                             _spriteBatch.DrawString(dogicaPixel, $"Round Number: {roundNumber}", new Vector2(10, 30), Color.White);
