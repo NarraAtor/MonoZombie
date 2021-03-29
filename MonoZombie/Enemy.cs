@@ -16,7 +16,7 @@ namespace MonoZombie
         double attTime;
         double timer;
 
-        public bool IsAlive { get; set; }
+        bool isAlive;
 
         public Enemy(Texture2D texture, int x, int y, int health, int speed, int attSpeed) 
             : base(texture, x, y)
