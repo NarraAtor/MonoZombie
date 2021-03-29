@@ -89,6 +89,7 @@ namespace MonoZombie
             baseImage = Content.Load<Texture2D>("TurretBase");
             turretImage = Content.Load<Texture2D>("TurretHead");
             playerImage = Content.Load<Texture2D>("playerproto");
+            enemyImage = Content.Load<Texture2D>("zombieproto");
             GrassProperty1 = Content.Load<Texture2D>("GrassTile1");
             GrassProperty2 = Content.Load<Texture2D>("GrassTile2");
             GrassProperty3 = Content.Load<Texture2D>("GrassTile3");
@@ -140,13 +141,17 @@ namespace MonoZombie
                 }
 
                 //The map editor saves files by column,left to right.
-                if (yPosition % mapDimensions[1] == 0 && yPosition != 0)
+                if (yPosition == (mapDimensions[1] - 1))
                 {
                     yPosition = 0;
                     xPosition++;
                 }
+                else
+                {
+                    yPosition++;
+                }
 
-                yPosition++;
+
             }
 
             reader.Close();
@@ -269,13 +274,14 @@ namespace MonoZombie
                     switch (gameState)
                     {
                         case GameState.Playing:
-                            turret.Draw(_spriteBatch, Color.White);
-                            player.Draw(_spriteBatch);
 
                             foreach (WallTile tile in listOfTiles)
                             {
                                 tile.Draw(_spriteBatch, Color.White);
                             }
+
+                            turret.Draw(_spriteBatch, Color.White);
+                            player.Draw(_spriteBatch);
 
                             _spriteBatch.DrawString(spriteFontTEST, $"Currency: {currency}", new Vector2(10, 10), Color.White);
                             _spriteBatch.DrawString(spriteFontTEST, $"Round Number: {roundNumber}", new Vector2(10, 30), Color.White);
