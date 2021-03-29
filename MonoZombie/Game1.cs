@@ -54,7 +54,7 @@ namespace MonoZombie
         private List<WallTile> listOfTiles;
         private List<Enemy> listOfZombies;
         private Turret turret;
-        private Player player;
+        public Player player;
         private Enemy zombie;
         private int currency;
         private int roundNumber;
@@ -100,14 +100,6 @@ namespace MonoZombie
             WallProperty1 = Content.Load<Texture2D>("WallTile1");
             WallProperty2 = Content.Load<Texture2D>("WallTile2");
             WallProperty3 = Content.Load<Texture2D>("WallTile3");
-
-            //Texture reliant intitialization
-            turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
-            player = new Player(100, 100, playerImage, 150, 150, 3);
-            zombie = new Enemy(enemyImage, 200, 200, 100, 1, 5);
-
-            //test zombie list
-            listOfZombies.Add(zombie);
 
 
             //Load the map;
@@ -166,6 +158,13 @@ namespace MonoZombie
 
             reader.Close();
 
+            //Texture reliant intitialization
+            turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
+            player = new Player(100, 100, playerImage, _graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, 3);
+            zombie = new Enemy(enemyImage, 200, 200, 100, 1, 5);
+
+            //test zombie list
+            listOfZombies.Add(zombie);
         }
 
         protected override void Update(GameTime gameTime)
@@ -221,7 +220,10 @@ namespace MonoZombie
                                 roundIsOngoing = false;
                             }
 
+                            foreach(WallTile wall in listOfTiles)
+                            {
 
+                            }
 
                             player.Update(gameTime, Mouse.GetState(), ks);
                             //Single press bool so that you don't switch states twice.
