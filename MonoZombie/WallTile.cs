@@ -136,5 +136,10 @@ namespace MonoZombie
         {
             sb.Draw(Image,location , tint);
         }
+
+        public void update()
+        {
+            this.Collision(Game1.Player);
+        }
     }
 }
