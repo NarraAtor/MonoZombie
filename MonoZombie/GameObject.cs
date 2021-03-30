@@ -54,9 +54,6 @@ namespace MonoZombie {
 			}
 		}
 
-
-		///###################################################################################################################
-
 		public GameObject (Texture2D texture, int x, int y) {
 			this.texture = texture;
 

@@ -36,8 +36,31 @@ namespace MonoZombie
         private KeyboardState previousks;
 
         //Test variables
-        private SpriteFont spriteFontTEST;
         private string currentStateTEST;
+
+        // Fonts
+        private SpriteFont dogicaPixel;
+        private SpriteFont dogicaPixelBold;
+
+        private static Vector2 screenDimensions;
+
+        // UI Variables
+        private UIImage menuTitle;
+        private UIButton menuPlayButton;
+        private UIButton menuQuitButton;
+
+        private UIImage gameUITab;
+        // private UIProgressBar gameHealthBar;
+
+        // SHOP UI OBJECTS (TO BE DETERMINED)
+
+        private UIText pausePausedText;
+        private UIButton pauseResumeButton;
+        private UIButton pauseMenuButton;
+
+        private UIImage gameOverImage;
+        private UIText gameOverScore;
+        private UIButton gameOverMenuButton;
 
         //Properties for WallTile
         public static Texture2D GrassProperty1 { get; set; }
@@ -73,8 +96,7 @@ namespace MonoZombie
             IsMouseVisible = true;
         }
 
-        protected override void Initialize()
-        {
+        protected override void Initialize() {
             // TODO: Add your initialization logic here
             menuState = MenuState.MainMenu;
             gameState = GameState.Playing;
@@ -113,19 +135,21 @@ namespace MonoZombie
             tileWidth = 45;
 
             //Get the dimensions
-            currentLine = reader.ReadLine();
-            string[] mapDimensionStrings = currentLine.Split("|");
-            int[] mapDimensions = new int[] { int.Parse(mapDimensionStrings[0]), int.Parse(mapDimensionStrings[1]) };
-            _graphics.PreferredBackBufferWidth = mapDimensions[0] * tileWidth;
-            _graphics.PreferredBackBufferHeight = mapDimensions[1] * tileWidth;
-            _graphics.ApplyChanges();
+            currentLine = reader.ReadLine( );
+            string[ ] mapDimensionStrings = currentLine.Split("|");
+            int[ ] mapDimensions = new int[ ] { int.Parse(mapDimensionStrings[0]), int.Parse(mapDimensionStrings[1]) };
+
+            // Update the dimensions of the screen
+            screenDimensions = new Vector2(mapDimensions[0] * tileWidth, mapDimensions[1] * tileWidth);
+            
+            _graphics.PreferredBackBufferWidth = (int) screenDimensions.X;
+            _graphics.PreferredBackBufferHeight = (int) screenDimensions.Y;
+            _graphics.ApplyChanges( );
 
             int xPosition = 0;
             int yPosition = 0;
-            while ((currentLine = reader.ReadLine()) != null)
-            {
-                switch (currentLine)
-                {
+            while ((currentLine = reader.ReadLine( )) != null) {
+                switch (currentLine) {
                     case "Grass":
                         listOfTiles.Add(new WallTile(Tile.Grass,
                             (_graphics.PreferredBackBufferWidth / mapDimensions[0]) * xPosition,
@@ -159,7 +183,60 @@ namespace MonoZombie
 
             }
 
-            reader.Close();
+            reader.Close( );
+
+            base.Initialize( );
+        }
+
+        protected override void LoadContent()
+        {
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            // TODO: use this.Content to load your game content here
+
+            baseImage = Content.Load<Texture2D>("TurretBase");
+            turretImage = Content.Load<Texture2D>("TurretHead");
+            playerImage = Content.Load<Texture2D>("playerproto");
+            GrassProperty1 = Content.Load<Texture2D>("GrassTile1");
+            GrassProperty2 = Content.Load<Texture2D>("GrassTile2");
+            GrassProperty3 = Content.Load<Texture2D>("GrassTile3");
+            WallProperty1 = Content.Load<Texture2D>("WallTile1");
+            WallProperty2 = Content.Load<Texture2D>("WallTile2");
+            WallProperty3 = Content.Load<Texture2D>("WallTile3");
+
+            // Load fonts
+            dogicaPixel = Content.Load<SpriteFont>("DogicaPixel");
+            dogicaPixelBold = Content.Load<SpriteFont>("DogicaPixelBold");
+
+            // Load UI Textures
+            Texture2D menuTitleTexture = Content.Load<Texture2D>("title");
+            Texture2D buttonTexture = Content.Load<Texture2D>("button");
+            Texture2D tabTexture = Content.Load<Texture2D>("tab");
+
+            // Update the scale of the UI
+            UIElement.UIScale = 5;
+
+            // Create UI
+            menuTitle = new UIImage(menuTitleTexture, new Point((int) screenDimensions.X / 2, (int) screenDimensions.Y / 4));
+            menuPlayButton = UIElement.CreateButton(buttonTexture, new Point((int) screenDimensions.X / 2, (int) screenDimensions.Y / 2), ( ) => {
+                menuState = MenuState.Game;
+                gameState = GameState.Playing;
+                roundIsOngoing = true;
+            }, dogicaPixel, "Play");
+            // menuQuitButton
+
+            // private UIImage gameUITab;
+            // private UIProgressBar gameHealthBar;
+
+            // SHOP UI OBJECTS (TO BE DETERMINED)
+
+            // pausePausedText
+            // pauseResumeButton
+            // pauseMenuButton
+
+            // private UIImage gameOverImage;
+            // gameOverScore
+            // gameOverMenuButton
 
             //Texture reliant intitialization
             turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
@@ -167,7 +244,7 @@ namespace MonoZombie
             zombie = new Enemy(enemyImage, (_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2, 100, 1, 5);
 
             //test zombie list
-            listOfZombies.Add(zombie);
+            // listOfZombies.Add(zombie);
         }
 
         protected override void Update(GameTime gameTime)
@@ -181,15 +258,11 @@ namespace MonoZombie
             {
                 case MenuState.MainMenu:
                     currentStateTEST = "MainMenu";
-                    //Single press bool so that you don't switch states twice.
-                    if (ks.IsKeyDown(Keys.Enter) && !previousks.IsKeyDown(Keys.Enter))
-                    {
-                        menuState = MenuState.Game;
-                        gameState = GameState.Playing;
-                        roundIsOngoing = true;
-                    }
-                    break;
 
+                    // Update the menu UI elements
+                    menuPlayButton.Update(gameTime, Mouse.GetState( ));
+
+                    break;
                 case MenuState.Game:
                     currentStateTEST = "Game -";
                     switch (gameState)
@@ -279,11 +352,18 @@ namespace MonoZombie
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
-            _spriteBatch.Begin();
+            // * These settings in SpriteBatch.Begin() prevent sprites from becoming blurry when scaled up. This
+            // means we can make pixel art images and import them into the game very small and then scale them up.
+            // This makes the images a lot easier to edit if we need to do that again.
+            _spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp);
+
             switch (menuState)
             {
                 case MenuState.MainMenu:
+                    // Draw menu UI objects
+                    menuTitle.Draw(_spriteBatch);
+                    menuPlayButton.Draw(_spriteBatch);
+
                     break;
                 case MenuState.Game:
                     switch (gameState)
@@ -309,6 +389,8 @@ namespace MonoZombie
                             _spriteBatch.DrawString(spriteFontTEST, $"Player Health: {player.Health}", new Vector2(10, 50), Color.White);
                             _spriteBatch.DrawString(spriteFontTEST, $"Zombie Timer: {zombie.Timer}", new Vector2(10, 90), Color.White);
                             //_spriteBatch.DrawString(spriteFontTEST, $"Game Timer: {gameTime.ElapsedGameTime.TotalMilliseconds}", new Vector2(10, 70), Color.White);
+                            _spriteBatch.DrawString(dogicaPixel, $"Currency: {currency}", new Vector2(10, 10), Color.White);
+                            _spriteBatch.DrawString(dogicaPixel, $"Round Number: {roundNumber}", new Vector2(10, 30), Color.White);
                             break;
                         case GameState.Pause:
                             break;
@@ -321,7 +403,7 @@ namespace MonoZombie
             }
 
             //Being used to test if states are switching properly.
-            _spriteBatch.DrawString(spriteFontTEST, currentStateTEST, new Vector2(100, 100), Color.White);
+            _spriteBatch.DrawString(dogicaPixel, currentStateTEST, new Vector2(100, 100), Color.White);
 
             _spriteBatch.End();
 
