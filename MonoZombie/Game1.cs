@@ -59,7 +59,8 @@ namespace MonoZombie
         private static int currency;
         private static int roundNumber;
         private static bool roundIsOngoing;
-                 
+        private static bool aZombieIsAlive;
+
         public static Player Player { get { return player; } }
 
         //Adjustment Variables
@@ -81,7 +82,7 @@ namespace MonoZombie
             roundNumber = 0;
             listOfTiles = new List<WallTile>();
             listOfZombies = new List<Enemy>();
-
+            aZombieIsAlive = false;
 
             base.Initialize();
         }
@@ -197,9 +198,8 @@ namespace MonoZombie
                             currentStateTEST = "Game - Playing";
                             player.Move(ks);
 
-                            //planned code for determining whether or not to end a round and rewarding the player for killing zombies.
-                            bool aZombieIsAlive = false; //(flag)
-
+                            //This code rewards the player when a zombie is killed and makes the round end when in contact with a zombie.
+                            aZombieIsAlive = false;
 
                             foreach (Enemy zombie in listOfZombies)
                             {
@@ -214,7 +214,7 @@ namespace MonoZombie
                                 if (zombie.IsAlive)
                                 {
                                     aZombieIsAlive = true;
-                                    zombie.Update(gameTime);
+                                    zombie.Update(gameTime, player);
                                 }
                             }
 
@@ -307,6 +307,8 @@ namespace MonoZombie
                             _spriteBatch.DrawString(spriteFontTEST, $"Currency: {currency}", new Vector2(10, 10), Color.White);
                             _spriteBatch.DrawString(spriteFontTEST, $"Round Number: {roundNumber}", new Vector2(10, 30), Color.White);
                             _spriteBatch.DrawString(spriteFontTEST, $"Player Health: {player.Health}", new Vector2(10, 50), Color.White);
+                            _spriteBatch.DrawString(spriteFontTEST, $"Zombie Timer: {zombie.Timer}", new Vector2(10, 90), Color.White);
+                            //_spriteBatch.DrawString(spriteFontTEST, $"Game Timer: {gameTime.ElapsedGameTime.TotalMilliseconds}", new Vector2(10, 70), Color.White);
                             break;
                         case GameState.Pause:
                             break;

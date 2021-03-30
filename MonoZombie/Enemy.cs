@@ -15,6 +15,8 @@ namespace MonoZombie
         double timeAtLastFrame;
         double attTime;
         double timer;
+        //testing property
+        public double Timer { get { return timer; } }
 
         bool isAlive;
 
@@ -24,6 +26,7 @@ namespace MonoZombie
             this.health = health;
             this.speed = speed;
             this.attSpeed = attSpeed;
+            isAlive = true;
             timer = 0;
         }
 
@@ -36,7 +39,9 @@ namespace MonoZombie
         /// <param name="player"></param>
         public void Attack(Player player)
         {
-            if (Distance(new Point(X, Y), new Point(player.X, player.Y)) < radius)
+            //Eric: GameObject never assigns to radius so I simply replaced the if statment with a rectangle intersects bool
+            //if (Distance(new Point(X, Y), new Point(player.X, player.Y)) < radius)
+            if(RectangleCollider.Intersects(player.RectangleCollider))
             {
                 if (timer > 1) 
                 {
@@ -61,14 +66,15 @@ namespace MonoZombie
         /// Update, make sure the time works 
         /// </summary>
         /// <param name="time"></param>
-        public void Update(GameTime time)
+        public void Update(GameTime time, Player player)
         {
-            double currentTime;
-            Double.TryParse(time.ToString(), out currentTime); //- timeAtLastFrame;
-            double timeBetweenFrames = currentTime - timeAtLastFrame;
-            timer += timeBetweenFrames;
-            Attack(Game1.Player);
-            timeAtLastFrame = currentTime;
+            //double currentTime;
+            //Double.TryParse(time.ToString(), out currentTime); //- timeAtLastFrame;
+            timer += time.ElapsedGameTime.TotalSeconds;
+            //double timeBetweenFrames = currentTime - timeAtLastFrame;
+            //timer += timeBetweenFrames;
+            Attack(player);
+            //timeAtLastFrame = currentTime;
         }
     }
 }
