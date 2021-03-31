@@ -37,7 +37,6 @@ namespace MonoZombie
 
         //Test variables
         private string currentStateTEST;
-
         // Fonts
         private SpriteFont dogicaPixel;
         private SpriteFont dogicaPixelBold;
@@ -114,7 +113,6 @@ namespace MonoZombie
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            spriteFontTEST = Content.Load<SpriteFont>("File");
             baseImage = Content.Load<Texture2D>("TurretBase");
             turretImage = Content.Load<Texture2D>("TurretHead");
             playerImage = Content.Load<Texture2D>("playerproto");
@@ -125,6 +123,45 @@ namespace MonoZombie
             WallProperty1 = Content.Load<Texture2D>("WallTile1");
             WallProperty2 = Content.Load<Texture2D>("WallTile2");
             WallProperty3 = Content.Load<Texture2D>("WallTile3");
+
+            //Texture reliant intitialization
+            turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
+            player = new Player(100, 100, playerImage, _graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, 3);
+            zombie = new Enemy(enemyImage, (_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2, 100, 1, 5);
+
+            // Load fonts
+            dogicaPixel = Content.Load<SpriteFont>("DogicaPixel");
+            dogicaPixelBold = Content.Load<SpriteFont>("DogicaPixelBold");
+
+            // Load UI Textures
+            Texture2D menuTitleTexture = Content.Load<Texture2D>("title");
+            Texture2D buttonTexture = Content.Load<Texture2D>("button");
+            Texture2D tabTexture = Content.Load<Texture2D>("tab");
+
+            // Update the scale of the UI
+            UIElement.UIScale = 5;
+
+            // Create UI
+            menuTitle = new UIImage(menuTitleTexture, new Point((int)screenDimensions.X / 2, (int)screenDimensions.Y / 4));
+            menuPlayButton = UIElement.CreateButton(buttonTexture, new Point((int)screenDimensions.X / 2, (int)screenDimensions.Y / 2), () => {
+                menuState = MenuState.Game;
+                gameState = GameState.Playing;
+                roundIsOngoing = true;
+            }, dogicaPixel, "Play");
+            // menuQuitButton
+
+            // private UIImage gameUITab;
+            // private UIProgressBar gameHealthBar;
+
+            // SHOP UI OBJECTS (TO BE DETERMINED)
+
+            // pausePausedText
+            // pauseResumeButton
+            // pauseMenuButton
+
+            // private UIImage gameOverImage;
+            // gameOverScore
+            // gameOverMenuButton
 
 
             //Load the map;
@@ -185,66 +222,10 @@ namespace MonoZombie
 
             reader.Close( );
 
-            base.Initialize( );
-        }
-
-        protected override void LoadContent()
-        {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
-
-            baseImage = Content.Load<Texture2D>("TurretBase");
-            turretImage = Content.Load<Texture2D>("TurretHead");
-            playerImage = Content.Load<Texture2D>("playerproto");
-            GrassProperty1 = Content.Load<Texture2D>("GrassTile1");
-            GrassProperty2 = Content.Load<Texture2D>("GrassTile2");
-            GrassProperty3 = Content.Load<Texture2D>("GrassTile3");
-            WallProperty1 = Content.Load<Texture2D>("WallTile1");
-            WallProperty2 = Content.Load<Texture2D>("WallTile2");
-            WallProperty3 = Content.Load<Texture2D>("WallTile3");
-
-            // Load fonts
-            dogicaPixel = Content.Load<SpriteFont>("DogicaPixel");
-            dogicaPixelBold = Content.Load<SpriteFont>("DogicaPixelBold");
-
-            // Load UI Textures
-            Texture2D menuTitleTexture = Content.Load<Texture2D>("title");
-            Texture2D buttonTexture = Content.Load<Texture2D>("button");
-            Texture2D tabTexture = Content.Load<Texture2D>("tab");
-
-            // Update the scale of the UI
-            UIElement.UIScale = 5;
-
-            // Create UI
-            menuTitle = new UIImage(menuTitleTexture, new Point((int) screenDimensions.X / 2, (int) screenDimensions.Y / 4));
-            menuPlayButton = UIElement.CreateButton(buttonTexture, new Point((int) screenDimensions.X / 2, (int) screenDimensions.Y / 2), ( ) => {
-                menuState = MenuState.Game;
-                gameState = GameState.Playing;
-                roundIsOngoing = true;
-            }, dogicaPixel, "Play");
-            // menuQuitButton
-
-            // private UIImage gameUITab;
-            // private UIProgressBar gameHealthBar;
-
-            // SHOP UI OBJECTS (TO BE DETERMINED)
-
-            // pausePausedText
-            // pauseResumeButton
-            // pauseMenuButton
-
-            // private UIImage gameOverImage;
-            // gameOverScore
-            // gameOverMenuButton
-
-            //Texture reliant intitialization
-            turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
-            player = new Player(100, 100, playerImage, _graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, 3);
-            zombie = new Enemy(enemyImage, (_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2, 100, 1, 5);
-
             //test zombie list
             // listOfZombies.Add(zombie);
+
+            base.LoadContent();
         }
 
         protected override void Update(GameTime gameTime)
@@ -384,10 +365,11 @@ namespace MonoZombie
                             player.Draw(_spriteBatch);
 
 
-                            _spriteBatch.DrawString(spriteFontTEST, $"Currency: {currency}", new Vector2(10, 10), Color.White);
-                            _spriteBatch.DrawString(spriteFontTEST, $"Round Number: {roundNumber}", new Vector2(10, 30), Color.White);
-                            _spriteBatch.DrawString(spriteFontTEST, $"Player Health: {player.Health}", new Vector2(10, 50), Color.White);
-                            _spriteBatch.DrawString(spriteFontTEST, $"Zombie Timer: {zombie.Timer}", new Vector2(10, 90), Color.White);
+                            _spriteBatch.DrawString(dogicaPixel, $"Currency: {currency}", new Vector2(10, 10), Color.White);
+                            _spriteBatch.DrawString(dogicaPixel, $"Round Number: {roundNumber}", new Vector2(10, 30), Color.White);
+                            _spriteBatch.DrawString(dogicaPixel, $"Player Health: {player.Health}", new Vector2(10, 50), Color.White);
+                            _spriteBatch.DrawString(dogicaPixel, $"Zombie Timer: {zombie.Timer}", new Vector2(10, 90), Color.White);
+
                             //_spriteBatch.DrawString(spriteFontTEST, $"Game Timer: {gameTime.ElapsedGameTime.TotalMilliseconds}", new Vector2(10, 70), Color.White);
                             _spriteBatch.DrawString(dogicaPixel, $"Currency: {currency}", new Vector2(10, 10), Color.White);
                             _spriteBatch.DrawString(dogicaPixel, $"Round Number: {roundNumber}", new Vector2(10, 30), Color.White);
