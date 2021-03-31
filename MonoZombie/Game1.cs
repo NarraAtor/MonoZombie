@@ -138,6 +138,29 @@ namespace MonoZombie
             Texture2D buttonTexture = Content.Load<Texture2D>("button");
             Texture2D tabTexture = Content.Load<Texture2D>("tab");
 
+            
+
+
+            //Load the map;
+            StreamReader reader = new StreamReader("../../../MapLevels\\CurrentMapDesign.level");
+
+            string currentLine;
+            //Used for quickly changing the map's scale;
+            tileWidth = 45;
+
+            //Get the dimensions
+            currentLine = reader.ReadLine( );
+            string[ ] mapDimensionStrings = currentLine.Split("|");
+            int[ ] mapDimensions = new int[ ] { int.Parse(mapDimensionStrings[0]), int.Parse(mapDimensionStrings[1]) };
+
+            // Update the dimensions of the screen
+            screenDimensions = new Vector2(mapDimensions[0] * tileWidth, mapDimensions[1] * tileWidth);
+            
+            _graphics.PreferredBackBufferWidth = (int) screenDimensions.X;
+            _graphics.PreferredBackBufferHeight = (int) screenDimensions.Y;
+            _graphics.ApplyChanges( );
+
+
             // Update the scale of the UI
             UIElement.UIScale = 5;
 
@@ -162,26 +185,6 @@ namespace MonoZombie
             // private UIImage gameOverImage;
             // gameOverScore
             // gameOverMenuButton
-
-
-            //Load the map;
-            StreamReader reader = new StreamReader("../../../MapLevels\\CurrentMapDesign.level");
-
-            string currentLine;
-            //Used for quickly changing the map's scale;
-            tileWidth = 45;
-
-            //Get the dimensions
-            currentLine = reader.ReadLine( );
-            string[ ] mapDimensionStrings = currentLine.Split("|");
-            int[ ] mapDimensions = new int[ ] { int.Parse(mapDimensionStrings[0]), int.Parse(mapDimensionStrings[1]) };
-
-            // Update the dimensions of the screen
-            screenDimensions = new Vector2(mapDimensions[0] * tileWidth, mapDimensions[1] * tileWidth);
-            
-            _graphics.PreferredBackBufferWidth = (int) screenDimensions.X;
-            _graphics.PreferredBackBufferHeight = (int) screenDimensions.Y;
-            _graphics.ApplyChanges( );
 
             int xPosition = 0;
             int yPosition = 0;
