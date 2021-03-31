@@ -124,11 +124,6 @@ namespace MonoZombie
             WallProperty2 = Content.Load<Texture2D>("WallTile2");
             WallProperty3 = Content.Load<Texture2D>("WallTile3");
 
-            //Texture reliant intitialization
-            turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
-            player = new Player(100, 100, playerImage, _graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, 3);
-            zombie = new Enemy(enemyImage, (_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2, 100, 1, 5);
-
             // Load fonts
             dogicaPixel = Content.Load<SpriteFont>("DogicaPixel");
             dogicaPixelBold = Content.Load<SpriteFont>("DogicaPixelBold");
@@ -138,8 +133,10 @@ namespace MonoZombie
             Texture2D buttonTexture = Content.Load<Texture2D>("button");
             Texture2D tabTexture = Content.Load<Texture2D>("tab");
 
-            
-
+            //Texture reliant intitialization
+            turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
+            player = new Player(100, 100, playerImage, _graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, 3);
+            zombie = new Enemy(enemyImage, (_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2, 100, 1, 5);
 
             //Load the map;
             StreamReader reader = new StreamReader("../../../MapLevels\\CurrentMapDesign.level");
