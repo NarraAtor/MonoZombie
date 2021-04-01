@@ -32,8 +32,10 @@ namespace MonoZombie
         private SpriteBatch _spriteBatch;
         private MenuState menuState;
         private GameState gameState;
-        private KeyboardState ks;
-        private KeyboardState previousks;
+
+        private KeyboardState currKeyboardState;
+        private KeyboardState prevKeyboardState;
+        private MouseState currMouseState;
 
         //Test variables
         private string currentStateTEST;
@@ -207,11 +209,10 @@ namespace MonoZombie
 
         protected override void Update(GameTime gameTime)
         {
-            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-            //    Exit();
+            // Get the current keyboard state
+            currKeyboardState = Keyboard.GetState();
+            currMouseState = Mouse.GetState( );
 
-            // TODO: Add your update logic here
-            ks = Keyboard.GetState();
             switch (menuState)
             {
                 case MenuState.MainMenu:
@@ -227,8 +228,6 @@ namespace MonoZombie
                     {
                         case GameState.Playing:
                             currentStateTEST = "Game - Playing";
-                            player.Move(ks);
-
                             //This code rewards the player when a zombie is killed and makes the round end when in contact with a zombie.
                             aZombieIsAlive = false;
 
@@ -259,31 +258,28 @@ namespace MonoZombie
                                 tile.Update();
                             }
 
-                            player.Update(gameTime, Mouse.GetState(), ks);
-                            //Single press bool so that you don't switch states twice.
-                            if (ks.IsKeyDown(Keys.Escape) && !previousks.IsKeyDown(Keys.Escape))
+                            player.Update(gameTime, currMouseState, currKeyboardState);
+
+                            if (GetKeyDown(Keys.Escape))
                             {
                                 gameState = GameState.Pause;
                             }
 
-                            //Single press bool so that you don't switch states twice.
-                            if (ks.IsKeyDown(Keys.Tab) && !previousks.IsKeyDown(Keys.Tab))
+                            if (GetKeyDown(Keys.Tab))
                             {
                                 gameState = GameState.Shop;
                             }
                             break;
                         case GameState.Pause:
                             currentStateTEST = "Game - Pause";
-                            //Single press bool so that you don't switch states twice.
-                            if (ks.IsKeyDown(Keys.Escape) && !previousks.IsKeyDown(Keys.Escape))
+                            if (GetKeyDown(Keys.Escape))
                             {
                                 gameState = GameState.Playing;
                             }
                             break;
                         case GameState.Shop:
                             currentStateTEST = "Game - Shop";
-                            //Single press bool so that you don't switch states twice.
-                            if (ks.IsKeyDown(Keys.Tab) && !previousks.IsKeyDown(Keys.Tab))
+                            if (GetKeyDown(Keys.Tab))
                             {
                                 gameState = GameState.Playing;
                             }
@@ -294,14 +290,14 @@ namespace MonoZombie
                 case MenuState.GameOver:
                     currentStateTEST = "GameOver";
                     //Single press bool so that you don't switch states twice.
-                    if (ks.IsKeyDown(Keys.Enter) && !previousks.IsKeyDown(Keys.Enter))
+                    if (GetKeyDown(Keys.Enter))
                     {
                         menuState = MenuState.MainMenu;
                     }
                     break;
             }
 
-            previousks = ks;
+            prevKeyboardState = currKeyboardState;
 
             base.Update(gameTime);
         }
@@ -320,7 +316,6 @@ namespace MonoZombie
                 case MenuState.MainMenu:
                     // Draw menu UI objects
                     UIElement.DrawImage(_spriteBatch, titleTexture, screenDimensions * new Vector2(0.5f, 0.25f), true);
-
                     menuPlayButton.Draw(_spriteBatch);
 
                     break;
@@ -328,7 +323,6 @@ namespace MonoZombie
                     switch (gameState)
                     {
                         case GameState.Playing:
-
                             foreach (WallTile tile in listOfTiles)
                             {
                                 tile.Draw(_spriteBatch, Color.White);
@@ -344,7 +338,6 @@ namespace MonoZombie
 
                             // Draw UI elements
                             UIElement.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), false);
-
                             UIElement.DrawText(_spriteBatch, 0.5f, $"Currency: {currency}", Color.Black, new Vector2(30, 30), false);
                             UIElement.DrawText(_spriteBatch, 0.5f, $"Round Number: {roundNumber}", Color.Black, new Vector2(30, 45), false);
                             UIElement.DrawText(_spriteBatch, 0.5f, $"Player Health: {player.Health}", Color.Black, new Vector2(30, 60), false);
@@ -368,5 +361,9 @@ namespace MonoZombie
 
             base.Draw(gameTime);
         }
+    
+        private bool GetKeyDown (Keys key) {
+            return (currKeyboardState.IsKeyDown(key) && !prevKeyboardState.IsKeyDown(key));
+		}
     }
 }
