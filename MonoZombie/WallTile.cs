@@ -60,21 +60,16 @@ namespace MonoZombie
         /// <returns></returns>
         public bool Collision(Player other)
         {
-            float dx = Math.Abs( other.X- location.X);
-            float dy = Math.Abs(other.Y - location.Y);
+            float dx = Math.Abs(other.X- location.X);
+            float dy = Math.Abs(other.Y - location.Y); 
+
             switch (type)
             {
-
+                
                 case Tile.Wall:
                     {
-                        if (dx<= (location.Width/2))
-                        {
-                            System.Diagnostics.Debug.WriteLine("DONE");
-                            return true;
-                        }
-                        if(dy <= (location.Height / 2))
-                        {
-                            System.Diagnostics.Debug.WriteLine("DONE");
+                      if(location.Intersects(other.RectangleCollider))
+                        {                            
                             return true;
                         }
                         return false;
@@ -83,12 +78,12 @@ namespace MonoZombie
                     {
                         if (dx <= (location.Width / 2))
                         {
-                            System.Diagnostics.Debug.WriteLine("DONE");
+                            System.Diagnostics.Debug.WriteLine("DONEc");
                             return true;
                         }
                         if (dy <= (location.Height / 2))
                         {
-                            System.Diagnostics.Debug.WriteLine("DONE");
+                            System.Diagnostics.Debug.WriteLine("DONEc");
                             return true;
                         }
                         return false;
@@ -98,12 +93,12 @@ namespace MonoZombie
                 {
                         if (dx <= (location.Width / 2))
                         {
-                            System.Diagnostics.Debug.WriteLine("DONE");
+                            System.Diagnostics.Debug.WriteLine("DONEc");
                             return true;
                         }
                         if (dy <= (location.Height / 2))
                         {
-                            System.Diagnostics.Debug.WriteLine("DONE");
+                            System.Diagnostics.Debug.WriteLine("DONEc");
                             return true;
                         }
                         return false;
@@ -113,12 +108,12 @@ namespace MonoZombie
                     {
                         if (dx <= (location.Width / 2))
                         {
-                            System.Diagnostics.Debug.WriteLine("DONE");
+                            System.Diagnostics.Debug.WriteLine("DONEc");
                             return true;
                         }
                         if (dy <= (location.Height / 2))
                         {
-                            System.Diagnostics.Debug.WriteLine("DONE");
+                            System.Diagnostics.Debug.WriteLine("DONEc");
                             return true;
                         }
                         return false;
@@ -134,6 +129,12 @@ namespace MonoZombie
 
         public void Draw(SpriteBatch sb, Color tint)
         {
+            if(Collision(Game1.Player))
+            {
+
+                return;
+            }
+            sb.Draw(Image, Game1.Player.RectangleCollider, tint);
             sb.Draw(Image,location , tint);
         }
 
