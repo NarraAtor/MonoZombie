@@ -9,9 +9,9 @@ namespace MonoZombie {
 	public class UIButton : UIElement {
 		private Action onClick;
 		private bool isPressed;
-		private UIText text;
+		private string text;
 
-		public UIButton (Texture2D texture, UIText text, Point position, Action onClick) : base(texture, position) {
+		public UIButton (string text, Vector2 position, Action onClick, bool centered = false) : base(Game1.buttonTexture.Bounds.Size.ToVector2( ) * UIScale, position, centered) {
 			this.text = text;
 			this.onClick = onClick;
 
@@ -43,10 +43,9 @@ namespace MonoZombie {
 			}
 		}
 
-		public new void Draw (SpriteBatch spriteBatch) {
-			// Make sure to draw both the button texture and the text texture
-			base.Draw(spriteBatch);
-			text.Draw(spriteBatch);
-		} 
+		public override void Draw (SpriteBatch spriteBatch) {
+			DrawImage(spriteBatch, Game1.buttonTexture, rect.Location.ToVector2( ), false);
+			DrawText(spriteBatch, 1, text, Color.Black, rect.Center.ToVector2( ), true);
+		}
 	}
 }

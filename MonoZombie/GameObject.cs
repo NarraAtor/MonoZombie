@@ -5,15 +5,20 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+// Author : Frank Alfano
+// Purpose : The base class for all objects in the game
+
 namespace MonoZombie {
 	public abstract class GameObject {
 		protected Texture2D texture;
 		protected Point centerPosition;
 		protected float angle;
-		protected float radius;
 
-		//Rectangle collider code
-		public Rectangle RectangleCollider { get; set; }
+		public Rectangle RectangleCollider {
+			get;
+			set;
+		}
+
 		public int X {
 			get {
 				return centerPosition.X;
@@ -23,8 +28,6 @@ namespace MonoZombie {
 				centerPosition.X = value;
 			}
 		}
-
-		public float Radius { get { return radius; } }
 
 		public int Y {
 			get {
@@ -62,6 +65,8 @@ namespace MonoZombie {
 		}
 
 		/*
+		 * Author : Frank Alfano
+		 * 
 		 * An overridable method that is used to update the game object
 		 * 
 		 * GameTime gameTime		: Used to get the current time in the game
@@ -75,6 +80,8 @@ namespace MonoZombie {
 		}
 
 		/*
+		 * Author : Frank Alfano
+		 * 
 		 * An overridable method that is used to draw the game object
 		 * * This method needs to be called within a SpriteBatch Begin() and End() draw methods
 		 * 
@@ -84,10 +91,14 @@ namespace MonoZombie {
 		 * return					:
 		 */
 		public virtual void Draw (SpriteBatch spriteBatch) {
-			spriteBatch.Draw(texture, new Rectangle(DrawX, DrawY, texture.Width, texture.Height), null, Color.White, angle, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 1f);
+			Rectangle drawRect = new Rectangle(DrawX, DrawY, texture.Width, texture.Height);
+
+			spriteBatch.Draw(texture, drawRect, null, Color.White, angle, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 1f);
 		}
 
 		/*
+		 * Author : Frank Alfano
+		 * 
 		 * Rotate the game object to face a certain object
 		 * 
 		 * Point face				: The point to face the object towards
@@ -127,6 +138,8 @@ namespace MonoZombie {
 		}
 
 		/*
+		 * Author : Frank Alfano
+		 * 
 		 * Get the distance (in pixels) between 2 points
 		 * 
 		 * Point point1				: The first point
