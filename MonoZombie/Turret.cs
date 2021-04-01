@@ -17,6 +17,11 @@ namespace MonoZombie
         DeBuff//these work diffrently then the rest 
     }
 
+    /// <summary>
+    /// Authors:Eric, Matthew
+    /// Purpose: Manages turrets and their function.
+    /// Restrictions:
+    /// </summary>
      class Turret :GameObject
     {
         private int range;
@@ -118,7 +123,6 @@ namespace MonoZombie
         }
 
         /// <summary>
-        /// Edited by Eric
         /// Purpose: Causes the turret to check if the target zombie is in this turret's range by using rectangle colliders.
         /// Restrictions: 
         /// </summary>
@@ -131,11 +135,6 @@ namespace MonoZombie
                 RotateTo(center);
                 target.Health-=damage; 
              }
-           else
-           {
-             return;
-           }
-
         }
 
         public void Draw(SpriteBatch sb, Color tint)
