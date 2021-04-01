@@ -29,7 +29,7 @@ namespace MonoZombie
             Move(keyboard);
 
             // Rotate the player to look at the mouse
-            RotateTo(mouse.Position);
+            RotateTo(mouse.Position);            
 		}
 
 
