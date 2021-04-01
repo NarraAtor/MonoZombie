@@ -202,7 +202,7 @@ namespace MonoZombie
             reader.Close( );
 
             //test zombie list
-            // listOfZombies.Add(zombie);
+            listOfZombies.Add(zombie);
 
             base.LoadContent();
         }

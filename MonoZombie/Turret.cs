@@ -17,7 +17,7 @@ namespace MonoZombie
         DeBuff//these work diffrently then the rest 
     }
 
-    public class Turret :GameObject
+     class Turret :GameObject
     {
         private int range;
         private int timer;//use later
@@ -26,6 +26,9 @@ namespace MonoZombie
         private Texture2D turret;//the base image of the turret
         private Texture2D GunPart;//The  rotating head of the turret
         private Rectangle Holder;//the location and size of the turret
+
+        //Eric
+        private Rectangle detector;//the detection range of the turret
         
         public int X
         {
@@ -74,6 +77,8 @@ namespace MonoZombie
                         range = 50;
                         damage = 100;
                         price = 300;
+                        //TODO: Adjust the rectangle so it is centered
+                        detector = new Rectangle(Holder.X, Holder.Y, Holder.Width, Holder.Height);
                         break;
                     }
 
@@ -111,23 +116,31 @@ namespace MonoZombie
 
             }
         }
-        /*
-        public Attack(Enemy target)
+
+        /// <summary>
+        /// Edited by Eric
+        /// Purpose: Causes the turret to check if the target zombie is in this turret's range by using rectangle colliders.
+        /// Restrictions: 
+        /// </summary>
+        /// <param name="target">the enemy to be checked</param>
+        public void Detect(Enemy target)
         {
-            float dx = Holder.X - target.X;
-            float dy = Holder.Y - target.Y;
-            double dist = Math.Sqrt(dx * dx + dy * dy); 
-            if(dist<=this.range)
-              {
-                 RotateTo(target.Center);
-                 target.Health-=damage; 
-              }
-           else
-            {
-              break;
-            }
+           //float dx = Holder.X - target.X;
+           //float dy = Holder.Y - target.Y;
+           //double dist = Math.Sqrt(dx * dx + dy * dy); 
+           //if(dist<=this.range)
+           //  {
+           //     RotateTo(target.Center);
+           //     target.Health-=damage; 
+           //  }
+           //lse
+           //{
+           //  break;
+           //}
+
+            //if(detector.Intersects())
+
         }
-        */
 
         public void Draw(SpriteBatch sb, Color tint)
         {
