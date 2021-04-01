@@ -78,7 +78,7 @@ namespace MonoZombie
                         damage = 100;
                         price = 300;
                         //TODO: Adjust the rectangle so it is centered
-                        detector = new Rectangle(Holder.X, Holder.Y, Holder.Width, Holder.Height);
+                        detector = new Rectangle(Holder.X, Holder.Y, range, range);
                         break;
                     }
 
@@ -125,20 +125,16 @@ namespace MonoZombie
         /// <param name="target">the enemy to be checked</param>
         public void Detect(Enemy target)
         {
-           //float dx = Holder.X - target.X;
-           //float dy = Holder.Y - target.Y;
-           //double dist = Math.Sqrt(dx * dx + dy * dy); 
-           //if(dist<=this.range)
-           //  {
-           //     RotateTo(target.Center);
-           //     target.Health-=damage; 
-           //  }
-           //lse
-           //{
-           //  break;
-           //}
-
-            //if(detector.Intersects())
+           if(detector.Intersects(target.RectangleCollider))
+             {
+                Point center = new Point(target.X,target.Y);
+                RotateTo(center);
+                target.Health-=damage; 
+             }
+           else
+           {
+             return;
+           }
 
         }
 
@@ -146,7 +142,11 @@ namespace MonoZombie
         {
             sb.Draw(turret, Holder, tint);
             sb.Draw(GunPart, Holder, tint);
+        }
 
+        public override void Update(GameTime gameTime, MouseState mouse, KeyboardState keyboard)
+        {
+           // Detect();
         }
     }
 }
