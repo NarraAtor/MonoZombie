@@ -16,8 +16,8 @@ namespace MonoZombie
         public int Health { get { return health; } set { health = value; } }
 
         public int PlayerSpeed { get { return playerSpeed; } set { playerSpeed = value; } }
-        public Player(int health, int attackSpd, Texture2D texture, int x, int y, int playerSpeed) 
-            : base (texture, x, y)
+        public Player(int health, int attackSpd, Texture2D texture, Vector2 position, int playerSpeed) 
+            : base (texture, position)
         { 
             this.health = health;
             this.attackSpd = attackSpd;
@@ -29,7 +29,7 @@ namespace MonoZombie
             Move(keyboard);
 
             // Rotate the player to look at the mouse
-            RotateTo(mouse.Position);
+            RotateTo(mouse.Position.ToVector2( ));
 		}
 
 
@@ -84,7 +84,7 @@ namespace MonoZombie
             double speedX = Math.Cos(angle);
             double speedY = Math.Sin(angle);
 
-            return new Bullet(bulletTexture, X, Y, speedX, speedY, 15);
+            return new Bullet(bulletTexture, new Vector2(X, Y), speedX, speedY, 15);
         }
 
         public void TakeDamage(int damage) { health -= damage; }

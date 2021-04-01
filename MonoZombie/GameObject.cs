@@ -11,43 +11,44 @@ using System.Text;
 namespace MonoZombie {
 	public abstract class GameObject {
 		protected Texture2D texture;
-		protected Point centerPosition;
+		protected Vector2 position;
 		protected float angle;
 
-		public Rectangle RectangleCollider {
-			get;
-			set;
+		public Rectangle Rect {
+			get {
+				return new Rectangle(DrawX, DrawY, texture.Width, texture.Height);
+			}
 		}
 
 		public int X {
 			get {
-				return centerPosition.X;
+				return (int) position.X;
 			}
 
 			set {
-				centerPosition.X = value;
+				position.X = value;
 			}
 		}
 
 		public int Y {
 			get {
-				return centerPosition.Y;
+				return (int) position.Y;
 			}
 
 			set {
-				centerPosition.Y = value;
+				position.Y = value;
 			}
 		}
 
 		public int DrawX {
 			get {
-				return centerPosition.X - (texture.Width / 2);
+				return (int) position.X - (texture.Width / 2);
 			}
 		}
 
 		public int DrawY {
 			get {
-				return centerPosition.Y - (texture.Height / 2);
+				return (int) position.Y - (texture.Height / 2);
 			}
 		}
 
@@ -57,11 +58,9 @@ namespace MonoZombie {
 			}
 		}
 
-		public GameObject (Texture2D texture, int x, int y) {
+		public GameObject (Texture2D texture, Vector2 position) {
 			this.texture = texture;
-
-			centerPosition = new Point(x, y);
-			RectangleCollider = new Rectangle(x, y, texture.Width, texture.Height);
+			this.position = position;
 		}
 
 		/*
@@ -91,9 +90,7 @@ namespace MonoZombie {
 		 * return					:
 		 */
 		public virtual void Draw (SpriteBatch spriteBatch) {
-			Rectangle drawRect = new Rectangle(DrawX, DrawY, texture.Width, texture.Height);
-
-			spriteBatch.Draw(texture, drawRect, null, Color.White, angle, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 1f);
+			spriteBatch.Draw(texture, Rect, null, Color.White, angle, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 1f);
 		}
 
 		/*
@@ -105,7 +102,7 @@ namespace MonoZombie {
 		 * 
 		 * return					: 
 		 */
-		public void RotateTo (Point face) {
+		public void RotateTo (Vector2 face) {
 			// Get the position of the other object with the game object as the origin instead of the top left corner of the screen
 			Vector2 posObjectAsOrigin = new Vector2(face.X - X, Y - face.Y);
 
@@ -113,7 +110,7 @@ namespace MonoZombie {
 			// This is to make sure we don't divide by 0 and crash the game
 			if (posObjectAsOrigin != Vector2.Zero) {
 				// Get this distance between the player and the other position
-				float distanceToPoint = Distance(face, centerPosition);
+				float distanceToPoint = Distance(face, position);
 
 				// Calculate the angle between the other point and the player
 				// The reason this is done twice is because Cos is always positive and Sin is both positive and negative.
@@ -147,7 +144,7 @@ namespace MonoZombie {
 		 * 
 		 * return double			: The distance (in pixels) between the two points
 		 */
-		protected float Distance (Point point1, Point point2) {
+		protected float Distance (Vector2 point1, Vector2 point2) {
 			return MathF.Sqrt(MathF.Pow(point1.X - point2.X, 2) + MathF.Pow(point1.Y - point2.Y, 2));
 		}
 	}

@@ -128,11 +128,6 @@ namespace MonoZombie
             buttonTexture = Content.Load<Texture2D>("button");
             tabTexture = Content.Load<Texture2D>("tab");
 
-            //Texture reliant intitialization
-            turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
-            player = new Player(100, 100, playerImage, _graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, 3);
-            zombie = new Enemy(enemyImage, (_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2, 100, 1, 5);
-
             //Load the map;
             StreamReader reader = new StreamReader("../../../MapLevels\\CurrentMapDesign.level");
 
@@ -147,10 +142,15 @@ namespace MonoZombie
 
             // Update the dimensions of the screen
             screenDimensions = new Vector2(mapDimensions[0] * tileWidth, mapDimensions[1] * tileWidth);
-            
+
             _graphics.PreferredBackBufferWidth = (int) screenDimensions.X;
             _graphics.PreferredBackBufferHeight = (int) screenDimensions.Y;
             _graphics.ApplyChanges( );
+
+            //Texture reliant intitialization
+            turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
+            player = new Player(100, 100, playerImage, screenDimensions / 2, 3);
+            zombie = new Enemy(enemyImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2), 100, 1, 5);
 
             // Update the scale of the UI
             UIElement.UIScale = 5;
@@ -167,7 +167,7 @@ namespace MonoZombie
             while ((currentLine = reader.ReadLine( )) != null) {
                 switch (currentLine) {
                     case "Grass":
-                        listOfTiles.Add(new WallTile(Tile.Grass,
+                        listOfTiles.Add(new WallTile(TileType.Grass,
                             (_graphics.PreferredBackBufferWidth / mapDimensions[0]) * xPosition,
                             (_graphics.PreferredBackBufferHeight / mapDimensions[1]) * yPosition,
                             tileWidth,
@@ -176,7 +176,7 @@ namespace MonoZombie
                         break;
 
                     case "Wall":
-                        listOfTiles.Add(new WallTile(Tile.Wall,
+                        listOfTiles.Add(new WallTile(TileType.Wall,
                             (_graphics.PreferredBackBufferWidth / mapDimensions[0]) * xPosition,
                             (_graphics.PreferredBackBufferHeight / mapDimensions[1]) * yPosition,
                             tileWidth,

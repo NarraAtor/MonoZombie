@@ -20,8 +20,8 @@ namespace MonoZombie
 
         bool isAlive;
 
-        public Enemy(Texture2D texture, int x, int y, int health, int speed, int attSpeed) 
-            : base(texture, x, y)
+        public Enemy(Texture2D texture, Vector2 position, int health, int speed, int attSpeed) 
+            : base(texture, position)
         {
             this.health = health;
             this.speed = speed;
@@ -41,7 +41,7 @@ namespace MonoZombie
         {
             //Eric: GameObject never assigns to radius so I simply replaced the if statment with a rectangle intersects bool
             //if (Distance(new Point(X, Y), new Point(player.X, player.Y)) < radius)
-            if(RectangleCollider.Intersects(player.RectangleCollider))
+            if(Rect.Intersects(player.Rect))
             {
                 if (timer > 1) 
                 {

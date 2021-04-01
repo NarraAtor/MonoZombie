@@ -49,7 +49,7 @@ namespace MonoZombie
         {
             get { return price; }
         }
-        public Turret(TurretType type,Texture2D Base, Texture2D Head,int X,int Y) :base(Base,X,Y)
+        public Turret(TurretType type,Texture2D Base, Texture2D Head, Vector2 position) :base(Base, position)
         {
             //goes through each of the diffrent turret types and then sets stats accordingly 
 

@@ -35,8 +35,8 @@ namespace MonoZombie
         /// <param name="speedX"> How much the bullet will be moving in the horizontal direction </param>
         /// <param name="speedY"> How much the bullet will be moving in the vertical direction </param>
         /// <param name="bulletSpeed"> How fast the bullet is going to be moving</param>
-        public Bullet(Texture2D texture, int x, int y, double speedX, double speedY, int bulletSpeed) 
-            : base(texture, x, y)
+        public Bullet(Texture2D texture, Vector2 position, double speedX, double speedY, int bulletSpeed) 
+            : base(texture, position)
         {
             this.bulletSpeed = bulletSpeed;
             this.speedX = bulletSpeed * speedX;
