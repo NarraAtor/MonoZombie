@@ -76,7 +76,7 @@ namespace MonoZombie {
 		 * return					:
 		 */
 		public virtual void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
-
+			RectangleCollider = new Rectangle(X, Y, texture.Width, texture.Height);
 		}
 
 		/*
