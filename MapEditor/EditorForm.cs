@@ -11,6 +11,9 @@ using System.IO;
 
 namespace MapEditor
 {
+    //Ken Adachi-Bartholomay
+    //Purpose: Displays the editor form used to make/edit map files
+    //Restrictions: Update height and width restrictions as necessary, update enum names as necessary
     public partial class EditorForm : Form
     {
         //fields
