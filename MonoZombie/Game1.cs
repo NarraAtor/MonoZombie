@@ -38,8 +38,7 @@ namespace MonoZombie
         //Test variables
         private string currentStateTEST;
         // Fonts
-        private SpriteFont dogicaPixel;
-        private SpriteFont dogicaPixelBold;
+        private SpriteFont pixelFont;
 
         private static Vector2 screenDimensions;
 
@@ -125,8 +124,7 @@ namespace MonoZombie
             WallProperty3 = Content.Load<Texture2D>("WallTile3");
 
             // Load fonts
-            dogicaPixel = Content.Load<SpriteFont>("DogicaPixel");
-            dogicaPixelBold = Content.Load<SpriteFont>("DogicaPixelBold");
+            pixelFont = Content.Load<SpriteFont>("5Pixel");
 
             // Load UI Textures
             Texture2D menuTitleTexture = Content.Load<Texture2D>("title");
@@ -167,7 +165,7 @@ namespace MonoZombie
                 menuState = MenuState.Game;
                 gameState = GameState.Playing;
                 roundIsOngoing = true;
-            }, dogicaPixel, "Play");
+            }, pixelFont, 1, "Play");
             // menuQuitButton
 
             // private UIImage gameUITab;
@@ -364,15 +362,10 @@ namespace MonoZombie
                             turret.Draw(_spriteBatch, Color.White);
                             player.Draw(_spriteBatch);
 
-
-                            _spriteBatch.DrawString(dogicaPixel, $"Currency: {currency}", new Vector2(10, 10), Color.White);
-                            _spriteBatch.DrawString(dogicaPixel, $"Round Number: {roundNumber}", new Vector2(10, 30), Color.White);
-                            _spriteBatch.DrawString(dogicaPixel, $"Player Health: {player.Health}", new Vector2(10, 50), Color.White);
-                            _spriteBatch.DrawString(dogicaPixel, $"Zombie Timer: {zombie.Timer}", new Vector2(10, 90), Color.White);
-
-                            //_spriteBatch.DrawString(spriteFontTEST, $"Game Timer: {gameTime.ElapsedGameTime.TotalMilliseconds}", new Vector2(10, 70), Color.White);
-                            _spriteBatch.DrawString(dogicaPixel, $"Currency: {currency}", new Vector2(10, 10), Color.White);
-                            _spriteBatch.DrawString(dogicaPixel, $"Round Number: {roundNumber}", new Vector2(10, 30), Color.White);
+                            _spriteBatch.DrawString(pixelFont, $"Currency: {currency}", new Vector2(10, 10), Color.White);
+                            _spriteBatch.DrawString(pixelFont, $"Round Number: {roundNumber}", new Vector2(10, 30), Color.White);
+                            _spriteBatch.DrawString(pixelFont, $"Player Health: {player.Health}", new Vector2(10, 50), Color.White);
+                            _spriteBatch.DrawString(pixelFont, $"Zombie Timer: {zombie.Timer}", new Vector2(10, 90), Color.White);
                             break;
                         case GameState.Pause:
                             break;
@@ -385,7 +378,7 @@ namespace MonoZombie
             }
 
             //Being used to test if states are switching properly.
-            _spriteBatch.DrawString(dogicaPixel, currentStateTEST, new Vector2(100, 100), Color.White);
+            _spriteBatch.DrawString(pixelFont, currentStateTEST, new Vector2(100, 100), Color.White);
 
             _spriteBatch.End();
 

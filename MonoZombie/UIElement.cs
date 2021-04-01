@@ -57,7 +57,7 @@ namespace MonoZombie {
 		 * 
 		 * return UIButton					: The UIButton object created with the specified parameters
 		 */
-		public static UIButton CreateButton (Texture2D texture, Point position, Action onClick, SpriteFont font, string text) {
+		public static UIButton CreateButton (Texture2D texture, Point position, Action onClick, SpriteFont font, int fontSize, string text) {
 			// Get the dimensions of the button as a rectangle object based on its texture
 			int textRectWidth = texture.Width * UIScale;
 			int textRectHeight = texture.Height * UIScale;
@@ -66,7 +66,7 @@ namespace MonoZombie {
 			Rectangle textRect = new Rectangle(textRectX, textRectY, textRectWidth, textRectHeight);
 			
 			// Create a UIText object that is going to be overlayed onto the button
-			UIText buttonText = new UIText(font, text, Color.Black, textRect);
+			UIText buttonText = new UIText(font, fontSize, text, Color.Black, textRect);
 
 			return new UIButton(texture, buttonText, position, onClick);
 		}

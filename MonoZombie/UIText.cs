@@ -8,6 +8,7 @@ using System.Text;
 namespace MonoZombie {
 	public class UIText : UIElement {
 		private SpriteFont font;
+		private int fontScale;
 		private string text;
 		private Color color;
 
@@ -20,14 +21,16 @@ namespace MonoZombie {
 			}
 		}
 
-		public UIText (SpriteFont font, string text, Color color, Point position) : base(font.MeasureString(text), position) {
+		public UIText (SpriteFont font, int fontScale, string text, Color color, Point position) : base(font.MeasureString(text), position) {
 			this.font = font;
+			this.fontScale = fontScale;
 			this.text = text;
 			this.color = color;
 		}
 
-		public UIText (SpriteFont font, string text, Color color, Rectangle rect) : base(rect) {
+		public UIText (SpriteFont font, int fontScale, string text, Color color, Rectangle rect) : base(rect) {
 			this.font = font;
+			this.fontScale = fontScale;
 			this.text = text;
 			this.color = color;
 		}
@@ -36,9 +39,11 @@ namespace MonoZombie {
 
 		public override void Draw (SpriteBatch spriteBatch) {
 			// Calculate the centered position of the text within its rectangle
-			Vector2 textPosition = new Vector2(rect.Center.X - (font.MeasureString(Text).X / 2), rect.Center.Y - (font.MeasureString(Text).Y / 2));
-			
-			spriteBatch.DrawString(font, text, textPosition, color);
+			float textWidth = font.MeasureString(Text).X * fontScale;
+			float textHeight = font.MeasureString(Text).Y * fontScale;
+			Vector2 textPosition = new Vector2(rect.Center.X - (textWidth / 2), rect.Center.Y - (textHeight / 2));
+
+			spriteBatch.DrawString(font, text, textPosition, color, 0, Vector2.Zero, fontScale, SpriteEffects.None, 1f);
 		}
 	}
 }

@@ -13,6 +13,13 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin 5Pixel.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:5Pixel.spritefont
+
 #begin button.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -24,20 +31,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:button.png
-
-#begin DogicaPixel.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:DogicaPixel.spritefont
-
-#begin DogicaPixelBold.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:DogicaPixelBold.spritefont
 
 #begin external-content.duckduckgo.com.png
 /importer:TextureImporter
