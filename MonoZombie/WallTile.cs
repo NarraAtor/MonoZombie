@@ -4,7 +4,8 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Text;
-
+//Matthew Sorrentino
+//Creates the walls and floors of the game map
 namespace MonoZombie
 {
     public enum Tile
@@ -76,46 +77,17 @@ namespace MonoZombie
                     }
                 case Tile.Gravel:
                     {
-                        if (dx <= (location.Width / 2))
-                        {
-                            System.Diagnostics.Debug.WriteLine("DONEc");
-                            return true;
-                        }
-                        if (dy <= (location.Height / 2))
-                        {
-                            System.Diagnostics.Debug.WriteLine("DONEc");
-                            return true;
-                        }
+                        
                         return false;
                     }
 
                 case Tile.Lava:
                 {
-                        if (dx <= (location.Width / 2))
-                        {
-                            System.Diagnostics.Debug.WriteLine("DONEc");
-                            return true;
-                        }
-                        if (dy <= (location.Height / 2))
-                        {
-                            System.Diagnostics.Debug.WriteLine("DONEc");
-                            return true;
-                        }
                         return false;
                     }
 
                 case Tile.Speed:
                     {
-                        if (dx <= (location.Width / 2))
-                        {
-                            System.Diagnostics.Debug.WriteLine("DONEc");
-                            return true;
-                        }
-                        if (dy <= (location.Height / 2))
-                        {
-                            System.Diagnostics.Debug.WriteLine("DONEc");
-                            return true;
-                        }
                         return false;
                     }
 

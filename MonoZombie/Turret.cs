@@ -4,7 +4,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-
+//Matthew Sorrentino / Eric Fotang
+//creates a turret object w a draw and update method
 namespace MonoZombie
 {
     public enum TurretType
