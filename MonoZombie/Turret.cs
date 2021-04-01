@@ -4,7 +4,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-
+//Matthew Sorrentino / Eric Fotang
+//creates a turret object w a draw and update method
 namespace MonoZombie
 {
     public enum TurretType
@@ -17,7 +18,12 @@ namespace MonoZombie
         DeBuff//these work diffrently then the rest 
     }
 
-    public class Turret :GameObject
+    /// <summary>
+    /// Authors:Eric, Matthew
+    /// Purpose: Manages turrets and their function.
+    /// Restrictions:
+    /// </summary>
+     class Turret :GameObject
     {
         private int range;
         private int timer;//use later
@@ -26,6 +32,9 @@ namespace MonoZombie
         private Texture2D turret;//the base image of the turret
         private Texture2D GunPart;//The  rotating head of the turret
         private Rectangle Holder;//the location and size of the turret
+
+        //Eric
+        private Rectangle detector;//the detection range of the turret
         
         public int X
         {
@@ -74,6 +83,8 @@ namespace MonoZombie
                         range = 50;
                         damage = 100;
                         price = 300;
+                        //TODO: Adjust the rectangle so it is centered
+                        detector = new Rectangle(Holder.X, Holder.Y, range, range);
                         break;
                     }
 
@@ -111,28 +122,31 @@ namespace MonoZombie
 
             }
         }
-        /*
-        public Attack(Enemy target)
+
+        /// <summary>
+        /// Purpose: Causes the turret to check if the target zombie is in this turret's range by using rectangle colliders.
+        /// Restrictions: 
+        /// </summary>
+        /// <param name="target">the enemy to be checked</param>
+        public void Detect(Enemy target)
         {
-            float dx = Holder.X - target.X;
-            float dy = Holder.Y - target.Y;
-            double dist = Math.Sqrt(dx * dx + dy * dy); 
-            if(dist<=this.range)
-              {
-                 RotateTo(target.Center);
-                 target.Health-=damage; 
-              }
-           else
-            {
-              break;
-            }
+           if(detector.Intersects(target.RectangleCollider))
+             {
+                Point center = new Point(target.X,target.Y);
+                RotateTo(center);
+                target.Health-=damage; 
+             }
         }
-        */
 
         public void Draw(SpriteBatch sb, Color tint)
         {
             sb.Draw(turret, Holder, tint);
             sb.Draw(GunPart, Holder, tint);
+        }
+
+        public void Update(Enemy target)
+        {
+          Detect(target);
         }
     }
 }

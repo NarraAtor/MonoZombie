@@ -24,13 +24,15 @@ namespace MonoZombie
             this.playerSpeed = playerSpeed;
         }
 
-        public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
+        public override void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
             // Move the player based on keyboard input
             Move(keyboard);
 
             // Rotate the player to look at the mouse
             RotateTo(mouse.Position);
-		}
+
+            base.Update(gameTime, mouse, keyboard);
+        }
 
 
         /// <summary>

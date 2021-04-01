@@ -4,7 +4,8 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Text;
-
+//Matthew Sorrentino
+//Creates the walls and floors of the game map
 namespace MonoZombie
 {
     public enum Tile
@@ -60,67 +61,33 @@ namespace MonoZombie
         /// <returns></returns>
         public bool Collision(Player other)
         {
-            float dx = Math.Abs( other.X- location.X);
-            float dy = Math.Abs(other.Y - location.Y);
+            float dx = Math.Abs(other.X- location.X);
+            float dy = Math.Abs(other.Y - location.Y); 
+
             switch (type)
             {
-
+                
                 case Tile.Wall:
                     {
-                        if (dx<= (location.Width/2))
-                        {
-                            System.Diagnostics.Debug.WriteLine("DONE");
-                            return true;
-                        }
-                        if(dy <= (location.Height / 2))
-                        {
-                            System.Diagnostics.Debug.WriteLine("DONE");
+                      if(location.Intersects(other.RectangleCollider))
+                        {                            
                             return true;
                         }
                         return false;
                     }
                 case Tile.Gravel:
                     {
-                        if (dx <= (location.Width / 2))
-                        {
-                            System.Diagnostics.Debug.WriteLine("DONE");
-                            return true;
-                        }
-                        if (dy <= (location.Height / 2))
-                        {
-                            System.Diagnostics.Debug.WriteLine("DONE");
-                            return true;
-                        }
+                        
                         return false;
                     }
 
                 case Tile.Lava:
                 {
-                        if (dx <= (location.Width / 2))
-                        {
-                            System.Diagnostics.Debug.WriteLine("DONE");
-                            return true;
-                        }
-                        if (dy <= (location.Height / 2))
-                        {
-                            System.Diagnostics.Debug.WriteLine("DONE");
-                            return true;
-                        }
                         return false;
                     }
 
                 case Tile.Speed:
                     {
-                        if (dx <= (location.Width / 2))
-                        {
-                            System.Diagnostics.Debug.WriteLine("DONE");
-                            return true;
-                        }
-                        if (dy <= (location.Height / 2))
-                        {
-                            System.Diagnostics.Debug.WriteLine("DONE");
-                            return true;
-                        }
                         return false;
                     }
 
@@ -134,6 +101,11 @@ namespace MonoZombie
 
         public void Draw(SpriteBatch sb, Color tint)
         {
+            if(Collision(Game1.Player))
+            {
+
+                return;
+            }
             sb.Draw(Image,location , tint);
         }
 

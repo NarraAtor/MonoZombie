@@ -41,13 +41,13 @@ namespace MonoZombie {
 
 		public int DrawX {
 			get {
-				return centerPosition.X - (texture.Width / 2);
+				return centerPosition.X + (texture.Width / 2);
 			}
 		}
 
 		public int DrawY {
 			get {
-				return centerPosition.Y - (texture.Height / 2);
+				return centerPosition.Y + (texture.Height / 2);
 			}
 		}
 
@@ -76,7 +76,7 @@ namespace MonoZombie {
 		 * return					:
 		 */
 		public virtual void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
-
+			RectangleCollider = new Rectangle(X, Y, texture.Width, texture.Height);
 		}
 
 		/*

@@ -71,6 +71,7 @@ namespace MonoZombie
         private static Texture2D enemyImage;
         private static List<WallTile> listOfTiles;
         private static List<Enemy> listOfZombies;
+        private static List<Turret> listOfTurrets;
         private static Turret turret;
         private static Player player;
         private static Enemy zombie;
@@ -99,6 +100,7 @@ namespace MonoZombie
             roundNumber = 0;
             listOfTiles = new List<WallTile>();
             listOfZombies = new List<Enemy>();
+            listOfTurrets = new List<Turret>();
             aZombieIsAlive = false;
 
             base.Initialize();
@@ -129,9 +131,14 @@ namespace MonoZombie
             tabTexture = Content.Load<Texture2D>("tab");
 
             //Texture reliant intitialization
-            turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
+            turret = new Turret(TurretType.Archer, baseImage, turretImage, _graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2);
             player = new Player(100, 100, playerImage, _graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, 3);
             zombie = new Enemy(enemyImage, (_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2, 100, 1, 5);
+
+            //test zombie list
+            listOfZombies.Add(zombie);
+            //test turret list
+            listOfTurrets.Add(turret);
 
             //Load the map;
             StreamReader reader = new StreamReader("../../../MapLevels\\CurrentMapDesign.level");
@@ -201,8 +208,7 @@ namespace MonoZombie
 
             reader.Close( );
 
-            //test zombie list
-            listOfZombies.Add(zombie);
+
 
             base.LoadContent();
         }
@@ -245,6 +251,12 @@ namespace MonoZombie
                                 {
                                     aZombieIsAlive = true;
                                     zombie.Update(gameTime, player);
+                                }
+
+                                //Check if any zombies are in range of the turrets
+                                foreach (Turret turret in listOfTurrets)
+                                {
+                                    turret.Update(zombie);
                                 }
                             }
 
@@ -333,7 +345,11 @@ namespace MonoZombie
                                 zombie.Draw(_spriteBatch);
                             }
 
-                            turret.Draw(_spriteBatch, Color.White);
+                            foreach (Turret turret in listOfTurrets)
+                            {
+                                turret.Draw(_spriteBatch, Color.White);
+                            }
+
                             player.Draw(_spriteBatch);
 
                             // Draw UI elements
@@ -341,7 +357,9 @@ namespace MonoZombie
                             UIElement.DrawText(_spriteBatch, 0.5f, $"Currency: {currency}", Color.Black, new Vector2(30, 30), false);
                             UIElement.DrawText(_spriteBatch, 0.5f, $"Round Number: {roundNumber}", Color.Black, new Vector2(30, 45), false);
                             UIElement.DrawText(_spriteBatch, 0.5f, $"Player Health: {player.Health}", Color.Black, new Vector2(30, 60), false);
-                            UIElement.DrawText(_spriteBatch, 0.5f, $"Zombie Timer: {zombie.Timer}", Color.Black, new Vector2(30, 75), false);
+
+                            //Test, draw zombie current health
+                            //UIElement.DrawText(_spriteBatch, 0.5f, $"Zombie Health: {zombie.Health}", Color.Black, new Vector2(30, 90), false);
 
                             break;
                         case GameState.Pause:
