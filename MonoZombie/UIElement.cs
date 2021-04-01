@@ -5,70 +5,88 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+// Author : Frank Alfano
+// Purpose : An overarching class that deals with all UI and drawing functions/classes
+
 namespace MonoZombie {
 	public abstract class UIElement {
 		// How much to scale the UI up by in-game
+		// * This should be modified in the Game class
 		public static int UIScale = 1;
 
-		protected Point position;
 		protected Rectangle rect;
-		protected Texture2D texture;
+		protected bool centered;
 
-		public UIElement (Texture2D texture, Point position) {
-			this.texture = texture;
-			this.position = position;
-
-			// Get the dimensions of the button as well as the position
-			int rectWidth = texture.Width * UIScale;
-			int rectHeight = texture.Height * UIScale;
-			int rectX = position.X - (rectWidth / 2);
-			int rectY = position.Y - (rectHeight / 2);
-			rect = new Rectangle(rectX, rectY, rectWidth, rectHeight);
+		public UIElement (Vector2 dimensions, Vector2 position, bool centered = false) : this(new Rectangle(position.ToPoint( ), dimensions.ToPoint( )), centered) {
 		}
 
-		public UIElement (Vector2 dimensions, Point position) {
-			this.position = position;
-
-			// Get the dimensions of the button as well as the position
-			int rectWidth = (int) dimensions.X * UIScale;
-			int rectHeight = (int) dimensions.Y * UIScale;
-			int rectX = position.X - (rectWidth / 2);
-			int rectY = position.Y - (rectHeight / 2);
-			rect = new Rectangle(rectX, rectY, rectWidth, rectHeight);
-		}
-
-		public UIElement (Rectangle rect) {
+		public UIElement (Rectangle rect, bool centered = false) {
 			this.rect = rect;
+			this.centered = centered;
+
+			// If the UIElement should be centered, shift its rectangle accordingly
+			if (centered) {
+				this.rect.Location -= (rect.Size.ToVector2( ) / 2).ToPoint( );
+			}
 		}
 
 		public abstract void Update (GameTime gameTime, MouseState mouse);
 
-		public virtual void Draw (SpriteBatch spriteBatch) {
-			spriteBatch.Draw(texture, rect, Color.White);
+		public abstract void Draw (SpriteBatch spriteBatch);
+
+		/*
+		 * Author : Frank Alfano
+		 * 
+		 * Draw an image to the screen
+		 * 
+		 * SpriteBatch spriteBatch					: The spritebatch used to draw the images
+		 * Texture2D texture						: The texture to draw
+		 * Vector2 position							: The position of the image
+		 * bool centered							: Whether or not the position given should be the where the center of the image lies or the top-left corner
+		 * 
+		 * return									: 
+		 */
+		public static void DrawImage (SpriteBatch spriteBatch, Texture2D texture, Vector2 position, bool centered = false) {
+			// Get the dimensions of the image
+			Vector2 imageDimensions = texture.Bounds.Size.ToVector2( ) * UIScale;
+
+			// If the image is to be centered at the position given, shift the position the image is drawn at
+			if (centered) {
+				position = new Vector2(position.X - (imageDimensions.X / 2), position.Y - (imageDimensions.Y / 2));
+			}
+
+			// Get the draw rectangle of the image
+			Rectangle drawRect = new Rectangle(position.ToPoint( ), imageDimensions.ToPoint( ));
+
+			// Draw the image
+			spriteBatch.Draw(texture, drawRect, null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 1f);
 		}
 
 		/*
-		 * Create a button UI object
+		 * Author : Frank Alfano
 		 * 
-		 * Texture2D texture				: The button texture
-		 * Point position					: The position of the button on the screen (this position is the center of the button)
-		 * SpriteFont font					: The font that text overlayed onto the button is
-		 * string text						: The text ovelayed onto the button
+		 * Draw a string of text to the screen
 		 * 
-		 * return UIButton					: The UIButton object created with the specified parameters
+		 * SpriteBatch spriteBatch					: The spritebatch used to draw the images
+		 * float fontScale							: How much to scale up or down the font size
+		 * string text								: The string of text to draw
+		 * Color color								: The color of the text
+		 * Vector2 position							: The position of the text
+		 * bool centered							: Whether or not the position given should be the where the center of the text lies or the top-left corner
+		 * 
+		 * return									: 
 		 */
-		public static UIButton CreateButton (Texture2D texture, Point position, Action onClick, SpriteFont font, int fontSize, string text) {
-			// Get the dimensions of the button as a rectangle object based on its texture
-			int textRectWidth = texture.Width * UIScale;
-			int textRectHeight = texture.Height * UIScale;
-			int textRectX = position.X - (textRectWidth / 2);
-			int textRectY = position.Y - (textRectHeight / 2);
-			Rectangle textRect = new Rectangle(textRectX, textRectY, textRectWidth, textRectHeight);
-			
-			// Create a UIText object that is going to be overlayed onto the button
-			UIText buttonText = new UIText(font, fontSize, text, Color.Black, textRect);
+		public static void DrawText (SpriteBatch spriteBatch, float fontScale, string text, Color color, Vector2 position, bool centered = false) {
+			// Calculate the width and height of the text
+			Vector2 textDimensions = Game1.font.MeasureString(text) * fontScale;
 
-			return new UIButton(texture, buttonText, position, onClick);
+			// If the text is to be centered at the position given, shift the position the text is drawn at
+			if (centered) {
+				position = new Vector2(position.X - (textDimensions.X / 2), position.Y - (textDimensions.Y / 2));
+			}
+
+			// Draw the text to the screen
+			spriteBatch.DrawString(Game1.font, text, position, color, 0, Vector2.Zero, fontScale, SpriteEffects.None, 1f);
 		}
 	}
 }

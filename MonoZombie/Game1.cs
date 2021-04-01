@@ -37,27 +37,22 @@ namespace MonoZombie
 
         //Test variables
         private string currentStateTEST;
-        // Fonts
-        private SpriteFont pixelFont;
 
         private static Vector2 screenDimensions;
 
-        // UI Variables
-        private UIImage menuTitle;
+        // Fonts
+        public static SpriteFont font;
+
+        // UI Textures
+        public static Texture2D titleTexture;
+        public static Texture2D buttonTexture;
+        public static Texture2D tabTexture;
+
+        // UI Button Variables
         private UIButton menuPlayButton;
         private UIButton menuQuitButton;
-
-        private UIImage gameUITab;
-        // private UIProgressBar gameHealthBar;
-
-        // SHOP UI OBJECTS (TO BE DETERMINED)
-
-        private UIText pausePausedText;
         private UIButton pauseResumeButton;
         private UIButton pauseMenuButton;
-
-        private UIImage gameOverImage;
-        private UIText gameOverScore;
         private UIButton gameOverMenuButton;
 
         //Properties for WallTile
@@ -124,12 +119,12 @@ namespace MonoZombie
             WallProperty3 = Content.Load<Texture2D>("WallTile3");
 
             // Load fonts
-            pixelFont = Content.Load<SpriteFont>("5Pixel");
+            font = Content.Load<SpriteFont>("5Pixel");
 
             // Load UI Textures
-            Texture2D menuTitleTexture = Content.Load<Texture2D>("title");
-            Texture2D buttonTexture = Content.Load<Texture2D>("button");
-            Texture2D tabTexture = Content.Load<Texture2D>("tab");
+            titleTexture = Content.Load<Texture2D>("title");
+            buttonTexture = Content.Load<Texture2D>("button");
+            tabTexture = Content.Load<Texture2D>("tab");
 
             //Texture reliant intitialization
             turret = new Turret(TurretType.Archer, baseImage, turretImage, 100, 100);
@@ -155,31 +150,15 @@ namespace MonoZombie
             _graphics.PreferredBackBufferHeight = (int) screenDimensions.Y;
             _graphics.ApplyChanges( );
 
-
             // Update the scale of the UI
             UIElement.UIScale = 5;
 
-            // Create UI
-            menuTitle = new UIImage(menuTitleTexture, new Point((int)screenDimensions.X / 2, (int)screenDimensions.Y / 4));
-            menuPlayButton = UIElement.CreateButton(buttonTexture, new Point((int)screenDimensions.X / 2, (int)screenDimensions.Y / 2), () => {
+            // Create UI Buttons
+            menuPlayButton = new UIButton("Play", screenDimensions / 2, () => {
                 menuState = MenuState.Game;
                 gameState = GameState.Playing;
                 roundIsOngoing = true;
-            }, pixelFont, 1, "Play");
-            // menuQuitButton
-
-            // private UIImage gameUITab;
-            // private UIProgressBar gameHealthBar;
-
-            // SHOP UI OBJECTS (TO BE DETERMINED)
-
-            // pausePausedText
-            // pauseResumeButton
-            // pauseMenuButton
-
-            // private UIImage gameOverImage;
-            // gameOverScore
-            // gameOverMenuButton
+            }, true);
 
             int xPosition = 0;
             int yPosition = 0;
@@ -340,7 +319,8 @@ namespace MonoZombie
             {
                 case MenuState.MainMenu:
                     // Draw menu UI objects
-                    menuTitle.Draw(_spriteBatch);
+                    UIElement.DrawImage(_spriteBatch, titleTexture, screenDimensions * new Vector2(0.5f, 0.25f), true);
+
                     menuPlayButton.Draw(_spriteBatch);
 
                     break;
@@ -362,10 +342,14 @@ namespace MonoZombie
                             turret.Draw(_spriteBatch, Color.White);
                             player.Draw(_spriteBatch);
 
-                            _spriteBatch.DrawString(pixelFont, $"Currency: {currency}", new Vector2(10, 10), Color.White);
-                            _spriteBatch.DrawString(pixelFont, $"Round Number: {roundNumber}", new Vector2(10, 30), Color.White);
-                            _spriteBatch.DrawString(pixelFont, $"Player Health: {player.Health}", new Vector2(10, 50), Color.White);
-                            _spriteBatch.DrawString(pixelFont, $"Zombie Timer: {zombie.Timer}", new Vector2(10, 90), Color.White);
+                            // Draw UI elements
+                            UIElement.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), false);
+
+                            UIElement.DrawText(_spriteBatch, 0.5f, $"Currency: {currency}", Color.Black, new Vector2(30, 30), false);
+                            UIElement.DrawText(_spriteBatch, 0.5f, $"Round Number: {roundNumber}", Color.Black, new Vector2(30, 45), false);
+                            UIElement.DrawText(_spriteBatch, 0.5f, $"Player Health: {player.Health}", Color.Black, new Vector2(30, 60), false);
+                            UIElement.DrawText(_spriteBatch, 0.5f, $"Zombie Timer: {zombie.Timer}", Color.Black, new Vector2(30, 75), false);
+
                             break;
                         case GameState.Pause:
                             break;
@@ -378,7 +362,7 @@ namespace MonoZombie
             }
 
             //Being used to test if states are switching properly.
-            _spriteBatch.DrawString(pixelFont, currentStateTEST, new Vector2(100, 100), Color.White);
+            _spriteBatch.DrawString(font, currentStateTEST, new Vector2(100, 100), Color.White);
 
             _spriteBatch.End();
 
