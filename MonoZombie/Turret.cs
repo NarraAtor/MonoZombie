@@ -144,9 +144,9 @@ namespace MonoZombie
             sb.Draw(GunPart, Holder, tint);
         }
 
-        public override void Update(GameTime gameTime, MouseState mouse, KeyboardState keyboard)
+        public void Update(Enemy target)
         {
-           // Detect();
+          Detect(target);
         }
     }
 }
