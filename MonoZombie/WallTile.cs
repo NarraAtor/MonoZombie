@@ -134,7 +134,6 @@ namespace MonoZombie
 
                 return;
             }
-            sb.Draw(Image, Game1.Player.RectangleCollider, tint);
             sb.Draw(Image,location , tint);
         }
 

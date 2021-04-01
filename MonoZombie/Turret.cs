@@ -146,6 +146,7 @@ namespace MonoZombie
         {
             sb.Draw(turret, Holder, tint);
             sb.Draw(GunPart, Holder, tint);
+
         }
     }
 }
