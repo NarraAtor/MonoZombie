@@ -29,8 +29,8 @@ namespace MonoZombie
             Move(keyboard);
 
             // Rotate the player to look at the mouse
-            RotateTo(mouse.Position);            
-		}
+            RotateTo(mouse.Position);
+        }
 
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace MonoZombie
             // Move the position of the player
             X += (int) (normMovement.X * playerSpeed);
             Y += (int) (normMovement.Y * playerSpeed);
-            RectangleCollider = new Rectangle(RectangleCollider.X, RectangleCollider.Y, RectangleCollider.Width, RectangleCollider.Height);
+            RectangleCollider = new Rectangle(X, Y, texture.Width, texture.Height);
         }
 
 

@@ -41,13 +41,13 @@ namespace MonoZombie {
 
 		public int DrawX {
 			get {
-				return centerPosition.X - (texture.Width / 2);
+				return centerPosition.X + (texture.Width / 2);
 			}
 		}
 
 		public int DrawY {
 			get {
-				return centerPosition.Y - (texture.Height / 2);
+				return centerPosition.Y + (texture.Height / 2);
 			}
 		}
 

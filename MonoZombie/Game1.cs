@@ -343,6 +343,10 @@ namespace MonoZombie
                             UIElement.DrawText(_spriteBatch, 0.5f, $"Player Health: {player.Health}", Color.Black, new Vector2(30, 60), false);
                             UIElement.DrawText(_spriteBatch, 0.5f, $"Zombie Timer: {zombie.Timer}", Color.Black, new Vector2(30, 75), false);
 
+                            //Test, draw player current position
+                            UIElement.DrawText(_spriteBatch, 0.5f, $"Player.X: {player.RectangleCollider.X}", Color.Black, new Vector2(30, 90), false);
+                            UIElement.DrawText(_spriteBatch, 0.5f, $"Player.Y: {player.RectangleCollider.Y}", Color.Black, new Vector2(30, 105), false);
+
                             break;
                         case GameState.Pause:
                             break;
