@@ -67,8 +67,8 @@ namespace MonoZombie {
 		private static Texture2D baseImage;
 		private static Texture2D playerImage;
 		private static Texture2D enemyImage;
-		private static List<Enemy> listOfZombies;
 		private static List<Turret> listOfTurrets;
+		private static List<Enemy> listOfZombies;
 		private static Turret turret;
 		private static Player player;
 		private static Enemy zombie;
@@ -90,6 +90,7 @@ namespace MonoZombie {
 		}
 
         protected override void Initialize() {
+            // TODO: Add your initialization logic here
             menuState = MenuState.MainMenu;
             gameState = GameState.Playing;
             currency = 0;
@@ -141,17 +142,10 @@ namespace MonoZombie {
 			_graphics.PreferredBackBufferHeight = (int) screenDimensions.Y;
 			_graphics.ApplyChanges( );
 
-
 			//Texture reliant intitialization
 			turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
 			player = new Player(100, 100, playerImage, screenDimensions / 2, 3);
 			zombie = new Enemy(enemyImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2), 100, 1, 5);
-
-			//test zombie list
-			listOfZombies.Add(zombie);
-			//test turret list
-			listOfTurrets.Add(turret);
-
 
 			// Create UI Buttons
 			menuPlayButton = new UIButton("Play", screenDimensions / 2, ( ) => {

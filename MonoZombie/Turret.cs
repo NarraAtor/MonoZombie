@@ -130,9 +130,9 @@ namespace MonoZombie
         /// <param name="target">the enemy to be checked</param>
         public void Detect(Enemy target)
         {
-           if(detector.Intersects(target.RectangleCollider))
+           if(detector.Intersects(target.Rect))
              {
-                Point center = new Point(target.X,target.Y);
+                Vector2 center = new Vector2(target.X,target.Y);
                 RotateTo(center);
                 target.Health-=damage; 
              }

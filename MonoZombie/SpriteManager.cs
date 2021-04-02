@@ -9,8 +9,7 @@ using System.Text;
 
 namespace MonoZombie {
 	public static class SpriteManager {
-		// How much to scale the UI up by in-game
-		// * This should be modified in the Game class
+		// How much to scale the UI and game objects up by in-game
 		public static float UIScale = 5;
 		public static float ObjectScale = 2f;
 
