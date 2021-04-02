@@ -33,18 +33,19 @@ namespace MonoZombie
 		}
 
 
-        /// <summary>
-        /// Moves the player depending on keys pressed;
-        /// Note that playerSpeed squared is the speed
-        /// of the player if they were to move in one direction,
-        /// and playerSpeed will acount for movement in both directions
-        /// </summary>
-        /// <param name="key"></param>
-        public void Move(KeyboardState key)
-        {
+        /*
+         * Author : Frank Alfano
+         * 
+         * Move the player based on keyboard input
+         * 
+         * KeyboardState keyboard               : The current keyboard state
+         * 
+         * return                               :
+         */
+        public void Move(KeyboardState keyboard) {
             // Get which direction the player is trying to move
-            int moveX = (key.IsKeyDown(Keys.D) ? 1 : 0) + (key.IsKeyDown(Keys.A) ? -1 : 0);
-            int moveY = (key.IsKeyDown(Keys.W) ? -1 : 0) + (key.IsKeyDown(Keys.S) ? 1 : 0);
+            int moveX = (keyboard.IsKeyDown(Keys.D) ? 1 : 0) + (keyboard.IsKeyDown(Keys.A) ? -1 : 0);
+            int moveY = (keyboard.IsKeyDown(Keys.W) ? -1 : 0) + (keyboard.IsKeyDown(Keys.S) ? 1 : 0);
 
             // Get the movement vector of the player and make sure it is normalized
             // Normalizing the vector makes sure that when the player is moving diagonally they are moving the same

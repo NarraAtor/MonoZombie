@@ -16,7 +16,7 @@ namespace MonoZombie {
 
 		public Rectangle Rect {
 			get {
-				return new Rectangle(DrawX, DrawY, texture.Width, texture.Height);
+				return new Rectangle(DrawX, DrawY, (int) (texture.Width * SpriteManager.ObjectScale), (int) (texture.Height * SpriteManager.ObjectScale));
 			}
 		}
 
@@ -90,7 +90,7 @@ namespace MonoZombie {
 		 * return					:
 		 */
 		public virtual void Draw (SpriteBatch spriteBatch) {
-			spriteBatch.Draw(texture, Rect, null, Color.White, angle, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 1f);
+			SpriteManager.DrawImage(spriteBatch, texture, position, angle:Angle, scale: SpriteManager.ObjectScale);
 		}
 
 		/*
@@ -125,7 +125,7 @@ namespace MonoZombie {
 				// If either of the angles are negative, do not calculate the angle because it will just be 0
 				if (sinAngle != 0 && cosAngle != 0) {
 					// Set the rotation based on the calculated angle
-					angle = (float) (-Math.PI / 2) + (sinMod * cosAngle);
+					angle = (float) Math.PI + (sinMod * cosAngle);
 				}
 			}
 		}

@@ -7,28 +7,20 @@ using System.Text;
 
 namespace MonoZombie
 {
-    public enum Tile
-    {
-        Grass,
-        Wall,
-        Gravel,
-        Lava,
-        Speed,
-        ZombieSpawn
-    }
+    
     class WallTile
     {
         private Random rng=new Random();
-        private Tile type;
+        private TileType type;
         private Rectangle location;
         private Texture2D Image;
 
-        public Tile Type
+        public TileType Type
         {
             get { return type; }
         }
 
-        public WallTile(Tile other, int x, int y,int width,int height)
+        public WallTile(TileType other, int x, int y,int width,int height)
         {
             type = other;
             location.X = x;
@@ -38,15 +30,15 @@ namespace MonoZombie
             switch (other)
             {
 
-                case Tile.Wall:
+                case TileType.Wall:
                     {
-                        Image = Game1.WallProperty1;
+                        //Image = Game1.WallProperty1;
                         break;
                     }
-                case Tile.Grass:
+                case TileType.Grass:
                     {
                         
-                            Image = Game1.GrassProperty1;
+                          //  Image = Game1.GrassProperty1;
                             break;                      
 
                     }
@@ -65,7 +57,7 @@ namespace MonoZombie
             switch (type)
             {
 
-                case Tile.Wall:
+                case TileType.Wall:
                     {
                         if (dx<= (location.Width/2))
                         {
@@ -79,7 +71,7 @@ namespace MonoZombie
                         }
                         return false;
                     }
-                case Tile.Gravel:
+                case TileType.Gravel:
                     {
                         if (dx <= (location.Width / 2))
                         {
@@ -94,7 +86,7 @@ namespace MonoZombie
                         return false;
                     }
 
-                case Tile.Lava:
+                case TileType.Lava:
                 {
                         if (dx <= (location.Width / 2))
                         {
@@ -109,7 +101,7 @@ namespace MonoZombie
                         return false;
                     }
 
-                case Tile.Speed:
+                case TileType.Speed:
                     {
                         if (dx <= (location.Width / 2))
                         {
@@ -124,7 +116,7 @@ namespace MonoZombie
                         return false;
                     }
 
-                case Tile.Grass:
+                case TileType.Grass:
                     {
                         return false;
                     }
