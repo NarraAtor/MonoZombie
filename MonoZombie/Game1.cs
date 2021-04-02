@@ -68,6 +68,7 @@ namespace MonoZombie {
 		private static Texture2D playerImage;
 		private static Texture2D enemyImage;
 		private static List<Enemy> listOfZombies;
+		private static List<Turret> listOfTurrets;
 		private static Turret turret;
 		private static Player player;
 		private static Enemy zombie;
@@ -88,14 +89,14 @@ namespace MonoZombie {
 			IsMouseVisible = true;
 		}
 
-		protected override void Initialize ( ) {
-			// TODO: Add your initialization logic here
-			menuState = MenuState.MainMenu;
-			gameState = GameState.Playing;
-			currency = 0;
-			roundNumber = 0;
-			listOfZombies = new List<Enemy>( );
-			aZombieIsAlive = false;
+        protected override void Initialize() {
+            menuState = MenuState.MainMenu;
+            gameState = GameState.Playing;
+            currency = 0;
+            roundNumber = 0;
+            listOfZombies = new List<Enemy>();
+            listOfTurrets = new List<Turret>();
+            aZombieIsAlive = false;
 
 			base.Initialize( );
 		}
@@ -140,10 +141,17 @@ namespace MonoZombie {
 			_graphics.PreferredBackBufferHeight = (int) screenDimensions.Y;
 			_graphics.ApplyChanges( );
 
+
 			//Texture reliant intitialization
 			turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
 			player = new Player(100, 100, playerImage, screenDimensions / 2, 3);
 			zombie = new Enemy(enemyImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2), 100, 1, 5);
+
+			//test zombie list
+			listOfZombies.Add(zombie);
+			//test turret list
+			listOfTurrets.Add(turret);
+
 
 			// Create UI Buttons
 			menuPlayButton = new UIButton("Play", screenDimensions / 2, ( ) => {
@@ -190,11 +198,18 @@ namespace MonoZombie {
 								}
 
 
-								if (zombie.IsAlive) {
-									aZombieIsAlive = true;
-									zombie.Update(gameTime, player);
-								}
-							}
+                                if (zombie.IsAlive)
+                                {
+                                    aZombieIsAlive = true;
+                                    zombie.Update(gameTime, player);
+                                }
+
+                                //Check if any zombies are in range of the turrets
+                                foreach (Turret turret in listOfTurrets)
+                                {
+                                    turret.Update(zombie);
+                                }
+                            }
 
 							if (aZombieIsAlive!) {
 								roundIsOngoing = false;
@@ -276,9 +291,17 @@ namespace MonoZombie {
 							/*
 							turret.Draw(_spriteBatch, Color.White);
 
-							foreach (Enemy zombie in listOfZombies) {
-								zombie.Draw(_spriteBatch);
-							}
+                            foreach(Enemy zombie in listOfZombies)
+                            {
+                                zombie.Draw(_spriteBatch);
+                            }
+
+                            foreach (Turret turret in listOfTurrets)
+                            {
+                                turret.Draw(_spriteBatch, Color.White);
+                            }
+
+                            player.Draw(_spriteBatch);
 							*/
 
 							// Draw UI elements
