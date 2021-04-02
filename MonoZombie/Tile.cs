@@ -5,6 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+// Author : Frank Alfano, Matthew Sorrentino
+// Purpose : A class for each of the tiles that is part of the map, allowing collision and textures to be checked/given to each
+
 namespace MonoZombie {
 	public enum TileType {
 		Grass,
@@ -15,10 +18,12 @@ namespace MonoZombie {
 	}
 
 	public class Tile : GameObject {
-		private bool isWalkable;
+		public bool IsWalkable {
+			get;
+		}
 
 		public Tile (TileType tileType, Vector2 position, bool isWalkable = true) : base(GetTexture(tileType), position) {
-			this.isWalkable = isWalkable;
+			IsWalkable = isWalkable;
 		}
 
 		public override void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
@@ -26,9 +31,25 @@ namespace MonoZombie {
 		}
 
 		public new void Draw (SpriteBatch spriteBatch) {
-			SpriteManager.DrawImage(spriteBatch, texture, position, scale:SpriteManager.ObjectScale);
+			SpriteManager.DrawImage(spriteBatch, texture, position, scale: SpriteManager.ObjectScale);
 		}
 
+		/*
+		 * Overridden from the base GameObject class
+		 */
+		public new bool CheckCollision (GameObject other) {
+			return !IsWalkable && base.CheckCollision(other);
+		}
+
+		/*
+		 * Author : Frank Alfano
+		 * 
+		 * Get a texture for the tile based on its type
+		 * 
+		 * TileType tileType					: The type of the tile
+		 * 
+		 * return Texture2D						: The texture to set for the tile
+		 */
 		private static Texture2D GetTexture (TileType tileType) {
 			// For generating a random index to get a random texture for the tile
 			Random random = new Random( );

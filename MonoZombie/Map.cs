@@ -12,6 +12,12 @@ namespace MonoZombie {
 
 		private Vector2[ ] zombieSpawns;
 
+		public Tile this[int x, int y] {
+			get {
+				return tiles[x, y];
+			}
+		}
+
 		public int Width {
 			get {
 				return tiles.GetLength(0);
@@ -70,13 +76,36 @@ namespace MonoZombie {
 		 * 
 		 * return					:
 		 */
-		public void Draw (SpriteBatch spriteBatch) {
+		public void Draw (SpriteBatch spriteBatch, Player player) {
 			for (int x = 0; x < Width; x++) {
 				for (int y = 0; y < Height; y++) {
-					tiles[x, y].Draw(spriteBatch);
+					// * TEST * if the player intersects with the tile, dont draw it to show that there is collision detection
+					if (!tiles[x, y].CheckCollision(player)) {
+						tiles[x, y].Draw(spriteBatch);
+					}
 				}
 			}
 		}
+
+		/*
+		public GameObject[ ] CheckCollisions (GameObject gameObject) {
+			List<GameObject> intersectingTiles = new List<GameObject>( );
+
+			for (int x = 0; x < Width; x++) {
+				for (int y = 0; y < Height; y++) {
+					Tile tile = tiles[x, y];
+
+					if (!tile.IsWalkable) {
+						if (tile.Rect.Intersects(gameObject.Rect)) {
+							intersectingTiles.Add(tile);
+						}
+					}
+				}
+			}
+
+			return intersectingTiles.ToArray( );
+		}
+		*/
 
 		/*
 		 * Author : Frank Alfano

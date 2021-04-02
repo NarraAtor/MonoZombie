@@ -12,11 +12,26 @@ namespace MonoZombie {
 	public abstract class GameObject {
 		protected Texture2D texture;
 		protected Vector2 position;
+		protected bool canRotate;
 		protected float angle;
 
 		public Rectangle Rect {
 			get {
-				return new Rectangle(DrawX, DrawY, (int) (texture.Width * SpriteManager.ObjectScale), (int) (texture.Height * SpriteManager.ObjectScale));
+				// Calculate the dimensions and position of the collision rectangle
+				int rectWidth = (int) (texture.Width * SpriteManager.ObjectScale);
+				int rectHeight = (int) (texture.Height * SpriteManager.ObjectScale);
+				int rectX = X;
+				int rectY = Y;
+
+				// If the object can rotate, the position that it is drawn at is going to be at the center of the image
+				// because of how Monogame rotates images. Therefore, if the image cant be rotated (for example, a map tile),
+				// we need to adjust the rectangle position so this rectangle correctly detects collision.
+				if (canRotate) {
+					rectX -= rectWidth / 2;
+					rectY -= rectHeight / 2;
+				}
+
+				return new Rectangle(rectX, rectY, rectWidth, rectHeight);
 			}
 		}
 
@@ -40,27 +55,16 @@ namespace MonoZombie {
 			}
 		}
 
-		public int DrawX {
-			get {
-				return (int) position.X - (texture.Width / 2);
-			}
-		}
-
-		public int DrawY {
-			get {
-				return (int) position.Y - (texture.Height / 2);
-			}
-		}
-
 		public float Angle {
 			get {
 				return angle;
 			}
 		}
 
-		public GameObject (Texture2D texture, Vector2 position) {
+		public GameObject (Texture2D texture, Vector2 position, bool canRotate = false) {
 			this.texture = texture;
 			this.position = position;
+			this.canRotate = canRotate;
 		}
 
 		/*
@@ -90,7 +94,7 @@ namespace MonoZombie {
 		 * return					:
 		 */
 		public virtual void Draw (SpriteBatch spriteBatch) {
-			SpriteManager.DrawImage(spriteBatch, texture, position, angle:Angle, scale: SpriteManager.ObjectScale);
+			SpriteManager.DrawImage(spriteBatch, texture, position, angle: Angle, scale: SpriteManager.ObjectScale);
 		}
 
 		/*
@@ -131,7 +135,7 @@ namespace MonoZombie {
 		}
 
 		public bool CheckCollision (GameObject other) {
-			throw new NotImplementedException( );
+			return other.Rect.Intersects(Rect);
 		}
 
 		/*

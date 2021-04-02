@@ -21,7 +21,7 @@ namespace MonoZombie
         bool isAlive;
 
         public Enemy(Texture2D texture, Vector2 position, int health, int speed, int attSpeed) 
-            : base(texture, position)
+            : base(texture, position, canRotate: true)
         {
             this.health = health;
             this.speed = speed;

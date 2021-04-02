@@ -17,7 +17,7 @@ namespace MonoZombie
 
         public int PlayerSpeed { get { return playerSpeed; } set { playerSpeed = value; } }
         public Player(int health, int attackSpd, Texture2D texture, Vector2 position, int playerSpeed) 
-            : base (texture, position)
+            : base (texture, position, canRotate: true)
         { 
             this.health = health;
             this.attackSpd = attackSpd;

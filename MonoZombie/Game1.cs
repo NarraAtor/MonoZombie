@@ -177,6 +177,7 @@ namespace MonoZombie {
 					switch (gameState) {
 						case GameState.Playing:
 							currentStateTEST = "Game - Playing";
+
 							/*
 							//This code rewards the player when a zombie is killed and makes the round end when in contact with a zombie.
 							aZombieIsAlive = false;
@@ -259,27 +260,29 @@ namespace MonoZombie {
 			switch (menuState) {
 				case MenuState.MainMenu:
 					// Draw menu UI objects
-					SpriteManager.DrawImage(_spriteBatch, titleTexture, screenDimensions * new Vector2(0.5f, 0.25f), centered:true, scale:SpriteManager.UIScale);
+					SpriteManager.DrawImage(_spriteBatch, titleTexture, screenDimensions * new Vector2(0.5f, 0.25f), centered: true, scale: SpriteManager.UIScale);
 					menuPlayButton.Draw(_spriteBatch);
 
 					break;
 				case MenuState.Game:
 					switch (gameState) {
 						case GameState.Playing:
-							// Update the map
-							map.Draw(_spriteBatch);
+							// Draw the map
+							map.Draw(_spriteBatch, player);
 
-							turret.Draw(_spriteBatch, Color.White);
+							// Draw the player
 							player.Draw(_spriteBatch);
 
 							/*
+							turret.Draw(_spriteBatch, Color.White);
+
 							foreach (Enemy zombie in listOfZombies) {
 								zombie.Draw(_spriteBatch);
 							}
 							*/
 
 							// Draw UI elements
-							SpriteManager.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), scale:SpriteManager.UIScale);
+							SpriteManager.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), scale: SpriteManager.UIScale);
 							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Currency: {currency}", Color.Black, new Vector2(30, 30));
 							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Round Number: {roundNumber}", Color.Black, new Vector2(30, 45));
 							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Player Health: {player.Health}", Color.Black, new Vector2(30, 60));
@@ -301,7 +304,7 @@ namespace MonoZombie {
 			}
 
 			// Being used to test if states are switching properly
-			_spriteBatch.DrawString(font, currentStateTEST, new Vector2(100, 100), Color.White);
+			_spriteBatch.DrawString(font, currentStateTEST, new Vector2(15, 900), Color.White);
 
 			_spriteBatch.End( );
 
