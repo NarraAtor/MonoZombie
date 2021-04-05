@@ -68,14 +68,14 @@ namespace MonoZombie {
 		 * 
 		 * SpriteBatch spriteBatch					: The spritebatch used to draw the images
 		 * Rectangle rect							: The rectangle bounds of the text
-		 * float fontScale							: How much to scale up or down the font size
 		 * string text								: The string of text to draw
 		 * Color color								: The color of the text
+		 * float fontScale							: How much to scale up or down the font size
 		 * bool isCentered							: Whether or not the position given should be the where the center of the text lies or the top-left corner
 		 * 
 		 * return									: 
 		 */
-		public static void DrawText (SpriteBatch spriteBatch, Rectangle rect, float fontScale, string text, Color color, bool isCentered = true) {
+		public static void DrawText (SpriteBatch spriteBatch, Rectangle rect, string text, Color color, float fontScale = 1, bool isCentered = true) {
 			// Calculate the width and height of the text
 			Vector2 textDimensions = Game1.font.MeasureString(text) * fontScale;
 
@@ -93,14 +93,14 @@ namespace MonoZombie {
 		 * 
 		 * SpriteBatch spriteBatch					: The spritebatch used to draw the images
 		 * Vector2 position							: The position of the text
-		 * float fontScale							: How much to scale up or down the font size
 		 * string text								: The string of text to draw
 		 * Color color								: The color of the text
+		 * float fontScale							: How much to scale up or down the font size
 		 * bool isCentered							: Whether or not the position given should be the where the center of the text lies or the top-left corner
 		 * 
 		 * return									: 
 		 */
-		public static void DrawText (SpriteBatch spriteBatch, Vector2 position, float fontScale, string text, Color color, bool isCentered = false) {
+		public static void DrawText (SpriteBatch spriteBatch, Vector2 position, string text, Color color, float fontScale = 1, bool isCentered = false) {
 			// Calculate the width and height of the text
 			Vector2 textDimensions = Game1.font.MeasureString(text) * fontScale;
 
