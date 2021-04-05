@@ -22,16 +22,12 @@ namespace MonoZombie {
 			get;
 		}
 
-		public Tile (TileType tileType, Vector2 position, bool isWalkable = true) : base(GetTexture(tileType), position) {
+		public Tile (TileType tileType, Vector2 centerPosition, bool isWalkable = true) : base(GetTexture(tileType), centerPosition) {
 			IsWalkable = isWalkable;
 		}
 
 		public override void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
 
-		}
-
-		public new void Draw (SpriteBatch spriteBatch) {
-			SpriteManager.DrawImage(spriteBatch, texture, position, scale: SpriteManager.ObjectScale);
 		}
 
 		/*

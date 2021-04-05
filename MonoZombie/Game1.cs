@@ -89,15 +89,15 @@ namespace MonoZombie {
 			IsMouseVisible = true;
 		}
 
-        protected override void Initialize() {
-            // TODO: Add your initialization logic here
-            menuState = MenuState.MainMenu;
-            gameState = GameState.Playing;
-            currency = 0;
-            roundNumber = 0;
-            listOfZombies = new List<Enemy>();
-            listOfTurrets = new List<Turret>();
-            aZombieIsAlive = false;
+		protected override void Initialize ( ) {
+			// TODO: Add your initialization logic here
+			menuState = MenuState.MainMenu;
+			gameState = GameState.Playing;
+			currency = 0;
+			roundNumber = 0;
+			listOfZombies = new List<Enemy>( );
+			listOfTurrets = new List<Turret>( );
+			aZombieIsAlive = false;
 
 			base.Initialize( );
 		}
@@ -269,7 +269,7 @@ namespace MonoZombie {
 			switch (menuState) {
 				case MenuState.MainMenu:
 					// Draw menu UI objects
-					SpriteManager.DrawImage(_spriteBatch, titleTexture, screenDimensions * new Vector2(0.5f, 0.25f), centered: true, scale: SpriteManager.UIScale);
+					SpriteManager.DrawImage(_spriteBatch, titleTexture, screenDimensions * new Vector2(0.5f, 0.25f), scale: SpriteManager.UIScale, isCentered: true);
 					menuPlayButton.Draw(_spriteBatch);
 
 					break;
@@ -293,9 +293,7 @@ namespace MonoZombie {
                             foreach (Turret turret in listOfTurrets)
                             {
                                 turret.Draw(_spriteBatch, Color.White);
-                            }
-
-                            player.Draw(_spriteBatch);
+                            
 							*/
 
 							// Draw UI elements
