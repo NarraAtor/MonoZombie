@@ -70,11 +70,14 @@ namespace MonoZombie {
 		private static Texture2D baseImage;
 		private static Texture2D playerImage;
 		private static Texture2D enemyImage;
+		private static Texture2D bulletImage;
 		private static List<Turret> listOfTurrets;
 		private static List<Enemy> listOfZombies;
+		private static List<Bullet> listOfBullets;
 		private static Turret turret;
 		private static Player player;
 		private static Enemy zombie;
+		//private static Bullet bullet;
 		private static int currency;
 		private static int roundNumber;
 		private static bool roundIsOngoing;
@@ -100,6 +103,7 @@ namespace MonoZombie {
             roundNumber = 0;
             listOfZombies = new List<Enemy>();
             listOfTurrets = new List<Turret>();
+			listOfBullets = new List<Bullet>();
             aZombieIsAlive = false;
 
 			base.Initialize( );
@@ -113,6 +117,7 @@ namespace MonoZombie {
 			turretImage = Content.Load<Texture2D>("TurretHead");
 			playerImage = Content.Load<Texture2D>("playerproto");
 			enemyImage = Content.Load<Texture2D>("zombieproto");
+			bulletImage = Content.Load<Texture2D>("bullet");
 
 			// Load map tile textures
 			grassTextures = new Texture2D[ ] {
@@ -232,6 +237,17 @@ namespace MonoZombie {
 
 							player.Update(gameTime, currMouseState, currKeyboardState);
 
+							//Code to test the bullet being created
+							if (currMouseState.LeftButton == ButtonState.Pressed)
+							{
+								listOfBullets.Add(player.Shoot(bulletImage, currMouseState));
+							}
+
+							foreach(Bullet bullet in listOfBullets)
+							{
+								bullet.Move();
+							}
+
 							if (GetKeyDown(Keys.Escape)) {
 								gameState = GameState.Pause;
 							}
@@ -299,6 +315,12 @@ namespace MonoZombie {
 
 							// Draw the player
 							player.Draw(_spriteBatch);
+
+							// Draw the bullets
+							foreach(Bullet bullet in listOfBullets)
+							{
+								bullet.Draw(_spriteBatch);
+							}
 
 							/*
 							turret.Draw(_spriteBatch, Color.White);

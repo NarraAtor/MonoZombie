@@ -7,6 +7,11 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MonoZombie
 {
+    /// <summary>
+    /// Author: Frank, Eric, Jack
+    /// Purpose: Manages player values and mechanics like shooting.
+    /// Restrictions:
+    /// </summary>
     public class Player : GameObject
     {
         private int playerSpeed;              // defines how much player moves in one direction
@@ -69,7 +74,7 @@ namespace MonoZombie
         /// </summary>
         /// <param name="bulletTexture"> Bullet texture parameter </param>
         /// <returns> </returns>
-        public Bullet Shoot(Texture2D bulletTexture)
+        public Bullet Shoot(Texture2D bulletTexture, MouseState mouse)
         {
             /*
              * Possible implementations:
@@ -82,10 +87,13 @@ namespace MonoZombie
              */
 
 
-            double speedX = Math.Cos(angle);
-            double speedY = Math.Sin(angle);
+            //double speedX = Math.Cos(angle);
+            //double speedY = Math.Sin(angle);
+            //
+            //return new Bullet(bulletTexture, new Vector2(X, Y), speedX, speedY, 15);
 
-            return new Bullet(bulletTexture, new Vector2(X, Y), speedX, speedY, 15);
+                System.Diagnostics.Debug.WriteLine("Shot a bullet");
+                return new Bullet(bulletTexture, new Vector2(X, Y), angle, 15);
         }
 
         public void TakeDamage(int damage) { health -= damage; }
