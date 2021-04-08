@@ -79,10 +79,10 @@ namespace MonoZombie {
 		public void Draw (SpriteBatch spriteBatch, Player player) {
 			for (int x = 0; x < Width; x++) {
 				for (int y = 0; y < Height; y++) {
-					// * TEST * if the player intersects with the tile, dont draw it to show that there is collision detection
-					if (!tiles[x, y].CheckCollision(player)) {
-						tiles[x, y].Draw(spriteBatch);
-					}
+					// if the player intersects with the tile run dection code
+					tiles[x, y].CheckCollision(player);					
+					
+					tiles[x, y].Draw(spriteBatch);
 				}
 			}
 		}

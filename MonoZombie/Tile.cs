@@ -37,8 +37,50 @@ namespace MonoZombie {
 		/*
 		 * Overridden from the base GameObject class
 		 */
-		public new bool CheckCollision (GameObject other) {
-			return !IsWalkable && base.CheckCollision(other);
+		public new bool CheckCollision (GameObject other) 
+		{
+			if(IsWalkable==false)
+            {
+				//checks for collision between player and walls
+				if (Rect.Intersects(other.Rect))
+				{
+					//checks if collsion is on the left and right
+					if (Rectangle.Intersect(other.Rect, Rect).Width <= Rectangle.Intersect(other.Rect, Rect).Height)
+					{
+						//left case
+						if (other.Rect.X >= Rect.X)
+						{
+							other.X += Rectangle.Intersect(other.Rect, Rect).Width;
+							return true;
+						}
+						//right case
+						else
+						{
+							other.X -= Rectangle.Intersect(other.Rect, Rect).Width;
+							return true;
+						}
+					}
+					//vertical collsion
+					else
+					{
+						//top case
+						if (other.Y >= Rect.Y)
+						{
+							other.Y += Rectangle.Intersect(other.Rect, Rect).Height;
+							return true;
+						}
+						//bottom case
+						else if (other.Y <= Rect.Y)
+						{
+							other.Y -= Rectangle.Intersect(other.Rect, Rect).Height;
+							return true;
+						}
+					}
+					return true;
+				}
+				
+			}
+			return false;
 		}
 
 		/*

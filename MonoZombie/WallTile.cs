@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 //Matthew Sorrentino
 //Creates the walls and floors of the game map
-namespace MonoZombie
+/*namespace MonoZombie
 {
     public enum Tile
     {
@@ -138,4 +138,4 @@ namespace MonoZombie
             this.Collision(Game1.Player);
         }
     }
-}
+}*/
