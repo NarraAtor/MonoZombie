@@ -60,6 +60,9 @@ namespace MonoZombie {
 		// arrays to add variation to the map
 		public static Texture2D[ ] grassTextures;
 		public static Texture2D[ ] wallTextures;
+		public static Texture2D[ ] gravelTextures;
+		public static Texture2D[] lavaTextures;
+		public static Texture2D[] speedTextures;
 
 		private Map map;
 
@@ -122,6 +125,21 @@ namespace MonoZombie {
 				Content.Load<Texture2D>("WallTile1"),
 				Content.Load<Texture2D>("WallTile2"),
 				Content.Load<Texture2D>("WallTile3")
+			};
+
+			gravelTextures = new Texture2D[]
+			{
+				Content.Load<Texture2D>("Gravel")
+			};
+
+			lavaTextures = new Texture2D[]
+			{
+				Content.Load<Texture2D>("Lava")
+			};
+
+			speedTextures = new Texture2D[]
+			{
+				Content.Load<Texture2D>("Speed")
 			};
 
 			// Load fonts
