@@ -16,12 +16,12 @@ namespace MonoZombie
     {
         private int playerSpeed;              // defines how much player moves in one direction
         private int health;
-        private int attackSpd;
+        private float attackSpd;
 
         public int Health { get { return health; } set { health = value; } }
 
         public int PlayerSpeed { get { return playerSpeed; } set { playerSpeed = value; } }
-        public Player(int health, int attackSpd, Texture2D texture, Vector2 position, int playerSpeed) 
+        public Player(int health, float attackSpd, Texture2D texture, Vector2 position, int playerSpeed) 
             : base (texture, position, canRotate: true)
         { 
             this.health = health;
