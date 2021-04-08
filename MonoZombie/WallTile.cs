@@ -61,16 +61,45 @@ namespace MonoZombie
         /// <returns></returns>
         public bool Collision(Player other)
         {
-            float dx = Math.Abs(other.X- location.X);
-            float dy = Math.Abs(other.Y - location.Y); 
 
             switch (type)
             {
                 
                 case Tile.Wall:
                     {
+                      //checks for collision between player and walls
                       if(location.Intersects(other.RectangleCollider))
-                        {                            
+                        {
+                            //checks if collsion is on the left and right
+                            if (Rectangle.Intersect(other.RectangleCollider, location).Width <= Rectangle.Intersect(other.RectangleCollider, location).Height)
+                            {
+                                //left case
+                                if (other.RectangleCollider.X >= location.X)
+                                {
+                                    other.X += Rectangle.Intersect(other.RectangleCollider, location).Width;
+                                    
+                                }
+                                //right case
+                                else
+                                {
+                                    other.X -= Rectangle.Intersect(other.RectangleCollider, location).Width;
+                                    
+                                }
+                            }
+                            //vertical collsion
+                            else
+                            {
+                                //top case
+                                if (other.Y >= location.Y)
+                                {
+                                    other.Y += Rectangle.Intersect(other.RectangleCollider, location).Height;
+                                }
+                                //bottom case
+                                else if (other.Y <= location.Y)
+                                {
+                                    other.Y -= Rectangle.Intersect(other.RectangleCollider, location).Height;
+                                }
+                            }
                             return true;
                         }
                         return false;
@@ -101,11 +130,6 @@ namespace MonoZombie
 
         public void Draw(SpriteBatch sb, Color tint)
         {
-            if(Collision(Game1.Player))
-            {
-
-                return;
-            }
             sb.Draw(Image,location , tint);
         }
 
