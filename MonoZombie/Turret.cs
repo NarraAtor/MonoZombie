@@ -58,7 +58,7 @@ namespace MonoZombie
         {
             get { return price; }
         }
-        public Turret(TurretType type,Texture2D Base, Texture2D Head,int X,int Y) :base(Base,X,Y)
+        public Turret(TurretType type,Texture2D Base, Texture2D Head, Vector2 position) :base(Base, position, canRotate: true)
         {
             //goes through each of the diffrent turret types and then sets stats accordingly 
 
@@ -130,9 +130,9 @@ namespace MonoZombie
         /// <param name="target">the enemy to be checked</param>
         public void Detect(Enemy target)
         {
-           if(detector.Intersects(target.RectangleCollider))
+           if(detector.Intersects(target.Rect))
              {
-                Point center = new Point(target.X,target.Y);
+                Vector2 center = new Vector2(target.X,target.Y);
                 RotateTo(center);
                 target.Health-=damage; 
              }

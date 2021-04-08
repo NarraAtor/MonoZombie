@@ -11,43 +11,47 @@ using System.Text;
 namespace MonoZombie {
 	public abstract class GameObject {
 		protected Texture2D texture;
-		protected Point centerPosition;
+		protected Vector2 position;
+		protected bool canRotate;
 		protected float angle;
 
-		public Rectangle RectangleCollider {
-			get;
-			set;
+		public Rectangle Rect {
+			get {
+				// Calculate the dimensions and position of the collision rectangle
+				int rectWidth = (int) (texture.Width * SpriteManager.ObjectScale);
+				int rectHeight = (int) (texture.Height * SpriteManager.ObjectScale);
+				int rectX = X;
+				int rectY = Y;
+
+				// If the object can rotate, the position that it is drawn at is going to be at the center of the image
+				// because of how Monogame rotates images. Therefore, if the image cant be rotated (for example, a map tile),
+				// we need to adjust the rectangle position so this rectangle correctly detects collision.
+				if (canRotate) {
+					rectX -= rectWidth / 2;
+					rectY -= rectHeight / 2;
+				}
+
+				return new Rectangle(rectX, rectY, rectWidth, rectHeight);
+			}
 		}
 
 		public int X {
 			get {
-				return centerPosition.X;
+				return (int) position.X;
 			}
 
 			set {
-				centerPosition.X = value;
+				position.X = value;
 			}
 		}
 
 		public int Y {
 			get {
-				return centerPosition.Y;
+				return (int) position.Y;
 			}
 
 			set {
-				centerPosition.Y = value;
-			}
-		}
-
-		public int DrawX {
-			get {
-				return centerPosition.X + (texture.Width / 2);
-			}
-		}
-
-		public int DrawY {
-			get {
-				return centerPosition.Y + (texture.Height / 2);
+				position.Y = value;
 			}
 		}
 
@@ -57,11 +61,10 @@ namespace MonoZombie {
 			}
 		}
 
-		public GameObject (Texture2D texture, int x, int y) {
+		public GameObject (Texture2D texture, Vector2 position, bool canRotate = false) {
 			this.texture = texture;
-
-			centerPosition = new Point(x, y);
-			RectangleCollider = new Rectangle(x, y, texture.Width, texture.Height);
+			this.position = position;
+			this.canRotate = canRotate;
 		}
 
 		/*
@@ -76,7 +79,7 @@ namespace MonoZombie {
 		 * return					:
 		 */
 		public virtual void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
-			RectangleCollider = new Rectangle(X, Y, texture.Width, texture.Height);
+
 		}
 
 		/*
@@ -91,9 +94,7 @@ namespace MonoZombie {
 		 * return					:
 		 */
 		public virtual void Draw (SpriteBatch spriteBatch) {
-			Rectangle drawRect = new Rectangle(DrawX, DrawY, texture.Width, texture.Height);
-
-			spriteBatch.Draw(texture, drawRect, null, Color.White, angle, new Vector2(texture.Width / 2, texture.Height / 2), SpriteEffects.None, 1f);
+			SpriteManager.DrawImage(spriteBatch, texture, position, angle: Angle, scale: SpriteManager.ObjectScale);
 		}
 
 		/*
@@ -105,7 +106,7 @@ namespace MonoZombie {
 		 * 
 		 * return					: 
 		 */
-		public void RotateTo (Point face) {
+		public void RotateTo (Vector2 face) {
 			// Get the position of the other object with the game object as the origin instead of the top left corner of the screen
 			Vector2 posObjectAsOrigin = new Vector2(face.X - X, Y - face.Y);
 
@@ -113,7 +114,7 @@ namespace MonoZombie {
 			// This is to make sure we don't divide by 0 and crash the game
 			if (posObjectAsOrigin != Vector2.Zero) {
 				// Get this distance between the player and the other position
-				float distanceToPoint = Distance(face, centerPosition);
+				float distanceToPoint = Distance(face, position);
 
 				// Calculate the angle between the other point and the player
 				// The reason this is done twice is because Cos is always positive and Sin is both positive and negative.
@@ -128,13 +129,13 @@ namespace MonoZombie {
 				// If either of the angles are negative, do not calculate the angle because it will just be 0
 				if (sinAngle != 0 && cosAngle != 0) {
 					// Set the rotation based on the calculated angle
-					angle = (float) (-Math.PI / 2) + (sinMod * cosAngle);
+					angle = (float) Math.PI + (sinMod * cosAngle);
 				}
 			}
 		}
 
 		public bool CheckCollision (GameObject other) {
-			throw new NotImplementedException( );
+			return other.Rect.Intersects(Rect);
 		}
 
 		/*
@@ -147,7 +148,7 @@ namespace MonoZombie {
 		 * 
 		 * return double			: The distance (in pixels) between the two points
 		 */
-		protected float Distance (Point point1, Point point2) {
+		protected float Distance (Vector2 point1, Vector2 point2) {
 			return MathF.Sqrt(MathF.Pow(point1.X - point2.X, 2) + MathF.Pow(point1.Y - point2.Y, 2));
 		}
 	}

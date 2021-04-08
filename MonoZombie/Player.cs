@@ -16,8 +16,8 @@ namespace MonoZombie
         public int Health { get { return health; } set { health = value; } }
 
         public int PlayerSpeed { get { return playerSpeed; } set { playerSpeed = value; } }
-        public Player(int health, int attackSpd, Texture2D texture, int x, int y, int playerSpeed) 
-            : base (texture, x, y)
+        public Player(int health, int attackSpd, Texture2D texture, Vector2 position, int playerSpeed) 
+            : base (texture, position, canRotate: true)
         { 
             this.health = health;
             this.attackSpd = attackSpd;
@@ -29,24 +29,23 @@ namespace MonoZombie
             Move(keyboard);
 
             // Rotate the player to look at the mouse
-            RotateTo(mouse.Position);
-
-            base.Update(gameTime, mouse, keyboard);
-        }
+            RotateTo(mouse.Position.ToVector2( ));
+		}
 
 
-        /// <summary>
-        /// Moves the player depending on keys pressed;
-        /// Note that playerSpeed squared is the speed
-        /// of the player if they were to move in one direction,
-        /// and playerSpeed will acount for movement in both directions
-        /// </summary>
-        /// <param name="key"></param>
-        public void Move(KeyboardState key)
-        {
+        /*
+         * Author : Frank Alfano
+         * 
+         * Move the player based on keyboard input
+         * 
+         * KeyboardState keyboard               : The current keyboard state
+         * 
+         * return                               :
+         */
+        public void Move(KeyboardState keyboard) {
             // Get which direction the player is trying to move
-            int moveX = (key.IsKeyDown(Keys.D) ? 1 : 0) + (key.IsKeyDown(Keys.A) ? -1 : 0);
-            int moveY = (key.IsKeyDown(Keys.W) ? -1 : 0) + (key.IsKeyDown(Keys.S) ? 1 : 0);
+            int moveX = (keyboard.IsKeyDown(Keys.D) ? 1 : 0) + (keyboard.IsKeyDown(Keys.A) ? -1 : 0);
+            int moveY = (keyboard.IsKeyDown(Keys.W) ? -1 : 0) + (keyboard.IsKeyDown(Keys.S) ? 1 : 0);
 
             // Get the movement vector of the player and make sure it is normalized
             // Normalizing the vector makes sure that when the player is moving diagonally they are moving the same
@@ -86,7 +85,7 @@ namespace MonoZombie
             double speedX = Math.Cos(angle);
             double speedY = Math.Sin(angle);
 
-            return new Bullet(bulletTexture, X, Y, speedX, speedY, 15);
+            return new Bullet(bulletTexture, new Vector2(X, Y), speedX, speedY, 15);
         }
 
         public void TakeDamage(int damage) { health -= damage; }

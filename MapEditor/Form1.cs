@@ -20,6 +20,9 @@ namespace MapEditor
         ZombieSpawn
     }
 
+    //Ken Adachi-Bartholomay
+    //Purpose: Displays the initial options 
+    //Restrictions: Need to update height and width restrictions as necessary
     public partial class Form1 : Form
     {
         public Form1()

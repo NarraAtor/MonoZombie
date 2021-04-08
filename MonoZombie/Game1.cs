@@ -4,93 +4,90 @@ using Microsoft.Xna.Framework.Input;
 using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System;
 
-namespace MonoZombie
-{
-    public enum MenuState
-    {
-        MainMenu,
-        Game,
-        GameOver
-    }
+namespace MonoZombie {
+	public enum MenuState {
+		MainMenu,
+		Game,
+		GameOver
+	}
 
-    public enum GameState
-    {
-        Playing,
-        Pause,
-        Shop
-    }
+	public enum GameState {
+		Playing,
+		Pause,
+		Shop
+	}
 
-    /// <summary>
-    /// Author: Eric Fotang
-    /// Purpose: Manages game states and calls other classes and methods to do their job. 
-    /// Restrictions:
-    /// </summary>
-    public class Game1 : Game
-    {
-        private GraphicsDeviceManager _graphics;
-        private SpriteBatch _spriteBatch;
-        private MenuState menuState;
-        private GameState gameState;
+	/// <summary>
+	/// Author: Eric Fotang
+	/// Purpose: Manages game states and calls other classes and methods to do their job. 
+	/// Restrictions:
+	/// </summary>
+	public class Game1 : Game {
+		private GraphicsDeviceManager _graphics;
+		private SpriteBatch _spriteBatch;
 
-        private KeyboardState currKeyboardState;
-        private KeyboardState prevKeyboardState;
-        private MouseState currMouseState;
+		private MenuState menuState;
+		private GameState gameState;
 
-        //Test variables
-        private string currentStateTEST;
+		private KeyboardState currKeyboardState;
+		private KeyboardState prevKeyboardState;
+		private MouseState currMouseState;
 
-        private static Vector2 screenDimensions;
+		//Test variables
+		private string currentStateTEST;
 
-        // Fonts
-        public static SpriteFont font;
+		private static Vector2 screenDimensions;
 
-        // UI Textures
-        public static Texture2D titleTexture;
-        public static Texture2D buttonTexture;
-        public static Texture2D tabTexture;
+		// Fonts
+		public static SpriteFont font;
 
-        // UI Button Variables
-        private UIButton menuPlayButton;
-        private UIButton menuQuitButton;
-        private UIButton pauseResumeButton;
-        private UIButton pauseMenuButton;
-        private UIButton gameOverMenuButton;
+		// UI Textures
+		public static Texture2D titleTexture;
+		public static Texture2D buttonTexture;
+		public static Texture2D tabTexture;
 
-        //Properties for WallTile
-        public static Texture2D GrassProperty1 { get; set; }
-        public static Texture2D GrassProperty2 { get; set; }
-        public static Texture2D GrassProperty3 { get; set; }
-        public static Texture2D WallProperty1 { get; set; }
-        public static Texture2D WallProperty2 { get; set; }
-        public static Texture2D WallProperty3 { get; set; }
+		// UI Button Variables
+		private UIButton menuPlayButton;
+		private UIButton menuQuitButton;
+		private UIButton pauseResumeButton;
+		private UIButton pauseMenuButton;
+		private UIButton gameOverMenuButton;
 
-        private static Texture2D turretImage;
-        private static Texture2D baseImage;
-        private static Texture2D playerImage;
-        private static Texture2D enemyImage;
-        private static List<WallTile> listOfTiles;
-        private static List<Enemy> listOfZombies;
-        private static List<Turret> listOfTurrets;
-        private static Turret turret;
-        private static Player player;
-        private static Enemy zombie;
-        private static int currency;
-        private static int roundNumber;
-        private static bool roundIsOngoing;
-        private static bool aZombieIsAlive;
+		// Map Tile Texture Arrays
+		// * These are arrays because when a tile is created, it picks a random texture from these
+		// arrays to add variation to the map
+		public static Texture2D[ ] grassTextures;
+		public static Texture2D[ ] wallTextures;
 
-        public static Player Player { get { return player; } }
+		private Map map;
 
-        //Adjustment Variables
-        private int tileWidth;
+		private static Texture2D turretImage;
+		private static Texture2D baseImage;
+		private static Texture2D playerImage;
+		private static Texture2D enemyImage;
+		private static List<Turret> listOfTurrets;
+		private static List<Enemy> listOfZombies;
+		private static Turret turret;
+		private static Player player;
+		private static Enemy zombie;
+		private static int currency;
+		private static int roundNumber;
+		private static bool roundIsOngoing;
+		private static bool aZombieIsAlive;
 
-        public Game1()
-        {
-            _graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
-            IsMouseVisible = true;
-        }
+		public static Player Player {
+			get {
+				return player;
+			}
+		}
+
+		public Game1 ( ) {
+			_graphics = new GraphicsDeviceManager(this);
+			Content.RootDirectory = "Content";
+			IsMouseVisible = true;
+		}
 
         protected override void Initialize() {
             // TODO: Add your initialization logic here
@@ -98,153 +95,101 @@ namespace MonoZombie
             gameState = GameState.Playing;
             currency = 0;
             roundNumber = 0;
-            listOfTiles = new List<WallTile>();
             listOfZombies = new List<Enemy>();
             listOfTurrets = new List<Turret>();
             aZombieIsAlive = false;
 
-            base.Initialize();
-        }
+			base.Initialize( );
+		}
 
-        protected override void LoadContent()
-        {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
+		protected override void LoadContent ( ) {
+			_spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
-            baseImage = Content.Load<Texture2D>("TurretBase");
-            turretImage = Content.Load<Texture2D>("TurretHead");
-            playerImage = Content.Load<Texture2D>("playerproto");
-            enemyImage = Content.Load<Texture2D>("zombieproto");
-            GrassProperty1 = Content.Load<Texture2D>("GrassTile1");
-            GrassProperty2 = Content.Load<Texture2D>("GrassTile2");
-            GrassProperty3 = Content.Load<Texture2D>("GrassTile3");
-            WallProperty1 = Content.Load<Texture2D>("WallTile1");
-            WallProperty2 = Content.Load<Texture2D>("WallTile2");
-            WallProperty3 = Content.Load<Texture2D>("WallTile3");
+			// Load textures for game objects
+			baseImage = Content.Load<Texture2D>("TurretBase");
+			turretImage = Content.Load<Texture2D>("TurretHead");
+			playerImage = Content.Load<Texture2D>("playerproto");
+			enemyImage = Content.Load<Texture2D>("zombieproto");
 
-            // Load fonts
-            font = Content.Load<SpriteFont>("5Pixel");
+			// Load map tile textures
+			grassTextures = new Texture2D[ ] {
+				Content.Load<Texture2D>("GrassTile1"),
+				Content.Load<Texture2D>("GrassTile2"),
+				Content.Load<Texture2D>("GrassTile3")
+			};
 
-            // Load UI Textures
-            titleTexture = Content.Load<Texture2D>("title");
-            buttonTexture = Content.Load<Texture2D>("button");
-            tabTexture = Content.Load<Texture2D>("tab");
+			wallTextures = new Texture2D[ ] {
+				Content.Load<Texture2D>("WallTile1"),
+				Content.Load<Texture2D>("WallTile2"),
+				Content.Load<Texture2D>("WallTile3")
+			};
 
-            //Texture reliant intitialization
-            turret = new Turret(TurretType.Archer, baseImage, turretImage, _graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2);
-            player = new Player(100, 100, playerImage, _graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, 3);
-            zombie = new Enemy(enemyImage, (_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2, 100, 1, 5);
+			// Load fonts
+			font = Content.Load<SpriteFont>("5Pixel");
 
-            //test zombie list
-            listOfZombies.Add(zombie);
-            //test turret list
-            listOfTurrets.Add(turret);
+			// Load UI Textures
+			titleTexture = Content.Load<Texture2D>("title");
+			buttonTexture = Content.Load<Texture2D>("button");
+			tabTexture = Content.Load<Texture2D>("tab");
 
-            //Load the map;
-            StreamReader reader = new StreamReader("../../../MapLevels\\CurrentMapDesign.level");
+			// Load the map
+			map = new Map("../../../MapLevels\\CurrentMapDesign.level");
 
-            string currentLine;
-            //Used for quickly changing the map's scale;
-            tileWidth = 45;
+			// Update the dimensions of the screen
+			screenDimensions = new Vector2(map.PixelWidth, map.PixelHeight);
 
-            //Get the dimensions
-            currentLine = reader.ReadLine( );
-            string[ ] mapDimensionStrings = currentLine.Split("|");
-            int[ ] mapDimensions = new int[ ] { int.Parse(mapDimensionStrings[0]), int.Parse(mapDimensionStrings[1]) };
+			_graphics.PreferredBackBufferWidth = (int) screenDimensions.X;
+			_graphics.PreferredBackBufferHeight = (int) screenDimensions.Y;
+			_graphics.ApplyChanges( );
 
-            // Update the dimensions of the screen
-            screenDimensions = new Vector2(mapDimensions[0] * tileWidth, mapDimensions[1] * tileWidth);
-            
-            _graphics.PreferredBackBufferWidth = (int) screenDimensions.X;
-            _graphics.PreferredBackBufferHeight = (int) screenDimensions.Y;
-            _graphics.ApplyChanges( );
+			//Texture reliant intitialization
+			turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
+			player = new Player(100, 100, playerImage, screenDimensions / 2, 3);
+			zombie = new Enemy(enemyImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2), 100, 1, 5);
 
-            // Update the scale of the UI
-            UIElement.UIScale = 5;
+			// Create UI Buttons
+			menuPlayButton = new UIButton("Play", screenDimensions / 2, ( ) => {
+				menuState = MenuState.Game;
+				gameState = GameState.Playing;
+				roundIsOngoing = true;
+			}, true);
 
-            // Create UI Buttons
-            menuPlayButton = new UIButton("Play", screenDimensions / 2, () => {
-                menuState = MenuState.Game;
-                gameState = GameState.Playing;
-                roundIsOngoing = true;
-            }, true);
+			// test zombie list
+			// listOfZombies.Add(zombie);
 
-            int xPosition = 0;
-            int yPosition = 0;
-            while ((currentLine = reader.ReadLine( )) != null) {
-                switch (currentLine) {
-                    case "Grass":
-                        listOfTiles.Add(new WallTile(Tile.Grass,
-                            (_graphics.PreferredBackBufferWidth / mapDimensions[0]) * xPosition,
-                            (_graphics.PreferredBackBufferHeight / mapDimensions[1]) * yPosition,
-                            tileWidth,
-                            tileWidth
-                            ));
-                        break;
+			base.LoadContent( );
+		}
 
-                    case "Wall":
-                        listOfTiles.Add(new WallTile(Tile.Wall,
-                            (_graphics.PreferredBackBufferWidth / mapDimensions[0]) * xPosition,
-                            (_graphics.PreferredBackBufferHeight / mapDimensions[1]) * yPosition,
-                            tileWidth,
-                            tileWidth
-                            ));
-                        break;
-                }
+		protected override void Update (GameTime gameTime) {
+			// Get the current keyboard state
+			currKeyboardState = Keyboard.GetState( );
+			currMouseState = Mouse.GetState( );
 
-                //The map editor saves files by column,left to right.
-                if (yPosition == (mapDimensions[1] - 1))
-                {
-                    yPosition = 0;
-                    xPosition++;
-                }
-                else
-                {
-                    yPosition++;
-                }
+			switch (menuState) {
+				case MenuState.MainMenu:
+					currentStateTEST = "MainMenu";
 
+					// Update the menu UI elements
+					menuPlayButton.Update(gameTime, currMouseState);
 
-            }
+					break;
+				case MenuState.Game:
+					currentStateTEST = "Game -";
 
-            reader.Close( );
+					switch (gameState) {
+						case GameState.Playing:
+							currentStateTEST = "Game - Playing";
 
+							/*
+							//This code rewards the player when a zombie is killed and makes the round end when in contact with a zombie.
+							aZombieIsAlive = false;
 
-
-            base.LoadContent();
-        }
-
-        protected override void Update(GameTime gameTime)
-        {
-            // Get the current keyboard state
-            currKeyboardState = Keyboard.GetState();
-            currMouseState = Mouse.GetState( );
-
-            switch (menuState)
-            {
-                case MenuState.MainMenu:
-                    currentStateTEST = "MainMenu";
-
-                    // Update the menu UI elements
-                    menuPlayButton.Update(gameTime, Mouse.GetState( ));
-
-                    break;
-                case MenuState.Game:
-                    currentStateTEST = "Game -";
-                    switch (gameState)
-                    {
-                        case GameState.Playing:
-                            currentStateTEST = "Game - Playing";
-                            //This code rewards the player when a zombie is killed and makes the round end when in contact with a zombie.
-                            aZombieIsAlive = false;
-
-                            foreach (Enemy zombie in listOfZombies)
-                            {
-                                //If a zombie just died, set indicate that it is dead an increment currency.
-                                if (zombie.Health <= 0 && zombie.IsAlive)
-                                {
-                                    zombie.Die();
-                                    currency++;
-                                }
+							foreach (Enemy zombie in listOfZombies) {
+								//If a zombie just died, set indicate that it is dead an increment currency.
+								if (zombie.Health <= 0 && zombie.IsAlive) {
+									zombie.Die( );
+									currency++;
+								}
 
 
                                 if (zombie.IsAlive)
@@ -260,85 +205,85 @@ namespace MonoZombie
                                 }
                             }
 
-                            if (aZombieIsAlive!)
-                            {
-                                roundIsOngoing = false;
-                            }
+							if (aZombieIsAlive!) {
+								roundIsOngoing = false;
+							}
+							*/
 
-                            foreach(WallTile tile in listOfTiles)
-                            {
-                                tile.Update();
-                            }
+							map.Update(gameTime, currMouseState, currKeyboardState);
 
-                            player.Update(gameTime, currMouseState, currKeyboardState);
+							player.Update(gameTime, currMouseState, currKeyboardState);
 
-                            if (GetKeyDown(Keys.Escape))
-                            {
-                                gameState = GameState.Pause;
-                            }
+							if (GetKeyDown(Keys.Escape)) {
+								gameState = GameState.Pause;
+							}
 
-                            if (GetKeyDown(Keys.Tab))
-                            {
-                                gameState = GameState.Shop;
-                            }
-                            break;
-                        case GameState.Pause:
-                            currentStateTEST = "Game - Pause";
-                            if (GetKeyDown(Keys.Escape))
-                            {
-                                gameState = GameState.Playing;
-                            }
-                            break;
-                        case GameState.Shop:
-                            currentStateTEST = "Game - Shop";
-                            if (GetKeyDown(Keys.Tab))
-                            {
-                                gameState = GameState.Playing;
-                            }
-                            break;
-                    }
-                    break;
+							if (GetKeyDown(Keys.Tab)) {
+								gameState = GameState.Shop;
+							}
 
-                case MenuState.GameOver:
-                    currentStateTEST = "GameOver";
-                    //Single press bool so that you don't switch states twice.
-                    if (GetKeyDown(Keys.Enter))
-                    {
-                        menuState = MenuState.MainMenu;
-                    }
-                    break;
-            }
+							break;
+						case GameState.Pause:
+							currentStateTEST = "Game - Pause";
 
-            prevKeyboardState = currKeyboardState;
+							if (GetKeyDown(Keys.Escape)) {
+								gameState = GameState.Playing;
+							}
 
-            base.Update(gameTime);
-        }
+							break;
+						case GameState.Shop:
+							currentStateTEST = "Game - Shop";
 
-        protected override void Draw(GameTime gameTime)
-        {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+							if (GetKeyDown(Keys.Tab)) {
+								gameState = GameState.Playing;
+							}
 
-            // * These settings in SpriteBatch.Begin() prevent sprites from becoming blurry when scaled up. This
-            // means we can make pixel art images and import them into the game very small and then scale them up.
-            // This makes the images a lot easier to edit if we need to do that again.
-            _spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp);
+							break;
+					}
+					break;
 
-            switch (menuState)
-            {
-                case MenuState.MainMenu:
-                    // Draw menu UI objects
-                    UIElement.DrawImage(_spriteBatch, titleTexture, screenDimensions * new Vector2(0.5f, 0.25f), true);
-                    menuPlayButton.Draw(_spriteBatch);
+				case MenuState.GameOver:
+					currentStateTEST = "GameOver";
 
-                    break;
-                case MenuState.Game:
-                    switch (gameState)
-                    {
-                        case GameState.Playing:
-                            foreach (WallTile tile in listOfTiles)
-                            {
-                                tile.Draw(_spriteBatch, Color.White);
-                            }
+					if (GetKeyDown(Keys.Enter)) {
+						menuState = MenuState.MainMenu;
+					}
+
+					break;
+			}
+
+			// Update the past keyboard state to the current one as Update() has ended this frame
+			prevKeyboardState = currKeyboardState;
+
+			base.Update(gameTime);
+		}
+
+		protected override void Draw (GameTime gameTime) {
+			GraphicsDevice.Clear(Color.CornflowerBlue);
+
+			// * These settings in SpriteBatch.Begin() prevent sprites from becoming blurry when scaled up. This
+			// means we can make pixel art images and import them into the game very small and then scale them up.
+			// This makes the images a lot easier to edit if we need to do that again.
+			_spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp);
+
+			switch (menuState) {
+				case MenuState.MainMenu:
+					// Draw menu UI objects
+					SpriteManager.DrawImage(_spriteBatch, titleTexture, screenDimensions * new Vector2(0.5f, 0.25f), centered: true, scale: SpriteManager.UIScale);
+					menuPlayButton.Draw(_spriteBatch);
+
+					break;
+				case MenuState.Game:
+					switch (gameState) {
+						case GameState.Playing:
+							// Draw the map
+							map.Draw(_spriteBatch, player);
+
+							// Draw the player
+							player.Draw(_spriteBatch);
+
+							/*
+							turret.Draw(_spriteBatch, Color.White);
 
                             foreach(Enemy zombie in listOfZombies)
                             {
@@ -351,37 +296,49 @@ namespace MonoZombie
                             }
 
                             player.Draw(_spriteBatch);
+							*/
 
-                            // Draw UI elements
-                            UIElement.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), false);
-                            UIElement.DrawText(_spriteBatch, 0.5f, $"Currency: {currency}", Color.Black, new Vector2(30, 30), false);
-                            UIElement.DrawText(_spriteBatch, 0.5f, $"Round Number: {roundNumber}", Color.Black, new Vector2(30, 45), false);
-                            UIElement.DrawText(_spriteBatch, 0.5f, $"Player Health: {player.Health}", Color.Black, new Vector2(30, 60), false);
+							// Draw UI elements
+							SpriteManager.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), scale: SpriteManager.UIScale);
+							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Currency: {currency}", Color.Black, new Vector2(30, 30));
+							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Round Number: {roundNumber}", Color.Black, new Vector2(30, 45));
+							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Player Health: {player.Health}", Color.Black, new Vector2(30, 60));
+							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Zombie Timer: {zombie.Timer}", Color.Black, new Vector2(30, 75));
 
-                            //Test, draw zombie current health
-                            //UIElement.DrawText(_spriteBatch, 0.5f, $"Zombie Health: {zombie.Health}", Color.Black, new Vector2(30, 90), false);
+							break;
+						case GameState.Pause:
 
-                            break;
-                        case GameState.Pause:
-                            break;
-                        case GameState.Shop:
-                            break;
-                    }
-                    break;
-                case MenuState.GameOver:
-                    break;
-            }
+							break;
+						case GameState.Shop:
 
-            //Being used to test if states are switching properly.
-            _spriteBatch.DrawString(font, currentStateTEST, new Vector2(100, 100), Color.White);
+							break;
+					}
 
-            _spriteBatch.End();
+					break;
+				case MenuState.GameOver:
 
-            base.Draw(gameTime);
-        }
-    
-        private bool GetKeyDown (Keys key) {
-            return (currKeyboardState.IsKeyDown(key) && !prevKeyboardState.IsKeyDown(key));
+					break;
+			}
+
+			// Being used to test if states are switching properly
+			_spriteBatch.DrawString(font, currentStateTEST, new Vector2(15, 900), Color.White);
+
+			_spriteBatch.End( );
+
+			base.Draw(gameTime);
 		}
-    }
+
+		/*
+		 * Author : Frank Alfano
+		 * 
+		 * Get whether a key was pressed this current frame
+		 * 
+		 * Keys key					: The key to check
+		 * 
+		 * return bool				: Whether or not the key was pressed this frame
+		 */
+		private bool GetKeyDown (Keys key) {
+			return (currKeyboardState.IsKeyDown(key) && !prevKeyboardState.IsKeyDown(key));
+		}
+	}
 }
