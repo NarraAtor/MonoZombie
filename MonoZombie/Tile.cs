@@ -85,13 +85,16 @@ namespace MonoZombie {
 					}
 
 				case TileType.Gravel:
-					return null;
+					return Game1.gravelTextures[0];
+
 				case TileType.Lava:
-					return null;
+					return Game1.lavaTextures[0];
+
 				case TileType.Speed:
-					return null;
+					return Game1.speedTextures[0];
+
 				default:
-					return null;
+					return Game1.grassTextures[0];
 			}
 		}
 	}
