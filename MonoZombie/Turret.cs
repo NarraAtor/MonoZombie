@@ -36,17 +36,17 @@ namespace MonoZombie
         //Eric
         private Rectangle detector;//the detection range of the turret
         
-        public int X
-        {
-            get { return Holder.X; }
-            set { Holder.X = value; }
-        }
-
-        public int Y
-        {
-            get { return Holder.Y; }
-            set { Holder.Y = value; }
-        }
+        //public int TurretX
+        //{
+        //    get { return Holder.X; }
+        //    set { Holder.X = value; }
+        //}
+        //
+        //public int TurretY
+        //{
+        //    get { return Holder.Y; }
+        //    set { Holder.Y = value; }
+        //}
 
         public int Timer
         {
@@ -62,8 +62,8 @@ namespace MonoZombie
         {
             //goes through each of the diffrent turret types and then sets stats accordingly 
 
-            Holder.X=X;
-            Holder.Y=Y;
+            Holder.X = X;
+            Holder.Y= Y;
             Holder.Width = 50;
             Holder.Height = 50;
             turret = Base;
@@ -84,7 +84,9 @@ namespace MonoZombie
                         damage = 100;
                         price = 300;
                         //TODO: Adjust the rectangle so it is centered
-                        detector = new Rectangle(Holder.X, Holder.Y, range, range);
+                        //detector = new Rectangle(Holder.X, Holder.Y, range, range);
+                        detector = new Rectangle(new Point(Holder.X, Holder.Y), new Point(Holder.Width, Holder.Height));
+                        detector.Inflate(range, range);
                         break;
                     }
 
@@ -140,8 +142,11 @@ namespace MonoZombie
 
         public void Draw(SpriteBatch sb, Color tint)
         {
+            sb.Draw(Game1.gravelTextures[0], detector, Color.White);
             sb.Draw(turret, Holder, tint);
             sb.Draw(GunPart, Holder, tint);
+
+
         }
 
         public void Update(Enemy target)

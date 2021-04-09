@@ -68,7 +68,7 @@ namespace MonoZombie {
 
 		private static Texture2D turretImage;
 		private static Texture2D baseImage;
-		private static Texture2D playerImage;
+		public static Texture2D playerImage;
 		private static Texture2D enemyImage;
 		private static Texture2D bulletImage;
 		private static List<Turret> listOfTurrets;
@@ -77,7 +77,6 @@ namespace MonoZombie {
 		private static Turret turret;
 		private static Player player;
 		private static Enemy zombie;
-		//private static Bullet bullet;
 		private static int currency;
 		private static int roundNumber;
 		private static bool roundIsOngoing;
@@ -178,7 +177,7 @@ namespace MonoZombie {
 			_graphics.ApplyChanges( );
 
 			//Texture reliant intitialization
-			turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
+			turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 70, (_graphics.PreferredBackBufferHeight / 2) + 0));
 			player = new Player(100, 5, playerImage, screenDimensions / 2, 3);
 			zombie = new Enemy(enemyImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2), 100, 1, 5);
 
@@ -190,7 +189,10 @@ namespace MonoZombie {
 			}, true);
 
 			// test zombie list
-			// listOfZombies.Add(zombie);
+			listOfZombies.Add(zombie);
+
+			//test turret list
+			listOfTurrets.Add(turret);
 
 			base.LoadContent( );
 		}
@@ -215,7 +217,12 @@ namespace MonoZombie {
 						case GameState.Playing:
 							currentStateTEST = "Game - Playing";
 
-							/*
+							//Check if the player is dead
+							//if(player.Health <= 0)
+							//{
+							//	menuState = MenuState.GameOver;
+							//}
+							
 							//This code rewards the player when a zombie is killed and makes the round end when in contact with a zombie.
 							aZombieIsAlive = false;
 
@@ -243,13 +250,12 @@ namespace MonoZombie {
 							if (aZombieIsAlive!) {
 								roundIsOngoing = false;
 							}
-							*/
+							
 
 							map.Update(gameTime, currMouseState, currKeyboardState);
 
 							player.Update(gameTime, currMouseState, currKeyboardState);
 
-							//Code to test the bullet being created
 							if (currMouseState.LeftButton == ButtonState.Pressed)
 							{
 								player.Shoot(bulletImage, currMouseState, gameTime);
@@ -334,9 +340,7 @@ namespace MonoZombie {
 								bullet.Draw(_spriteBatch);
 							}
 
-							/*
-							turret.Draw(_spriteBatch, Color.White);
-
+							
                             foreach(Enemy zombie in listOfZombies)
                             {
                                 zombie.Draw(_spriteBatch);
@@ -348,7 +352,7 @@ namespace MonoZombie {
                             }
 
                             player.Draw(_spriteBatch);
-							*/
+							
 
 							// Draw UI elements
 							SpriteManager.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), scale: SpriteManager.UIScale);
@@ -356,6 +360,7 @@ namespace MonoZombie {
 							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Round Number: {roundNumber}", Color.Black, new Vector2(30, 45));
 							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Player Health: {player.Health}", Color.Black, new Vector2(30, 60));
 							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Zombie Timer: {zombie.Timer}", Color.Black, new Vector2(30, 75));
+							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Zombie Health: {zombie.Health}", Color.Black, new Vector2(30, 90));
 
 							break;
 						case GameState.Pause:
