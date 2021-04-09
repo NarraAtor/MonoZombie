@@ -16,16 +16,17 @@ namespace MonoZombie
     {
         private int playerSpeed;              // defines how much player moves in one direction
         private int health;
-        private float attackSpd;
+        private double attackSpdTimer;
+        private double attacksPerSecond;
 
         public int Health { get { return health; } set { health = value; } }
 
         public int PlayerSpeed { get { return playerSpeed; } set { playerSpeed = value; } }
-        public Player(int health, float attackSpd, Texture2D texture, Vector2 position, int playerSpeed) 
+        public Player(int health, double attacksPerSecond, Texture2D texture, Vector2 position, int playerSpeed) 
             : base (texture, position, canRotate: true)
         { 
             this.health = health;
-            this.attackSpd = attackSpd;
+            this.attacksPerSecond = attacksPerSecond;
             this.playerSpeed = playerSpeed;
         }
 
@@ -35,7 +36,10 @@ namespace MonoZombie
 
             // Rotate the player to look at the mouse
             RotateTo(mouse.Position.ToVector2( ));
-		}
+
+            attackSpdTimer += gameTime.ElapsedGameTime.TotalSeconds;
+
+        }
 
 
         /*
@@ -74,7 +78,7 @@ namespace MonoZombie
         /// </summary>
         /// <param name="bulletTexture"> Bullet texture parameter </param>
         /// <returns> </returns>
-        public Bullet Shoot(Texture2D bulletTexture, MouseState mouse)
+        public void Shoot(Texture2D bulletTexture, MouseState mouse, GameTime gameTime)
         {
             /*
              * Possible implementations:
@@ -92,8 +96,12 @@ namespace MonoZombie
             //
             //return new Bullet(bulletTexture, new Vector2(X, Y), speedX, speedY, 15);
 
-                System.Diagnostics.Debug.WriteLine("Shot a bullet");
-                return new Bullet(bulletTexture, new Vector2(X, Y), angle, 15);
+            if(attackSpdTimer >= 1/attacksPerSecond)
+            {
+                Game1.ListOfBullets.Add( new Bullet(bulletTexture, new Vector2(X, Y), angle, 15));
+                attackSpdTimer = 0;
+            }
+
         }
 
         public void TakeDamage(int damage) { health -= damage; }

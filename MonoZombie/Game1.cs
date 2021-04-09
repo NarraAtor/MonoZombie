@@ -89,6 +89,18 @@ namespace MonoZombie {
 			}
 		}
 
+		public static List<Bullet> ListOfBullets
+		{
+			get
+			{
+				return listOfBullets;
+			}
+			set
+			{
+				listOfBullets = value;
+			}
+		}
+
 		public Game1 ( ) {
 			_graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
@@ -167,7 +179,7 @@ namespace MonoZombie {
 
 			//Texture reliant intitialization
 			turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
-			player = new Player(100, 100, playerImage, screenDimensions / 2, 3);
+			player = new Player(100, 5, playerImage, screenDimensions / 2, 3);
 			zombie = new Enemy(enemyImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2), 100, 1, 5);
 
 			// Create UI Buttons
@@ -240,7 +252,7 @@ namespace MonoZombie {
 							//Code to test the bullet being created
 							if (currMouseState.LeftButton == ButtonState.Pressed)
 							{
-								listOfBullets.Add(player.Shoot(bulletImage, currMouseState));
+								player.Shoot(bulletImage, currMouseState, gameTime);
 							}
 
 							foreach(Bullet bullet in listOfBullets)
