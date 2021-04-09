@@ -35,6 +35,8 @@ namespace MonoZombie {
 		private KeyboardState prevKeyboardState;
 		private MouseState currMouseState;
 
+		private bool isPaused;
+
 		//Test variables
 		private string currentStateTEST;
 
@@ -99,6 +101,7 @@ namespace MonoZombie {
             listOfTurrets = new List<Turret>();
             aZombieIsAlive = false;
 
+			isPaused = false;
 			base.Initialize( );
 		}
 
@@ -153,6 +156,11 @@ namespace MonoZombie {
 				gameState = GameState.Playing;
 				roundIsOngoing = true;
 			}, true);
+			pauseResumeButton = new UIButton("Resume", screenDimensions / 2, () =>
+			  {
+				  gameState = GameState.Pause;
+				  roundIsOngoing = true;
+			  }, true);
 
 			// test zombie list
 			// listOfZombies.Add(zombie);
@@ -276,38 +284,37 @@ namespace MonoZombie {
 				case MenuState.Game:
 					switch (gameState) {
 						case GameState.Playing:
-							// Draw the map
-							map.Draw(_spriteBatch, player);
+								// Draw the map
+								map.Draw(_spriteBatch, player);
 
-							// Draw the player
-							player.Draw(_spriteBatch);
+								// Draw the player
+								player.Draw(_spriteBatch);
 
-							/*
-							turret.Draw(_spriteBatch, Color.White);
+								/*
+								turret.Draw(_spriteBatch, Color.White);
 
-                            foreach(Enemy zombie in listOfZombies)
-                            {
-                                zombie.Draw(_spriteBatch);
-                            }
+								foreach(Enemy zombie in listOfZombies)
+								{
+									zombie.Draw(_spriteBatch);
+								}
 
-                            foreach (Turret turret in listOfTurrets)
-                            {
-                                turret.Draw(_spriteBatch, Color.White);
-                            }
+								foreach (Turret turret in listOfTurrets)
+								{
+									turret.Draw(_spriteBatch, Color.White);
+								}
 
-                            player.Draw(_spriteBatch);
-							*/
+								player.Draw(_spriteBatch);
+								*/
 
-							// Draw UI elements
-							SpriteManager.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), scale: SpriteManager.UIScale);
-							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Currency: {currency}", Color.Black, new Vector2(30, 30));
-							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Round Number: {roundNumber}", Color.Black, new Vector2(30, 45));
-							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Player Health: {player.Health}", Color.Black, new Vector2(30, 60));
-							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Zombie Timer: {zombie.Timer}", Color.Black, new Vector2(30, 75));
-
+								// Draw UI elements
+								SpriteManager.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), scale: SpriteManager.UIScale);
+								SpriteManager.DrawText(_spriteBatch, 0.5f, $"Currency: {currency}", Color.Black, new Vector2(30, 30));
+								SpriteManager.DrawText(_spriteBatch, 0.5f, $"Round Number: {roundNumber}", Color.Black, new Vector2(30, 45));
+								SpriteManager.DrawText(_spriteBatch, 0.5f, $"Player Health: {player.Health}", Color.Black, new Vector2(30, 60));
+								SpriteManager.DrawText(_spriteBatch, 0.5f, $"Zombie Timer: {zombie.Timer}", Color.Black, new Vector2(30, 75));
 							break;
 						case GameState.Pause:
-
+							DrawPauseMenu();
 							break;
 						case GameState.Shop:
 
@@ -340,5 +347,21 @@ namespace MonoZombie {
 		private bool GetKeyDown (Keys key) {
 			return (currKeyboardState.IsKeyDown(key) && !prevKeyboardState.IsKeyDown(key));
 		}
+
+
+		/// <summary>
+		/// Draws the 
+		/// </summary>
+		private void DrawPauseMenu()
+        {
+//			_spriteBatch.Draw(new Rectangle(0,0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight), Color.LightBlue);
+			_spriteBatch.DrawString(font, "Pause Menu", new Vector2(_graphics.PreferredBackBufferWidth/2-90, 30), Color.White);
+
+        }
+
+		private void DrawShop()
+        {
+
+        }
 	}
 }
