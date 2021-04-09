@@ -37,8 +37,50 @@ namespace MonoZombie {
 		/*
 		 * Overridden from the base GameObject class
 		 */
-		public new bool CheckCollision (GameObject other) {
-			return !IsWalkable && base.CheckCollision(other);
+		public new bool CheckCollision (GameObject other) 
+		{
+			if(IsWalkable==false)
+            {
+				//checks for collision between player and walls
+				if (Rect.Intersects(other.Rect))
+				{
+					//checks if collsion is on the left and right
+					if (Rectangle.Intersect(other.Rect, Rect).Width <= Rectangle.Intersect(other.Rect, Rect).Height)
+					{
+						//left case
+						if (other.Rect.X >= Rect.X)
+						{
+							other.X += Rectangle.Intersect(other.Rect, Rect).Width;
+							return true;
+						}
+						//right case
+						else
+						{
+							other.X -= Rectangle.Intersect(other.Rect, Rect).Width;
+							return true;
+						}
+					}
+					//vertical collsion
+					else
+					{
+						//top case
+						if (other.Y >= Rect.Y)
+						{
+							other.Y += Rectangle.Intersect(other.Rect, Rect).Height;
+							return true;
+						}
+						//bottom case
+						else if (other.Y <= Rect.Y)
+						{
+							other.Y -= Rectangle.Intersect(other.Rect, Rect).Height;
+							return true;
+						}
+					}
+					return true;
+				}
+				
+			}
+			return false;
 		}
 
 		/*
@@ -53,21 +95,48 @@ namespace MonoZombie {
 		private static Texture2D GetTexture (TileType tileType) {
 			// For generating a random index to get a random texture for the tile
 			Random random = new Random( );
-
+			int rng = random.Next(10);
 			// Based on what type the tile is, get a random texture from its corresponding array
 			switch (tileType) {
 				case TileType.Grass:
-					return Game1.grassTextures[random.Next(0, Game1.grassTextures.Length)];
+					if(rng < 8)
+                    {
+						return Game1.grassTextures[0];
+					}
+					else if(rng >= 8 && rng < 9)
+                    {
+						return Game1.grassTextures[1];
+					}
+                    else
+                    {
+						return Game1.grassTextures[2];
+					}
+
 				case TileType.Wall:
-					return Game1.wallTextures[random.Next(0, Game1.wallTextures.Length)];
+					if (rng < 8)
+					{
+						return Game1.wallTextures[0];
+					}
+					else if (rng >= 8 && rng < 9)
+					{
+						return Game1.wallTextures[1];
+					}
+					else
+					{
+						return Game1.wallTextures[2];
+					}
+
 				case TileType.Gravel:
-					return null;
+					return Game1.gravelTextures[0];
+
 				case TileType.Lava:
-					return null;
+					return Game1.lavaTextures[0];
+
 				case TileType.Speed:
-					return null;
+					return Game1.speedTextures[0];
+
 				default:
-					return null;
+					return Game1.grassTextures[0];
 			}
 		}
 	}

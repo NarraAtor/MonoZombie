@@ -7,20 +7,26 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MonoZombie
 {
+    /// <summary>
+    /// Author: Frank, Eric, Jack
+    /// Purpose: Manages player values and mechanics like shooting.
+    /// Restrictions:
+    /// </summary>
     public class Player : GameObject
     {
         private int playerSpeed;              // defines how much player moves in one direction
         private int health;
-        private int attackSpd;
+        private double attackSpdTimer;
+        private double attacksPerSecond;
 
         public int Health { get { return health; } set { health = value; } }
 
         public int PlayerSpeed { get { return playerSpeed; } set { playerSpeed = value; } }
-        public Player(int health, int attackSpd, Texture2D texture, Vector2 position, int playerSpeed) 
+        public Player(int health, double attacksPerSecond, Texture2D texture, Vector2 position, int playerSpeed) 
             : base (texture, position, canRotate: true)
         { 
             this.health = health;
-            this.attackSpd = attackSpd;
+            this.attacksPerSecond = attacksPerSecond;
             this.playerSpeed = playerSpeed;
         }
 
@@ -30,7 +36,10 @@ namespace MonoZombie
 
             // Rotate the player to look at the mouse
             RotateTo(mouse.Position.ToVector2( ));
-		}
+
+            attackSpdTimer += gameTime.ElapsedGameTime.TotalSeconds;
+
+        }
 
 
         /*
@@ -69,7 +78,7 @@ namespace MonoZombie
         /// </summary>
         /// <param name="bulletTexture"> Bullet texture parameter </param>
         /// <returns> </returns>
-        public Bullet Shoot(Texture2D bulletTexture)
+        public void Shoot(Texture2D bulletTexture, MouseState mouse, GameTime gameTime)
         {
             /*
              * Possible implementations:
@@ -82,10 +91,17 @@ namespace MonoZombie
              */
 
 
-            double speedX = Math.Cos(angle);
-            double speedY = Math.Sin(angle);
+            //double speedX = Math.Cos(angle);
+            //double speedY = Math.Sin(angle);
+            //
+            //return new Bullet(bulletTexture, new Vector2(X, Y), speedX, speedY, 15);
 
-            return new Bullet(bulletTexture, new Vector2(X, Y), speedX, speedY, 15);
+            if(attackSpdTimer >= 1/attacksPerSecond)
+            {
+                Game1.ListOfBullets.Add( new Bullet(bulletTexture, new Vector2(X, Y), angle, 15));
+                attackSpdTimer = 0;
+            }
+
         }
 
         public void TakeDamage(int damage) { health -= damage; }

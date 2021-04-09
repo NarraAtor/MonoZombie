@@ -35,8 +35,6 @@ namespace MonoZombie {
 		private KeyboardState prevKeyboardState;
 		private MouseState currMouseState;
 
-		private bool isPaused;
-
 		//Test variables
 		private string currentStateTEST;
 
@@ -62,6 +60,9 @@ namespace MonoZombie {
 		// arrays to add variation to the map
 		public static Texture2D[ ] grassTextures;
 		public static Texture2D[ ] wallTextures;
+		public static Texture2D[ ] gravelTextures;
+		public static Texture2D[] lavaTextures;
+		public static Texture2D[] speedTextures;
 
 		private Map map;
 
@@ -69,11 +70,14 @@ namespace MonoZombie {
 		private static Texture2D baseImage;
 		private static Texture2D playerImage;
 		private static Texture2D enemyImage;
+		private static Texture2D bulletImage;
 		private static List<Turret> listOfTurrets;
 		private static List<Enemy> listOfZombies;
+		private static List<Bullet> listOfBullets;
 		private static Turret turret;
 		private static Player player;
 		private static Enemy zombie;
+		//private static Bullet bullet;
 		private static int currency;
 		private static int roundNumber;
 		private static bool roundIsOngoing;
@@ -82,6 +86,18 @@ namespace MonoZombie {
 		public static Player Player {
 			get {
 				return player;
+			}
+		}
+
+		public static List<Bullet> ListOfBullets
+		{
+			get
+			{
+				return listOfBullets;
+			}
+			set
+			{
+				listOfBullets = value;
 			}
 		}
 
@@ -99,9 +115,9 @@ namespace MonoZombie {
             roundNumber = 0;
             listOfZombies = new List<Enemy>();
             listOfTurrets = new List<Turret>();
+			listOfBullets = new List<Bullet>();
             aZombieIsAlive = false;
 
-			isPaused = false;
 			base.Initialize( );
 		}
 
@@ -113,6 +129,7 @@ namespace MonoZombie {
 			turretImage = Content.Load<Texture2D>("TurretHead");
 			playerImage = Content.Load<Texture2D>("playerproto");
 			enemyImage = Content.Load<Texture2D>("zombieproto");
+			bulletImage = Content.Load<Texture2D>("bullet");
 
 			// Load map tile textures
 			grassTextures = new Texture2D[ ] {
@@ -125,6 +142,21 @@ namespace MonoZombie {
 				Content.Load<Texture2D>("WallTile1"),
 				Content.Load<Texture2D>("WallTile2"),
 				Content.Load<Texture2D>("WallTile3")
+			};
+
+			gravelTextures = new Texture2D[]
+			{
+				Content.Load<Texture2D>("Gravel")
+			};
+
+			lavaTextures = new Texture2D[]
+			{
+				Content.Load<Texture2D>("Lava")
+			};
+
+			speedTextures = new Texture2D[]
+			{
+				Content.Load<Texture2D>("Speed")
 			};
 
 			// Load fonts
@@ -147,7 +179,7 @@ namespace MonoZombie {
 
 			//Texture reliant intitialization
 			turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
-			player = new Player(100, 100, playerImage, screenDimensions / 2, 3);
+			player = new Player(100, 5, playerImage, screenDimensions / 2, 3);
 			zombie = new Enemy(enemyImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2), 100, 1, 5);
 
 			// Create UI Buttons
@@ -156,11 +188,6 @@ namespace MonoZombie {
 				gameState = GameState.Playing;
 				roundIsOngoing = true;
 			}, true);
-			pauseResumeButton = new UIButton("Resume", screenDimensions / 2, () =>
-			  {
-				  gameState = GameState.Pause;
-				  roundIsOngoing = true;
-			  }, true);
 
 			// test zombie list
 			// listOfZombies.Add(zombie);
@@ -221,6 +248,17 @@ namespace MonoZombie {
 							map.Update(gameTime, currMouseState, currKeyboardState);
 
 							player.Update(gameTime, currMouseState, currKeyboardState);
+
+							//Code to test the bullet being created
+							if (currMouseState.LeftButton == ButtonState.Pressed)
+							{
+								player.Shoot(bulletImage, currMouseState, gameTime);
+							}
+
+							foreach(Bullet bullet in listOfBullets)
+							{
+								bullet.Move();
+							}
 
 							if (GetKeyDown(Keys.Escape)) {
 								gameState = GameState.Pause;
@@ -284,37 +322,44 @@ namespace MonoZombie {
 				case MenuState.Game:
 					switch (gameState) {
 						case GameState.Playing:
-								// Draw the map
-								map.Draw(_spriteBatch, player);
+							// Draw the map
+							map.Draw(_spriteBatch, player);
 
-								// Draw the player
-								player.Draw(_spriteBatch);
+							// Draw the player
+							player.Draw(_spriteBatch);
 
-								/*
-								turret.Draw(_spriteBatch, Color.White);
+							// Draw the bullets
+							foreach(Bullet bullet in listOfBullets)
+							{
+								bullet.Draw(_spriteBatch);
+							}
 
-								foreach(Enemy zombie in listOfZombies)
-								{
-									zombie.Draw(_spriteBatch);
-								}
+							/*
+							turret.Draw(_spriteBatch, Color.White);
 
-								foreach (Turret turret in listOfTurrets)
-								{
-									turret.Draw(_spriteBatch, Color.White);
-								}
+                            foreach(Enemy zombie in listOfZombies)
+                            {
+                                zombie.Draw(_spriteBatch);
+                            }
 
-								player.Draw(_spriteBatch);
-								*/
+                            foreach (Turret turret in listOfTurrets)
+                            {
+                                turret.Draw(_spriteBatch, Color.White);
+                            }
 
-								// Draw UI elements
-								SpriteManager.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), scale: SpriteManager.UIScale);
-								SpriteManager.DrawText(_spriteBatch, 0.5f, $"Currency: {currency}", Color.Black, new Vector2(30, 30));
-								SpriteManager.DrawText(_spriteBatch, 0.5f, $"Round Number: {roundNumber}", Color.Black, new Vector2(30, 45));
-								SpriteManager.DrawText(_spriteBatch, 0.5f, $"Player Health: {player.Health}", Color.Black, new Vector2(30, 60));
-								SpriteManager.DrawText(_spriteBatch, 0.5f, $"Zombie Timer: {zombie.Timer}", Color.Black, new Vector2(30, 75));
+                            player.Draw(_spriteBatch);
+							*/
+
+							// Draw UI elements
+							SpriteManager.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), scale: SpriteManager.UIScale);
+							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Currency: {currency}", Color.Black, new Vector2(30, 30));
+							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Round Number: {roundNumber}", Color.Black, new Vector2(30, 45));
+							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Player Health: {player.Health}", Color.Black, new Vector2(30, 60));
+							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Zombie Timer: {zombie.Timer}", Color.Black, new Vector2(30, 75));
+
 							break;
 						case GameState.Pause:
-							DrawPauseMenu();
+
 							break;
 						case GameState.Shop:
 
@@ -347,21 +392,5 @@ namespace MonoZombie {
 		private bool GetKeyDown (Keys key) {
 			return (currKeyboardState.IsKeyDown(key) && !prevKeyboardState.IsKeyDown(key));
 		}
-
-
-		/// <summary>
-		/// Draws the 
-		/// </summary>
-		private void DrawPauseMenu()
-        {
-//			_spriteBatch.Draw(new Rectangle(0,0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight), Color.LightBlue);
-			_spriteBatch.DrawString(font, "Pause Menu", new Vector2(_graphics.PreferredBackBufferWidth/2-90, 30), Color.White);
-
-        }
-
-		private void DrawShop()
-        {
-
-        }
 	}
 }
