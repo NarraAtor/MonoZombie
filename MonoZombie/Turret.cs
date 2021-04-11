@@ -23,7 +23,7 @@ namespace MonoZombie
     /// Purpose: Manages turrets and their function.
     /// Restrictions:
     /// </summary>
-     class Turret :GameObject
+    class Turret : GameObject
     {
         private int range;
         private int timer;//use later
@@ -33,9 +33,8 @@ namespace MonoZombie
         private Texture2D GunPart;//The  rotating head of the turret
         private Rectangle Holder;//the location and size of the turret
 
-        //Eric
-        private Rectangle detector;//the detection range of the turret
-        
+        private Enemy target; // the target to shoot at
+
         //public int TurretX
         //{
         //    get { return Holder.X; }
@@ -58,19 +57,19 @@ namespace MonoZombie
         {
             get { return price; }
         }
-        public Turret(TurretType type,Texture2D Base, Texture2D Head, Vector2 position) :base(Base, position, canRotate: true)
+        public Turret(TurretType type, Texture2D Base, Texture2D Head, Vector2 position) : base(Base, position, canRotate: true)
         {
             //goes through each of the diffrent turret types and then sets stats accordingly 
 
             Holder.X = X;
-            Holder.Y= Y;
+            Holder.Y = Y;
             Holder.Width = 50;
             Holder.Height = 50;
             turret = Base;
             GunPart = Head;
             switch (type)
             {
-                
+
                 case TurretType.Cannon:
                     {
                         range = 50;
@@ -84,9 +83,7 @@ namespace MonoZombie
                         damage = 100;
                         price = 300;
                         //TODO: Adjust the rectangle so it is centered
-                        //detector = new Rectangle(Holder.X, Holder.Y, range, range);
-                        detector = new Rectangle(new Point(Holder.X, Holder.Y), new Point(Holder.Width, Holder.Height));
-                        detector.Inflate(range, range);
+
                         break;
                     }
 
@@ -125,33 +122,35 @@ namespace MonoZombie
             }
         }
 
-        /// <summary>
-        /// Purpose: Causes the turret to check if the target zombie is in this turret's range by using rectangle colliders.
-        /// Restrictions: 
-        /// </summary>
-        /// <param name="target">the enemy to be checked</param>
-        public void Detect(Enemy target)
+
+        public void DetectPlus(List<Enemy> enemies)
         {
-           if(detector.Intersects(target.Rect))
-             {
-                Vector2 center = new Vector2(target.X,target.Y);
-                RotateTo(center);
-                target.Health-=damage; 
-             }
+            float closestRange = float.MaxValue;
+            float distancetoZombie;
+            foreach (Enemy zombie in enemies)
+            {
+                distancetoZombie = Distance(new Vector2(zombie.X, zombie.Y), new Vector2(X, Y));
+                if (distancetoZombie <= range && distancetoZombie < closestRange)
+                {
+                    closestRange = distancetoZombie;
+                    target = zombie;
+                }
+            }
+
+            if(!(target is null))
+            target.Health -= damage;
         }
 
         public void Draw(SpriteBatch sb, Color tint)
         {
-            sb.Draw(Game1.gravelTextures[0], detector, Color.White);
             sb.Draw(turret, Holder, tint);
             sb.Draw(GunPart, Holder, tint);
-
-
         }
 
         public void Update(Enemy target)
         {
-          Detect(target);
+            DetectPlus(Game1.ListOfZombies);
         }
     }
 }
+

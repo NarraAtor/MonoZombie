@@ -100,6 +100,18 @@ namespace MonoZombie {
 			}
 		}
 
+		public static List<Enemy> ListOfZombies
+		{
+			get
+			{
+				return listOfZombies;
+			}
+			set
+			{
+				listOfZombies = value;
+			}
+		}
+
 		public Game1 ( ) {
 			_graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
@@ -177,7 +189,7 @@ namespace MonoZombie {
 			_graphics.ApplyChanges( );
 
 			//Texture reliant intitialization
-			turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 70, (_graphics.PreferredBackBufferHeight / 2) + 0));
+			turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 100, (_graphics.PreferredBackBufferHeight / 2) + 100));
 			player = new Player(100, 5, playerImage, screenDimensions / 2, 3);
 			zombie = new Enemy(enemyImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2), 100, 1, 5);
 

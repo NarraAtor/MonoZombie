@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MonoZombie
 {
-    class Enemy : GameObject
+    public class Enemy : GameObject
     {
         private int health;
         private int speed;
