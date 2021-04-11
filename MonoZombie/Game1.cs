@@ -189,7 +189,7 @@ namespace MonoZombie {
 			_graphics.ApplyChanges( );
 
 			//Texture reliant intitialization
-			turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 100, (_graphics.PreferredBackBufferHeight / 2) + 100));
+			turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 50, (_graphics.PreferredBackBufferHeight / 2) + 30));
 			player = new Player(100, 5, playerImage, screenDimensions / 2, 3);
 			zombie = new Enemy(enemyImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2), 100, 1, 5);
 
@@ -255,7 +255,7 @@ namespace MonoZombie {
                                 //Check if any zombies are in range of the turrets
                                 foreach (Turret turret in listOfTurrets)
                                 {
-                                    turret.Update(zombie);
+                                    turret.Update(zombie, bulletImage, gameTime);
                                 }
                             }
 

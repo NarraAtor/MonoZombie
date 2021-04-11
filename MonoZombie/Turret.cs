@@ -26,32 +26,14 @@ namespace MonoZombie
     class Turret : GameObject
     {
         private int range;
-        private int timer;//use later
         private int damage;
         private int price;
+        private double attackSpdTimer;
+        private double attacksPerSecond;
         private Texture2D turret;//the base image of the turret
         private Texture2D GunPart;//The  rotating head of the turret
         private Rectangle Holder;//the location and size of the turret
-
         private Enemy target; // the target to shoot at
-
-        //public int TurretX
-        //{
-        //    get { return Holder.X; }
-        //    set { Holder.X = value; }
-        //}
-        //
-        //public int TurretY
-        //{
-        //    get { return Holder.Y; }
-        //    set { Holder.Y = value; }
-        //}
-
-        public int Timer
-        {
-            get { return timer; }
-            set { timer = value; }
-        }
 
         public int Price
         {
@@ -82,6 +64,7 @@ namespace MonoZombie
                         range = 50;
                         damage = 100;
                         price = 300;
+                        attacksPerSecond = 5;
                         //TODO: Adjust the rectangle so it is centered
 
                         break;
@@ -122,34 +105,51 @@ namespace MonoZombie
             }
         }
 
-
-        public void DetectPlus(List<Enemy> enemies)
+        /// <summary>
+        /// Purpose: Detects the closest zombie in this turret's range and fires a bullet at it.
+        /// Restrictions:
+        /// </summary>
+        /// <param name="enemies">the list of enemies to attack.</param>
+        /// <param name="bulletTexture">the texture of the bullets</param>
+        /// <param name="gameTime">the information on time in game.</param>
+        public void Detect(List<Enemy> enemies, Texture2D bulletTexture, GameTime gameTime)
         {
-            float closestRange = float.MaxValue;
-            float distancetoZombie;
-            foreach (Enemy zombie in enemies)
+            if (attackSpdTimer >= 1 / attacksPerSecond)
             {
-                distancetoZombie = Distance(new Vector2(zombie.X, zombie.Y), new Vector2(X, Y));
-                if (distancetoZombie <= range && distancetoZombie < closestRange)
+                float closestRange = float.MaxValue;
+                float distancetoZombie;
+                foreach (Enemy zombie in enemies)
                 {
-                    closestRange = distancetoZombie;
-                    target = zombie;
+                    distancetoZombie = Distance(new Vector2(zombie.X, zombie.Y), new Vector2(X, Y));
+                    if (distancetoZombie <= range && distancetoZombie < closestRange)
+                    {
+                        closestRange = distancetoZombie;
+                        target = zombie;
+                    }
                 }
+
+                if (!(target is null))
+                {
+                    Game1.ListOfBullets.Add(new Bullet(bulletTexture, new Vector2(X, Y), angle, 15));
+                    attackSpdTimer = 0;
+                }
+                //target.Health -= damage;
             }
 
-            if(!(target is null))
-            target.Health -= damage;
         }
 
         public void Draw(SpriteBatch sb, Color tint)
         {
-            sb.Draw(turret, Holder, tint);
-            sb.Draw(GunPart, Holder, tint);
+            //base.Draw(turret, Holder, tint);
+            //base.Draw(GunPart, Holder, tint);
+            SpriteManager.DrawImage(sb, turret, position, angle: Angle, scale: SpriteManager.ObjectScale);
+            SpriteManager.DrawImage(sb, GunPart, position, angle: Angle, scale: SpriteManager.ObjectScale);
         }
 
-        public void Update(Enemy target)
+        public void Update(Enemy target, Texture2D bulletTexture, GameTime gameTime)
         {
-            DetectPlus(Game1.ListOfZombies);
+            attackSpdTimer += gameTime.ElapsedGameTime.TotalSeconds;
+            Detect(Game1.ListOfZombies, bulletTexture, gameTime);
         }
     }
 }
