@@ -38,7 +38,7 @@ namespace MonoZombie {
 		//Test variables
 		private string currentStateTEST;
 
-		private static Vector2 screenDimensions;
+		public static Vector2 screenDimensions;
 
 		// Fonts
 		public static SpriteFont font;
@@ -152,7 +152,7 @@ namespace MonoZombie {
 				menuState = MenuState.Game;
 				gameState = GameState.Playing;
 				roundIsOngoing = true;
-			}, true);
+			});
 
 			// test zombie list
 			// listOfZombies.Add(zombie);
@@ -210,9 +210,17 @@ namespace MonoZombie {
 							}
 							*/
 
+							// Update the map
 							map.Update(gameTime, currMouseState, currKeyboardState);
 
+							// Update the player
 							player.Update(gameTime, currMouseState, currKeyboardState);
+
+							// Check gameobject collisions
+							map.CheckUpdateCollision(player);
+							// check zombie-map collisions
+							// check zombie-player collisions
+							// check bullet-zombie collisions
 
 							if (GetKeyDown(Keys.Escape)) {
 								gameState = GameState.Pause;
@@ -277,7 +285,7 @@ namespace MonoZombie {
 					switch (gameState) {
 						case GameState.Playing:
 							// Draw the map
-							map.Draw(_spriteBatch, player);
+							map.Draw(_spriteBatch);
 
 							// Draw the player
 							player.Draw(_spriteBatch);

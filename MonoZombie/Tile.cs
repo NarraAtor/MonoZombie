@@ -22,7 +22,7 @@ namespace MonoZombie {
 			get;
 		}
 
-		public Tile (TileType tileType, Vector2 centerPosition, bool isWalkable = true) : base(GetTexture(tileType), centerPosition) {
+		public Tile (TileType tileType, Vector2 centerPosition, bool isWalkable = true) : base(GetTexture(tileType), centerPosition, canMove: false) {
 			IsWalkable = isWalkable;
 		}
 
@@ -33,8 +33,8 @@ namespace MonoZombie {
 		/*
 		 * Overridden from the base GameObject class
 		 */
-		public new bool CheckCollision (GameObject other) {
-			return !IsWalkable && base.CheckCollision(other);
+		public new bool CheckUpdateCollision (GameObject other) {
+			return !IsWalkable && base.CheckUpdateCollision(other);
 		}
 
 		/*

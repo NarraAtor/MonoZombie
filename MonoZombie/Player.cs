@@ -82,8 +82,8 @@ namespace MonoZombie
              */
 
 
-            double speedX = Math.Cos(angle);
-            double speedY = Math.Sin(angle);
+            double speedX = Math.Cos(Angle);
+            double speedY = Math.Sin(Angle);
 
             return new Bullet(bulletTexture, new Vector2(X, Y), speedX, speedY, 15);
         }

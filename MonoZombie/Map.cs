@@ -7,7 +7,7 @@ using System.IO;
 using System.Text;
 
 namespace MonoZombie {
-	public class Map {
+	public class Map : GameObject {
 		private Tile[ , ] tiles;
 
 		private Vector2[ ] zombieSpawns;
@@ -16,6 +16,11 @@ namespace MonoZombie {
 			get {
 				return tiles[x, y];
 			}
+		}
+
+		public GameObject[ ] CollidableMapTiles {
+			get;
+			private set;
 		}
 
 		public int Width {
@@ -42,8 +47,8 @@ namespace MonoZombie {
 			}
 		}
 
-		public Map (string mapFilePath) {
-			tiles = LoadMap(mapFilePath);
+		public Map (string mapFilePath) : base(null, Vector2.Zero) {
+			LoadMap(mapFilePath);
 		}
 
 		/*
@@ -57,7 +62,7 @@ namespace MonoZombie {
 		 * 
 		 * return					:
 		 */
-		public void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
+		public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
 			for (int x = 0; x < Width; x++) {
 				for (int y = 0; y < Height; y++) {
 					tiles[x, y].Update(gameTime, mouse, keyboard);
@@ -76,36 +81,34 @@ namespace MonoZombie {
 		 * 
 		 * return					:
 		 */
-		public void Draw (SpriteBatch spriteBatch, Player player) {
+		public new void Draw (SpriteBatch spriteBatch) {
 			for (int x = 0; x < Width; x++) {
 				for (int y = 0; y < Height; y++) {
-					// * TEST * if the player intersects with the tile, dont draw it to show that there is collision detection
-					if (!tiles[x, y].CheckCollision(player)) {
-						tiles[x, y].Draw(spriteBatch);
-					}
+					tiles[x, y].Draw(spriteBatch);
 				}
 			}
 		}
 
 		/*
-		public GameObject[ ] CheckCollisions (GameObject gameObject) {
-			List<GameObject> intersectingTiles = new List<GameObject>( );
+		 * Author : Frank Alfano
+		 * 
+		 * * See GameObject class method for explanation
+		 */
+		public new bool CheckUpdateCollision (GameObject other) {
+			// Whether or not the "other" gameobject is colliding with any of the tiles on the map
+			bool foundCollision = false;
 
-			for (int x = 0; x < Width; x++) {
-				for (int y = 0; y < Height; y++) {
-					Tile tile = tiles[x, y];
+			// Loop through all the collidable tiles on the map
+			for (int i = 0; i < CollidableMapTiles.Length; i++) {
+				GameObject tile = CollidableMapTiles[i];
 
-					if (!tile.IsWalkable) {
-						if (tile.Rect.Intersects(gameObject.Rect)) {
-							intersectingTiles.Add(tile);
-						}
-					}
+				if (tile.CheckUpdateCollision(other)) {
+					foundCollision = true;
 				}
 			}
 
-			return intersectingTiles.ToArray( );
+			return foundCollision;
 		}
-		*/
 
 		/*
 		 * Author : Frank Alfano
@@ -114,9 +117,9 @@ namespace MonoZombie {
 		 * 
 		 * string filepath					: The path to the map file
 		 * 
-		 * return Tile[,]					: The loaded 2D array of tiles
+		 * return							: 
 		 */
-		private Tile[ , ] LoadMap (string filepath) {
+		private void LoadMap (string filepath) {
 			// Read all the lines from the file
 			string[ ] lines = File.ReadAllLines(filepath);
 
@@ -142,6 +145,8 @@ namespace MonoZombie {
 				Vector2 tileSpriteDimensions = tileBaseSpriteDimensions * SpriteManager.ObjectScale;
 
 				// Calculate the x and y of the tile incorperating the fact that the sprites need to be scaled up for the game
+				// Also, shift the sprites a bit to get their center position rather than the top left position. This makes it a lot
+				// easier to draw they using the methods in the SpriteManager class
 				int tileX = (int) ((currX * tileSpriteDimensions.X) + (tileSpriteDimensions.X / 2));
 				int tileY = (int) ((currY * tileSpriteDimensions.Y) + (tileSpriteDimensions.Y / 2));
 				Vector2 tilePosition = new Vector2(tileX, tileY);
@@ -153,7 +158,24 @@ namespace MonoZombie {
 				loadedTiles[currX, currY] = new Tile(tileType, tilePosition, !(tileType == TileType.Lava || tileType == TileType.Wall));
 			}
 
-			return loadedTiles;
+			tiles = loadedTiles;
+
+			// Get all of the tiles in the map that have colliders
+			CollidableMapTiles = GetColliders( );
+		}
+
+		private GameObject[ ] GetColliders ( ) {
+			List<GameObject> tileColliders = new List<GameObject>( );
+
+			for (int x = 0; x < Width; x++) {
+				for (int y = 0; y < Height; y++) {
+					if (!tiles[x, y].IsWalkable) {
+						tileColliders.Add(tiles[x, y]);
+					}
+				}
+			}
+
+			return tileColliders.ToArray( );
 		}
 	}
 }

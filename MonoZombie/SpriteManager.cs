@@ -137,6 +137,16 @@ namespace MonoZombie {
 			return new Rectangle(rectPosition.ToPoint( ), rectSize.ToPoint( ));
 		}
 
+		/*
+		 * Author : Frank Alfano
+		 * 
+		 * Draw a solid color rectangle to the screen for debug purposes
+		 * 
+		 * SpriteBatch spriteBatch					: The SpriteBatch object used for the game
+		 * GraphicsDeviceManager graphics			: The GraphicsDeviceManager object used for the game
+		 * Rectangle rect							: The rectangle bounds of the debug rect
+		 * Color color								: The color of the debug rectangle
+		 */
 		public static void DrawDebugRect (SpriteBatch spriteBatch, GraphicsDeviceManager graphics, Rectangle rect, Color color) {
 			// Create a blank rectangular texture
 			Texture2D debugTexture = new Texture2D(graphics.GraphicsDevice, rect.Width, rect.Height);

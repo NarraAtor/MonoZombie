@@ -13,7 +13,7 @@ namespace MonoZombie {
 		protected Texture2D texture;
 		protected Vector2 centerPosition;
 		protected bool canRotate;
-		protected float angle;
+		protected bool canMove;
 
 		public Rectangle Rect {
 			get {
@@ -27,7 +27,9 @@ namespace MonoZombie {
 			}
 
 			set {
-				centerPosition.X = value;
+				if (canMove) {
+					centerPosition.X = value;
+				}
 			}
 		}
 
@@ -37,20 +39,22 @@ namespace MonoZombie {
 			}
 
 			set {
-				centerPosition.Y = value;
+				if (canMove) {
+					centerPosition.Y = value;
+				}
 			}
 		}
 
 		public float Angle {
-			get {
-				return angle;
-			}
+			get;
+			private set;
 		}
 
-		public GameObject (Texture2D texture, Vector2 position, bool canRotate = false) {
+		public GameObject (Texture2D texture, Vector2 centerPosition, bool canRotate = false, bool canMove = true) {
 			this.texture = texture;
-			this.centerPosition = position;
+			this.centerPosition = centerPosition;
 			this.canRotate = canRotate;
+			this.canMove = canMove;
 		}
 
 		/*
@@ -79,7 +83,10 @@ namespace MonoZombie {
 		 * return					:
 		 */
 		public virtual void Draw (SpriteBatch spriteBatch) {
-			SpriteManager.DrawImage(spriteBatch, texture, Rect, angle: Angle);
+			// Make sure the texture is not null before trying to draw it
+			if (texture != null) {
+				SpriteManager.DrawImage(spriteBatch, texture, Rect, angle: Angle);
+			}
 		}
 
 		/*
@@ -116,14 +123,59 @@ namespace MonoZombie {
 					// If either of the angles are negative, do not calculate the angle because it will just be 0
 					if (sinAngle != 0 && cosAngle != 0) {
 						// Set the rotation based on the calculated angle
-						angle = (float) Math.PI + (sinMod * cosAngle);
+						Angle = (float) Math.PI + (sinMod * cosAngle);
 					}
 				}
 			}
 		}
 
-		public bool CheckCollision (GameObject other) {
-			return other.Rect.Intersects(Rect);
+		/*
+		 * Author : Frank Alfano
+		 * 
+		 * Check collision as well as update the position of both colliding gameobjects based on the collision
+		 * 
+		 * GameObject other			: The other game object to check collision with
+		 */
+		public bool CheckUpdateCollision (GameObject other) {
+			// Make sure this game object can move before trying to check collision
+			// If a game object cannot move, other objects can still check collision with it (for example, map tiles cant move but still have collision)
+			//if (canMove) {
+			// Get the intersect rectangle between this game objects rectangle collider and the other game object's rectangle collider
+			Rectangle intersectRect = Rectangle.Intersect(other.Rect, Rect);
+
+			if (intersectRect.Size == Point.Zero) {
+				return false;
+			}
+
+			// *** When objects collide, it might be better to have both objects (if they can both move) to move in opposite directions. This would give a
+			// sort of "pushing" effect which could add to more realistic collisions
+
+			if (intersectRect.Width <= intersectRect.Height) {
+				// If the rectangle X coordinates are equal, then this game object needs to move to the right
+				// If the intersect rectangle X coordinate is greater than this game objects X position, then this game object needs to move to the left
+				int mod = (intersectRect.X == Rect.X) ? 1 : -1;
+
+				if (other.canMove) {
+					X += mod * (intersectRect.Width / 2);
+					other.X -= mod * (intersectRect.Width / 2);
+				} else {
+					X += mod * intersectRect.Width;
+				}
+			} else {
+				// If the rectangle Y coordinates are equal, then this game object needs to move down
+				// If the intersect rectangle Y coordinate is greater than this game object Y position, then this game object needs to move up
+				int mod = (intersectRect.Y == Rect.Y) ? 1 : -1;
+
+				if (other.canMove) {
+					Y += mod * (intersectRect.Height / 2);
+					other.Y -= mod * (intersectRect.Height / 2);
+				} else {
+					Y += mod * intersectRect.Height;
+				}
+			}
+			//}
+
+			return true;
 		}
 
 		/*
