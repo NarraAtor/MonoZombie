@@ -77,13 +77,13 @@ namespace MonoZombie {
 		 */
 		public static void DrawText (SpriteBatch spriteBatch, Rectangle rect, string text, Color color, float fontScale = 1, bool isCentered = true) {
 			// Calculate the width and height of the text
-			Vector2 textDimensions = Game1.font.MeasureString(text) * fontScale;
+			Vector2 textDimensions = Main.font.MeasureString(text) * fontScale;
 
 			// If the text is to be centered at the position given, shift the position the text is drawn at
 			Vector2 textPosition = (isCentered) ? rect.Center.ToVector2( ) - (textDimensions / 2) : rect.Location.ToVector2( );
 
 			// Draw the text to the screen
-			spriteBatch.DrawString(Game1.font, text, textPosition, color, 0, Vector2.Zero, fontScale, SpriteEffects.None, 1f);
+			spriteBatch.DrawString(Main.font, text, textPosition, color, 0, Vector2.Zero, fontScale, SpriteEffects.None, 1f);
 		}
 
 		/*
@@ -102,7 +102,7 @@ namespace MonoZombie {
 		 */
 		public static void DrawText (SpriteBatch spriteBatch, Vector2 position, string text, Color color, float fontScale = 1, bool isCentered = false) {
 			// Calculate the width and height of the text
-			Vector2 textDimensions = Game1.font.MeasureString(text) * fontScale;
+			Vector2 textDimensions = Main.font.MeasureString(text) * fontScale;
 
 			// If the text is to be centered at the position given, shift the position the text is drawn at
 			if (isCentered) {
@@ -110,7 +110,7 @@ namespace MonoZombie {
 			}
 
 			// Draw the text to the screen
-			spriteBatch.DrawString(Game1.font, text, position, color, 0, Vector2.Zero, fontScale, SpriteEffects.None, 1f);
+			spriteBatch.DrawString(Main.font, text, position, color, 0, Vector2.Zero, fontScale, SpriteEffects.None, 1f);
 		}
 
 		/*

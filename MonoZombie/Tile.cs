@@ -53,42 +53,42 @@ namespace MonoZombie {
 				case TileType.Grass:
 					if(rng < 8)
                     {
-						return Game1.grassTextures[0];
+						return Main.grassTextures[0];
 					}
 					else if(rng >= 8 && rng < 9)
                     {
-						return Game1.grassTextures[1];
+						return Main.grassTextures[1];
 					}
                     else
                     {
-						return Game1.grassTextures[2];
+						return Main.grassTextures[2];
 					}
 
 				case TileType.Wall:
 					if (rng < 8)
 					{
-						return Game1.wallTextures[0];
+						return Main.wallTextures[0];
 					}
 					else if (rng >= 8 && rng < 9)
 					{
-						return Game1.wallTextures[1];
+						return Main.wallTextures[1];
 					}
 					else
 					{
-						return Game1.wallTextures[2];
+						return Main.wallTextures[2];
 					}
 
 				case TileType.Gravel:
-					return Game1.gravelTextures[0];
+					return Main.gravelTextures[0];
 
 				case TileType.Lava:
-					return Game1.lavaTextures[0];
+					return Main.lavaTextures[0];
 
 				case TileType.Speed:
-					return Game1.speedTextures[0];
+					return Main.speedTextures[0];
 
 				default:
-					return Game1.grassTextures[0];
+					return Main.grassTextures[0];
 			}
 		}
 	}

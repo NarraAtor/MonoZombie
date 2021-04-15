@@ -77,8 +77,8 @@ namespace MonoZombie {
 			MoveSpeed = moveSpeed;
 
 			// Calculate the initial camera position
-			CamX = X - (int) (Game1.ScreenDimensions / 2).X;
-			CamY = Y - (int) (Game1.ScreenDimensions / 2).Y;
+			CamX = X - (int) (Main.ScreenDimensions / 2).X;
+			CamY = Y - (int) (Main.ScreenDimensions / 2).Y;
 		}
 
 		/*
@@ -141,7 +141,7 @@ namespace MonoZombie {
 				// This is to make sure we don't divide by 0 and crash the game
 				if (posObjectAsOrigin != Vector2.Zero) {
 					// Get this distance between the player and the other position
-					float distanceToPoint = Game1.Distance(face, centerPosition);
+					float distanceToPoint = Main.Distance(face, centerPosition);
 
 					// Calculate the angle between the other point and the player
 					// The reason this is done twice is because Cos is always positive and Sin is both positive and negative.
