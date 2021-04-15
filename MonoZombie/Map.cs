@@ -50,10 +50,18 @@ namespace MonoZombie {
 		 * 
 		 * return					:
 		 */
-		public void Update (MouseState mouse, KeyboardState keyboard, Camera camera) {
+		public void Update (MouseState mouse, KeyboardState keyboard) {
 			for (int x = 0; x < Width; x++) {
 				for (int y = 0; y < Height; y++) {
-					tiles[x, y].Update(mouse, keyboard, camera);
+					tiles[x, y].Update(mouse, keyboard);
+				}
+			}
+		}
+
+		public void UpdateCameraScreenPosition (Camera camera) {
+			for (int x = 0; x < Width; x++) {
+				for (int y = 0; y < Height; y++) {
+					tiles[x, y].UpdateCameraScreenPosition(camera);
 				}
 			}
 		}

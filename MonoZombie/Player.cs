@@ -29,14 +29,12 @@ namespace MonoZombie {
 		 * 
 		 * Overridden from the base GameObject class
 		 */
-		public new void Update (MouseState mouse, KeyboardState keyboard, Camera camera) {
+		public new void Update (MouseState mouse, KeyboardState keyboard) {
 			// Move the player based on keyboard input
 			Move(keyboard);
 
 			// Rotate the player to look at the mouse
 			RotateTo(mouse.Position.ToVector2( ));
-
-			base.Update(mouse, keyboard, camera);
 		}
 
 

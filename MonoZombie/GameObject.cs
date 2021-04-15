@@ -89,8 +89,6 @@ namespace MonoZombie {
 		 * Author : Frank Alfano
 		 * 
 		 * An overridable method that is used to update the game object
-		 * *** MAKE SURE, ANY TIME THAT YOU MAKE A NEW UPDATE METHOD IN A CLASS THAT EXTENDS GAMEOBJECT, CALL THIS BASE METHOD OR EVERYTHING
-		 * WILL GO TO SHIT lmao. So just put base.Update(...) *** AT THE END OF THE UPDATE METHOD *** :). This makes the camera work
 		 * 
 		 * GameTime gameTime		: Used to get the current time in the game
 		 * MouseState mouse			: The current state of the mouse
@@ -98,7 +96,11 @@ namespace MonoZombie {
 		 * 
 		 * return					:
 		 */
-		public virtual void Update (MouseState mouse, KeyboardState keyboard, Camera camera) {
+		public virtual void Update (MouseState mouse, KeyboardState keyboard) {
+
+		}
+
+		public void UpdateCameraScreenPosition (Camera camera) {
 			// Update the position of the game object based on the target game object
 			centerPosition = camera.CalculateScreenPosition(this);
 		}
@@ -199,22 +201,26 @@ namespace MonoZombie {
 				// If the intersect rectangle X coordinate is greater than this game objects X position, then this game object needs to move to the left
 				int mod = (intersectRect.X == Rect.X) ? 1 : -1;
 
-				if (other.canMove) {
-					moveThisBy.X += mod * (intersectRect.Width / 2f) + (mod * MoveSpeed);
-					moveOtherBy.X -= mod * (intersectRect.Width / 2f) + (mod * MoveSpeed);
+				if (canMove && other.canMove) {
+					moveThisBy.X += mod * (intersectRect.Width / 2f);
+					moveOtherBy.X -= mod * (intersectRect.Width / 2f);
+				} else if (canMove) {
+					moveThisBy.X += mod * intersectRect.Width;
 				} else {
-					moveThisBy.X += mod * intersectRect.Width + (mod * MoveSpeed);
+					moveOtherBy.X -= mod * intersectRect.Width;
 				}
 			} else {
 				// If the rectangle Y coordinates are equal, then this game object needs to move down
 				// If the intersect rectangle Y coordinate is greater than this game object Y position, then this game object needs to move up
 				int mod = (intersectRect.Y == Rect.Y) ? 1 : -1;
 
-				if (other.canMove) {
-					moveThisBy.Y += mod * (intersectRect.Height / 2f) + (mod * MoveSpeed);
-					moveOtherBy.Y -= mod * (intersectRect.Height / 2f) + (mod * MoveSpeed);
+				if (canMove && other.canMove) {
+					moveThisBy.Y += mod * (intersectRect.Height / 2f);
+					moveOtherBy.Y -= mod * (intersectRect.Height / 2f);
+				} else if (canMove) {
+					moveThisBy.Y += mod * intersectRect.Height;
 				} else {
-					moveThisBy.Y += mod * intersectRect.Height + (mod * MoveSpeed);
+					moveOtherBy.Y -= mod * intersectRect.Height;
 				}
 			}
 

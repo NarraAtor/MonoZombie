@@ -33,7 +33,7 @@ namespace MonoZombie {
 			}
 
 			// Calculate the pixel difference between the target and other game object camera positions
-			Vector2 cameraOffset = new Vector2(other.CamX - (2 * Target.CamX), other.CamY - (2 * Target.CamY));
+			Vector2 cameraOffset = new Vector2(other.CamX - Target.CamX, other.CamY - Target.CamY);
 
 			// The position of other objects on the screen are relative to the target game object, so the position of the other game
 			// object would be the target position plus the camera difference

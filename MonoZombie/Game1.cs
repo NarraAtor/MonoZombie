@@ -212,10 +212,10 @@ namespace MonoZombie {
 							*/
 
 							// Update the player
-							player.Update(currMouseState, currKeyboardState, camera);
+							player.Update(currMouseState, currKeyboardState);
 
 							// Update the map
-							map.Update(currMouseState, currKeyboardState, camera);
+							map.Update(currMouseState, currKeyboardState);
 
 							// Check gameobject collisions
 							map.CheckUpdateCollision(player);
@@ -223,7 +223,8 @@ namespace MonoZombie {
 							// check zombie-player collisions
 							// check bullet-zombie collisions
 
-							Console.WriteLine($"{player.X}, {player.Y}");
+							player.UpdateCameraScreenPosition(camera);
+							map.UpdateCameraScreenPosition(camera);
 
 							if (GetKeyDown(Keys.Escape)) {
 								gameState = GameState.Pause;
@@ -293,7 +294,8 @@ namespace MonoZombie {
 							// Draw the player
 							player.Draw(_spriteBatch);
 
-							// SpriteManager.DrawDebugRect(_spriteBatch, _graphics, player.Rect, Color.Red);
+							SpriteManager.DrawDebugRect(_spriteBatch, _graphics, player.Rect, Color.Red);
+							SpriteManager.DrawDebugRect(_spriteBatch, _graphics, map[0, 0].Rect, Color.Blue);
 
 							/*
 							turret.Draw(_spriteBatch, Color.White);
