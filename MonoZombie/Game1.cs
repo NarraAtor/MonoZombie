@@ -38,7 +38,8 @@ namespace MonoZombie {
 		//Test variables
 		private string currentStateTEST;
 
-		public static Vector2 screenDimensions;
+		public static Vector2 ScreenDimensions = new Vector2(1280, 720);
+		private Camera camera;
 
 		// Fonts
 		public static SpriteFont font;
@@ -135,20 +136,20 @@ namespace MonoZombie {
 			// Load the map
 			map = new Map("../../../MapLevels\\CurrentMapDesign.level");
 
-			// Update the dimensions of the screen
-			screenDimensions = new Vector2(map.PixelWidth, map.PixelHeight);
-
-			_graphics.PreferredBackBufferWidth = (int) screenDimensions.X;
-			_graphics.PreferredBackBufferHeight = (int) screenDimensions.Y;
+			_graphics.PreferredBackBufferWidth = (int) ScreenDimensions.X;
+			_graphics.PreferredBackBufferHeight = (int) ScreenDimensions.Y;
 			_graphics.ApplyChanges( );
 
-			//Texture reliant intitialization
-			turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
-			player = new Player(100, 100, playerImage, screenDimensions / 2, 3);
-			zombie = new Enemy(enemyImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2), 100, 1, 5);
+			// Texture-reliant intitialization
+			// turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
+			player = new Player(playerImage, ScreenDimensions / 2, 10, 10, 3);
+			// zombie = new Enemy(enemyImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2), 100, 1, 5);
+
+			// Create the camera
+			camera = new Camera(player);
 
 			// Create UI Buttons
-			menuPlayButton = new UIButton("Play", screenDimensions / 2, ( ) => {
+			menuPlayButton = new UIButton("Play", ScreenDimensions / 2, ( ) => {
 				menuState = MenuState.Game;
 				gameState = GameState.Playing;
 				roundIsOngoing = true;
@@ -210,17 +211,19 @@ namespace MonoZombie {
 							}
 							*/
 
-							// Update the map
-							map.Update(gameTime, currMouseState, currKeyboardState);
-
 							// Update the player
-							player.Update(gameTime, currMouseState, currKeyboardState);
+							player.Update(currMouseState, currKeyboardState, camera);
+
+							// Update the map
+							map.Update(currMouseState, currKeyboardState, camera);
 
 							// Check gameobject collisions
 							map.CheckUpdateCollision(player);
 							// check zombie-map collisions
 							// check zombie-player collisions
 							// check bullet-zombie collisions
+
+							Console.WriteLine($"{player.X}, {player.Y}");
 
 							if (GetKeyDown(Keys.Escape)) {
 								gameState = GameState.Pause;
@@ -277,7 +280,7 @@ namespace MonoZombie {
 			switch (menuState) {
 				case MenuState.MainMenu:
 					// Draw menu UI objects
-					SpriteManager.DrawImage(_spriteBatch, titleTexture, screenDimensions * new Vector2(0.5f, 0.25f), scale: SpriteManager.UIScale, isCentered: true);
+					SpriteManager.DrawImage(_spriteBatch, titleTexture, ScreenDimensions * new Vector2(0.5f, 0.25f), scale: SpriteManager.UIScale, isCentered: true);
 					menuPlayButton.Draw(_spriteBatch);
 
 					break;
@@ -289,6 +292,8 @@ namespace MonoZombie {
 
 							// Draw the player
 							player.Draw(_spriteBatch);
+
+							// SpriteManager.DrawDebugRect(_spriteBatch, _graphics, player.Rect, Color.Red);
 
 							/*
 							turret.Draw(_spriteBatch, Color.White);
@@ -309,7 +314,7 @@ namespace MonoZombie {
 							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 30), $"Currency: {currency}", Color.Black, fontScale: 0.5f);
 							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 45), $"Round Number: {roundNumber}", Color.Black, fontScale: 0.5f);
 							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 60), $"Player Health: {player.Health}", Color.Black, fontScale: 0.5f);
-							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 75), $"Zombie Timer: {zombie.Timer}", Color.Black, fontScale: 0.5f);
+							// SpriteManager.DrawText(_spriteBatch, new Vector2(30, 75), $"Zombie Timer: {zombie.Timer}", Color.Black, fontScale: 0.5f);
 
 							break;
 						case GameState.Pause:
@@ -345,6 +350,20 @@ namespace MonoZombie {
 		 */
 		private bool GetKeyDown (Keys key) {
 			return (currKeyboardState.IsKeyDown(key) && !prevKeyboardState.IsKeyDown(key));
+		}
+
+		/*
+		 * Author : Frank Alfano
+		 * 
+		 * Get the distance (in pixels) between 2 points
+		 * 
+		 * Point point1				: The first point
+		 * Point point2				: The second point
+		 * 
+		 * return double			: The distance (in pixels) between the two points
+		 */
+		public static float Distance (Vector2 point1, Vector2 point2) {
+			return MathF.Sqrt(MathF.Pow(point1.X - point2.X, 2) + MathF.Pow(point1.Y - point2.Y, 2));
 		}
 	}
 }

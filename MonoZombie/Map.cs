@@ -7,10 +7,10 @@ using System.IO;
 using System.Text;
 
 namespace MonoZombie {
-	public class Map : GameObject {
+	public class Map {
 		private Tile[ , ] tiles;
 
-		private Vector2[ ] zombieSpawns;
+		// private Vector2[ ] zombieSpawns;
 
 		public Tile this[int x, int y] {
 			get {
@@ -35,19 +35,7 @@ namespace MonoZombie {
 			}
 		}
 
-		public int PixelWidth {
-			get {
-				return (int) (Width * Game1.grassTextures[0].Width * SpriteManager.ObjectScale);
-			}
-		}
-
-		public int PixelHeight {
-			get {
-				return (int) (Height * Game1.grassTextures[0].Height * SpriteManager.ObjectScale);
-			}
-		}
-
-		public Map (string mapFilePath) : base(null, Vector2.Zero) {
+		public Map (string mapFilePath) {
 			LoadMap(mapFilePath);
 		}
 
@@ -62,10 +50,10 @@ namespace MonoZombie {
 		 * 
 		 * return					:
 		 */
-		public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
+		public void Update (MouseState mouse, KeyboardState keyboard, Camera camera) {
 			for (int x = 0; x < Width; x++) {
 				for (int y = 0; y < Height; y++) {
-					tiles[x, y].Update(gameTime, mouse, keyboard);
+					tiles[x, y].Update(mouse, keyboard, camera);
 				}
 			}
 		}
@@ -81,7 +69,7 @@ namespace MonoZombie {
 		 * 
 		 * return					:
 		 */
-		public new void Draw (SpriteBatch spriteBatch) {
+		public void Draw (SpriteBatch spriteBatch) {
 			for (int x = 0; x < Width; x++) {
 				for (int y = 0; y < Height; y++) {
 					tiles[x, y].Draw(spriteBatch);
@@ -94,7 +82,7 @@ namespace MonoZombie {
 		 * 
 		 * * See GameObject class method for explanation
 		 */
-		public new bool CheckUpdateCollision (GameObject other) {
+		public bool CheckUpdateCollision (GameObject other) {
 			// Whether or not the "other" gameobject is colliding with any of the tiles on the map
 			bool foundCollision = false;
 
@@ -149,7 +137,12 @@ namespace MonoZombie {
 				// easier to draw they using the methods in the SpriteManager class
 				int tileX = (int) ((currX * tileSpriteDimensions.X) + (tileSpriteDimensions.X / 2));
 				int tileY = (int) ((currY * tileSpriteDimensions.Y) + (tileSpriteDimensions.Y / 2));
-				Vector2 tilePosition = new Vector2(tileX, tileY);
+
+				// Make sure to reposition the tiles so that way the map is centered around the center of the screen
+				// This also means the player will spawn at the center of the screen
+				int mapPixelWidth = mapWidth * (int) tileSpriteDimensions.X;
+				int mapPixelHeight = mapHeight * (int) tileSpriteDimensions.Y;
+				Vector2 tilePosition = new Vector2((Game1.ScreenDimensions.X / 2) - (mapPixelWidth / 2) + tileX, (Game1.ScreenDimensions.Y / 2) - (mapPixelHeight / 2) + tileY);
 
 				// Get the type of the tile from the file
 				TileType tileType = (TileType) Enum.Parse(typeof(TileType), lines[i], true);
@@ -164,9 +157,17 @@ namespace MonoZombie {
 			CollidableMapTiles = GetColliders( );
 		}
 
+		/*
+		 * Author : Frank Alfano
+		 * 
+		 * Get all tiles that are not walkable (or "colliders" as I am calling them)
+		 * 
+		 * return GameObject[]			: A list of all the collidable tiles on the map
+		 */
 		private GameObject[ ] GetColliders ( ) {
 			List<GameObject> tileColliders = new List<GameObject>( );
 
+			// Loop through all the tiles and only get the ones that are collidable
 			for (int x = 0; x < Width; x++) {
 				for (int y = 0; y < Height; y++) {
 					if (!tiles[x, y].IsWalkable) {

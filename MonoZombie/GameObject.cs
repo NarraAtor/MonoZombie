@@ -15,12 +15,28 @@ namespace MonoZombie {
 		protected bool canRotate;
 		protected bool canMove;
 
+		protected int MoveSpeed {
+			get;
+			private set;
+		}
+
 		public Rectangle Rect {
 			get {
 				return SpriteManager.GetBoundingRect(texture, centerPosition, SpriteManager.ObjectScale);
 			}
 		}
 
+		public int CamX {
+			get;
+			private set;
+		}
+
+		public int CamY {
+			get;
+			private set;
+		}
+
+		// The game object's pixel position X value on the screen
 		public int X {
 			get {
 				return (int) centerPosition.X;
@@ -33,6 +49,7 @@ namespace MonoZombie {
 			}
 		}
 
+		// The game object's pixel position Y value on the screen
 		public int Y {
 			get {
 				return (int) centerPosition.Y;
@@ -45,22 +62,35 @@ namespace MonoZombie {
 			}
 		}
 
+		// The angle that the game object is rotated to
 		public float Angle {
 			get;
 			private set;
 		}
 
-		public GameObject (Texture2D texture, Vector2 centerPosition, bool canRotate = false, bool canMove = true) {
+		public GameObject (Texture2D texture, Vector2 centerPosition, int moveSpeed = 0, bool canRotate = false, bool canMove = true) {
 			this.texture = texture;
 			this.centerPosition = centerPosition;
 			this.canRotate = canRotate;
 			this.canMove = canMove;
+
+			MoveSpeed = moveSpeed;
+
+			// Calculate the initial camera position
+			CamX = X - (int) (Game1.ScreenDimensions / 2).X;
+			CamY = Y - (int) (Game1.ScreenDimensions / 2).Y;
 		}
+
+		/*
+		 * * NOTE * All game objects need to call the Update and Draw methods in order to function correctly
+		 */
 
 		/*
 		 * Author : Frank Alfano
 		 * 
 		 * An overridable method that is used to update the game object
+		 * *** MAKE SURE, ANY TIME THAT YOU MAKE A NEW UPDATE METHOD IN A CLASS THAT EXTENDS GAMEOBJECT, CALL THIS BASE METHOD OR EVERYTHING
+		 * WILL GO TO SHIT lmao. So just put base.Update(...) *** AT THE END OF THE UPDATE METHOD *** :). This makes the camera work
 		 * 
 		 * GameTime gameTime		: Used to get the current time in the game
 		 * MouseState mouse			: The current state of the mouse
@@ -68,8 +98,9 @@ namespace MonoZombie {
 		 * 
 		 * return					:
 		 */
-		public virtual void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
-
+		public virtual void Update (MouseState mouse, KeyboardState keyboard, Camera camera) {
+			// Update the position of the game object based on the target game object
+			centerPosition = camera.CalculateScreenPosition(this);
 		}
 
 		/*
@@ -89,7 +120,7 @@ namespace MonoZombie {
 			}
 		}
 
-		/*
+		/* 
 		 * Author : Frank Alfano
 		 * 
 		 * Rotate the game object to face a certain object
@@ -108,7 +139,7 @@ namespace MonoZombie {
 				// This is to make sure we don't divide by 0 and crash the game
 				if (posObjectAsOrigin != Vector2.Zero) {
 					// Get this distance between the player and the other position
-					float distanceToPoint = Distance(face, centerPosition);
+					float distanceToPoint = Game1.Distance(face, centerPosition);
 
 					// Calculate the angle between the other point and the player
 					// The reason this is done twice is because Cos is always positive and Sin is both positive and negative.
@@ -129,17 +160,26 @@ namespace MonoZombie {
 			}
 		}
 
+		public void MoveBy (Vector2 movement) {
+			if (canMove) {
+				X += (int) movement.X;
+				Y += (int) movement.Y;
+
+				CamX += (int) movement.X;
+				CamY += (int) movement.Y;
+			}
+		}
+
 		/*
-		 * Author : Frank Alfano
+		 * Author : Frank Alfano, Matthew Sorrentino
 		 * 
 		 * Check collision as well as update the position of both colliding gameobjects based on the collision
 		 * 
 		 * GameObject other			: The other game object to check collision with
+		 * 
+		 * return bool				: Whether or not the game object has collided with something
 		 */
 		public bool CheckUpdateCollision (GameObject other) {
-			// Make sure this game object can move before trying to check collision
-			// If a game object cannot move, other objects can still check collision with it (for example, map tiles cant move but still have collision)
-			//if (canMove) {
 			// Get the intersect rectangle between this game objects rectangle collider and the other game object's rectangle collider
 			Rectangle intersectRect = Rectangle.Intersect(other.Rect, Rect);
 
@@ -150,16 +190,20 @@ namespace MonoZombie {
 			// *** When objects collide, it might be better to have both objects (if they can both move) to move in opposite directions. This would give a
 			// sort of "pushing" effect which could add to more realistic collisions
 
+			// Vectors that hold the values that each of the game objects involved in the collision move by
+			Vector2 moveThisBy = Vector2.Zero;
+			Vector2 moveOtherBy = Vector2.Zero;
+
 			if (intersectRect.Width <= intersectRect.Height) {
 				// If the rectangle X coordinates are equal, then this game object needs to move to the right
 				// If the intersect rectangle X coordinate is greater than this game objects X position, then this game object needs to move to the left
 				int mod = (intersectRect.X == Rect.X) ? 1 : -1;
 
 				if (other.canMove) {
-					X += mod * (intersectRect.Width / 2);
-					other.X -= mod * (intersectRect.Width / 2);
+					moveThisBy.X += mod * (intersectRect.Width / 2f) + (mod * MoveSpeed);
+					moveOtherBy.X -= mod * (intersectRect.Width / 2f) + (mod * MoveSpeed);
 				} else {
-					X += mod * intersectRect.Width;
+					moveThisBy.X += mod * intersectRect.Width + (mod * MoveSpeed);
 				}
 			} else {
 				// If the rectangle Y coordinates are equal, then this game object needs to move down
@@ -167,29 +211,18 @@ namespace MonoZombie {
 				int mod = (intersectRect.Y == Rect.Y) ? 1 : -1;
 
 				if (other.canMove) {
-					Y += mod * (intersectRect.Height / 2);
-					other.Y -= mod * (intersectRect.Height / 2);
+					moveThisBy.Y += mod * (intersectRect.Height / 2f) + (mod * MoveSpeed);
+					moveOtherBy.Y -= mod * (intersectRect.Height / 2f) + (mod * MoveSpeed);
 				} else {
-					Y += mod * intersectRect.Height;
+					moveThisBy.Y += mod * intersectRect.Height + (mod * MoveSpeed);
 				}
 			}
-			//}
+
+			// Move the objects based on the calculated values above
+			MoveBy(moveThisBy);
+			other.MoveBy(moveOtherBy);
 
 			return true;
-		}
-
-		/*
-		 * Author : Frank Alfano
-		 * 
-		 * Get the distance (in pixels) between 2 points
-		 * 
-		 * Point point1				: The first point
-		 * Point point2				: The second point
-		 * 
-		 * return double			: The distance (in pixels) between the two points
-		 */
-		protected float Distance (Vector2 point1, Vector2 point2) {
-			return MathF.Sqrt(MathF.Pow(point1.X - point2.X, 2) + MathF.Pow(point1.Y - point2.Y, 2));
 		}
 	}
 }

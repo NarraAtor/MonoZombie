@@ -26,11 +26,9 @@ namespace MonoZombie {
 			IsWalkable = isWalkable;
 		}
 
-		public override void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
-
-		}
-
 		/*
+		 * Author : Frank Alfano
+		 * 
 		 * Overridden from the base GameObject class
 		 */
 		public new bool CheckUpdateCollision (GameObject other) {
@@ -38,7 +36,7 @@ namespace MonoZombie {
 		}
 
 		/*
-		 * Author : Frank Alfano
+		 * Author : Frank Alfano, Ken A.
 		 * 
 		 * Get a texture for the tile based on its type
 		 * 
