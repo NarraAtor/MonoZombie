@@ -80,5 +80,15 @@ namespace MonoZombie
             Attack(player);
             //timeAtLastFrame = currentTime;
         }
+
+        /// <summary>
+        /// Purpose: Only draw the zombie if it is alive.
+        /// </summary>
+        /// <param name="spriteBatch">the zombie to draw to</param>
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            if(IsAlive)
+            base.Draw(spriteBatch);
+        }
     }
 }
