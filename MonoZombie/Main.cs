@@ -24,7 +24,7 @@ namespace MonoZombie {
 	/// Purpose: Manages game states and calls other classes and methods to do their job. 
 	/// Restrictions:
 	/// </summary>
-	public class Game1 : Game {
+	public class Main : Game {
 		private GraphicsDeviceManager _graphics;
 		private SpriteBatch _spriteBatch;
 
@@ -113,7 +113,7 @@ namespace MonoZombie {
 			}
 		}
 
-		public Game1 ( ) {
+		public Main ( ) {
 			_graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
 			IsMouseVisible = true;

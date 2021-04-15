@@ -94,7 +94,7 @@ namespace MonoZombie {
 
             if(attackSpdTimer >= 1/attacksPerSecond)
             {
-                Game1.ListOfBullets.Add( new Bullet(bulletTexture, new Vector2(X, Y), Angle, 15));
+                Main.ListOfBullets.Add( new Bullet(bulletTexture, new Vector2(X, Y), Angle, 15));
                 attackSpdTimer = 0;
             }
 

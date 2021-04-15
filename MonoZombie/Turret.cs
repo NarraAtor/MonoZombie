@@ -120,7 +120,7 @@ namespace MonoZombie
                 float distancetoZombie;
                 foreach (Enemy zombie in enemies)
                 {
-                    distancetoZombie = Game1.Distance(new Vector2(zombie.X, zombie.Y), new Vector2(X, Y));
+                    distancetoZombie = Main.Distance(new Vector2(zombie.X, zombie.Y), new Vector2(X, Y));
                     if (distancetoZombie <= range && distancetoZombie < closestRange)
                     {
                         closestRange = distancetoZombie;
@@ -131,7 +131,7 @@ namespace MonoZombie
                 if (!(target is null))
                 {
                     RotateTo(new Vector2(target.X, target.Y));
-                    Game1.ListOfBullets.Add(new Bullet(bulletTexture, new Vector2(X, Y), Angle, 15));
+                    Main.ListOfBullets.Add(new Bullet(bulletTexture, new Vector2(X, Y), Angle, 15));
                     attackSpdTimer = 0;
                 }
                 //target.Health -= damage;
@@ -152,7 +152,7 @@ namespace MonoZombie
         public void UpdateTurret(Enemy target, Texture2D bulletTexture, GameTime gameTime)
         {
             attackSpdTimer += gameTime.ElapsedGameTime.TotalSeconds;
-            Detect(Game1.ListOfZombies, bulletTexture, gameTime);
+            Detect(Main.ListOfZombies, bulletTexture, gameTime);
         }
     }
 }

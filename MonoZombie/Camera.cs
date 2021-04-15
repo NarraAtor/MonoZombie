@@ -29,7 +29,7 @@ namespace MonoZombie {
 		 */
 		public Vector2 CalculateScreenPosition (GameObject other) {
 			if (other == Target) {
-				return Game1.ScreenDimensions / 2;
+				return Main.ScreenDimensions / 2;
 			}
 
 			// Calculate the pixel difference between the target and other game object camera positions

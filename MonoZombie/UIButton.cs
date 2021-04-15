@@ -11,7 +11,7 @@ namespace MonoZombie {
 		private bool isPressed;
 		private string text;
 
-		public UIButton (string text, Vector2 position, Action onClick, bool isCentered = true) : base(Game1.buttonTexture, position, isCentered) {
+		public UIButton (string text, Vector2 position, Action onClick, bool isCentered = true) : base(Main.buttonTexture, position, isCentered) {
 			this.text = text;
 			this.onClick = onClick;
 
@@ -44,7 +44,7 @@ namespace MonoZombie {
 		}
 
 		public override void Draw (SpriteBatch spriteBatch) {
-			SpriteManager.DrawImage(spriteBatch, Game1.buttonTexture, rect);
+			SpriteManager.DrawImage(spriteBatch, Main.buttonTexture, rect);
 			SpriteManager.DrawText(spriteBatch, rect, text, Color.Black);
 		}
 	}

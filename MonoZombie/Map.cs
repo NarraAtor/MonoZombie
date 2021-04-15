@@ -137,7 +137,7 @@ namespace MonoZombie {
 
 				// Based on the current indexes of the map tiles, get their positions on the screen
 				// First, get the dimensions of the actual tile sprite in pixels
-				Vector2 tileBaseSpriteDimensions = Game1.grassTextures[0].Bounds.Size.ToVector2( );
+				Vector2 tileBaseSpriteDimensions = Main.grassTextures[0].Bounds.Size.ToVector2( );
 				Vector2 tileSpriteDimensions = tileBaseSpriteDimensions * SpriteManager.ObjectScale;
 
 				// Calculate the x and y of the tile incorperating the fact that the sprites need to be scaled up for the game
@@ -150,7 +150,7 @@ namespace MonoZombie {
 				// This also means the player will spawn at the center of the screen
 				int mapPixelWidth = mapWidth * (int) tileSpriteDimensions.X;
 				int mapPixelHeight = mapHeight * (int) tileSpriteDimensions.Y;
-				Vector2 tilePosition = new Vector2((Game1.ScreenDimensions.X / 2) - (mapPixelWidth / 2) + tileX, (Game1.ScreenDimensions.Y / 2) - (mapPixelHeight / 2) + tileY);
+				Vector2 tilePosition = new Vector2((Main.ScreenDimensions.X / 2) - (mapPixelWidth / 2) + tileX, (Main.ScreenDimensions.Y / 2) - (mapPixelHeight / 2) + tileY);
 
 				// Get the type of the tile from the file
 				TileType tileType = (TileType) Enum.Parse(typeof(TileType), lines[i], true);
