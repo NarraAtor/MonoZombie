@@ -130,6 +130,7 @@ namespace MonoZombie
 
                 if (!(target is null))
                 {
+                    RotateTo(new Vector2(target.X, target.Y));
                     Game1.ListOfBullets.Add(new Bullet(bulletTexture, new Vector2(X, Y), angle, 15));
                     attackSpdTimer = 0;
                 }
@@ -142,8 +143,10 @@ namespace MonoZombie
         {
             //base.Draw(turret, Holder, tint);
             //base.Draw(GunPart, Holder, tint);
-            SpriteManager.DrawImage(sb, turret, position, angle: Angle, scale: SpriteManager.ObjectScale);
-            SpriteManager.DrawImage(sb, GunPart, position, angle: Angle, scale: SpriteManager.ObjectScale);
+            SpriteManager.DrawImage(sb, turret, position, angle: 0, scale: SpriteManager.ObjectScale);
+            //Change the angle the gun is drawn at since the asset is drawn a bit differently 
+            //(about 90 degrees off from where it's actually facing).
+            SpriteManager.DrawImage(sb, GunPart, position, angle: angle + (MathF.PI/2), scale: SpriteManager.ObjectScale);
         }
 
         public void Update(Enemy target, Texture2D bulletTexture, GameTime gameTime)

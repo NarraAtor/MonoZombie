@@ -346,13 +346,6 @@ namespace MonoZombie {
 							// Draw the player
 							player.Draw(_spriteBatch);
 
-							// Draw the bullets
-							foreach(Bullet bullet in listOfBullets)
-							{
-								bullet.Draw(_spriteBatch);
-							}
-
-							
                             foreach(Enemy zombie in listOfZombies)
                             {
                                 zombie.Draw(_spriteBatch);
@@ -363,7 +356,13 @@ namespace MonoZombie {
                                 turret.Draw(_spriteBatch, Color.White);
                             }
 
-                            player.Draw(_spriteBatch);
+							// Draw the bullets
+							foreach (Bullet bullet in listOfBullets)
+							{
+								bullet.Draw(_spriteBatch);
+							}
+
+							player.Draw(_spriteBatch);
 							
 
 							// Draw UI elements

@@ -55,6 +55,7 @@ namespace MonoZombie {
 			}
 		}
 
+		//In radians
 		public float Angle {
 			get {
 				return angle;
