@@ -22,69 +22,21 @@ namespace MonoZombie {
 			get;
 		}
 
-		public Tile (TileType tileType, Vector2 position, bool isWalkable = true) : base(GetTexture(tileType), position) {
+		public Tile (TileType tileType, Vector2 centerPosition, bool isWalkable = true) : base(GetTexture(tileType), centerPosition, canMove: false) {
 			IsWalkable = isWalkable;
-		}
-
-		public override void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
-
-		}
-
-		public new void Draw (SpriteBatch spriteBatch) {
-			SpriteManager.DrawImage(spriteBatch, texture, position, scale: SpriteManager.ObjectScale);
-		}
-
-		/*
-		 * Overridden from the base GameObject class
-		 */
-		public new bool CheckCollision (GameObject other) 
-		{
-			if(IsWalkable==false)
-            {
-				//checks for collision between player and walls
-				if (Rect.Intersects(other.Rect))
-				{
-					//checks if collsion is on the left and right
-					if (Rectangle.Intersect(other.Rect, Rect).Width <= Rectangle.Intersect(other.Rect, Rect).Height)
-					{
-						//left case
-						if (other.Rect.X >= Rect.X)
-						{
-							other.X += Rectangle.Intersect(other.Rect, Rect).Width;
-							return true;
-						}
-						//right case
-						else
-						{
-							other.X -= Rectangle.Intersect(other.Rect, Rect).Width;
-							return true;
-						}
-					}
-					//vertical collsion
-					else
-					{
-						//top case
-						if (other.Y >= Rect.Y)
-						{
-							other.Y += Rectangle.Intersect(other.Rect, Rect).Height;
-							return true;
-						}
-						//bottom case
-						else if (other.Y <= Rect.Y)
-						{
-							other.Y -= Rectangle.Intersect(other.Rect, Rect).Height;
-							return true;
-						}
-					}
-					return true;
-				}
-				
-			}
-			return false;
 		}
 
 		/*
 		 * Author : Frank Alfano
+		 * 
+		 * Overridden from the base GameObject class
+		 */
+		public new bool CheckUpdateCollision (GameObject other) {
+			return !IsWalkable && base.CheckUpdateCollision(other);
+		}
+
+		/*
+		 * Author : Frank Alfano, Ken A.
 		 * 
 		 * Get a texture for the tile based on its type
 		 * 
@@ -101,42 +53,42 @@ namespace MonoZombie {
 				case TileType.Grass:
 					if(rng < 8)
                     {
-						return Game1.grassTextures[0];
+						return Main.grassTextures[0];
 					}
 					else if(rng >= 8 && rng < 9)
                     {
-						return Game1.grassTextures[1];
+						return Main.grassTextures[1];
 					}
                     else
                     {
-						return Game1.grassTextures[2];
+						return Main.grassTextures[2];
 					}
 
 				case TileType.Wall:
 					if (rng < 8)
 					{
-						return Game1.wallTextures[0];
+						return Main.wallTextures[0];
 					}
 					else if (rng >= 8 && rng < 9)
 					{
-						return Game1.wallTextures[1];
+						return Main.wallTextures[1];
 					}
 					else
 					{
-						return Game1.wallTextures[2];
+						return Main.wallTextures[2];
 					}
 
 				case TileType.Gravel:
-					return Game1.gravelTextures[0];
+					return Main.gravelTextures[0];
 
 				case TileType.Lava:
-					return Game1.lavaTextures[0];
+					return Main.lavaTextures[0];
 
 				case TileType.Speed:
-					return Game1.speedTextures[0];
+					return Main.speedTextures[0];
 
 				default:
-					return Game1.grassTextures[0];
+					return Main.grassTextures[0];
 			}
 		}
 	}

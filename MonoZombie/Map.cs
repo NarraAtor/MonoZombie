@@ -10,12 +10,17 @@ namespace MonoZombie {
 	public class Map {
 		private Tile[ , ] tiles;
 
-		private Vector2[ ] zombieSpawns;
+		// private Vector2[ ] zombieSpawns;
 
 		public Tile this[int x, int y] {
 			get {
 				return tiles[x, y];
 			}
+		}
+
+		public GameObject[ ] CollidableMapTiles {
+			get;
+			private set;
 		}
 
 		public int Width {
@@ -30,20 +35,8 @@ namespace MonoZombie {
 			}
 		}
 
-		public int PixelWidth {
-			get {
-				return (int) (Width * Game1.grassTextures[0].Width * SpriteManager.ObjectScale);
-			}
-		}
-
-		public int PixelHeight {
-			get {
-				return (int) (Height * Game1.grassTextures[0].Height * SpriteManager.ObjectScale);
-			}
-		}
-
 		public Map (string mapFilePath) {
-			tiles = LoadMap(mapFilePath);
+			LoadMap(mapFilePath);
 		}
 
 		/*
@@ -65,6 +58,14 @@ namespace MonoZombie {
 			}
 		}
 
+		public void UpdateCameraScreenPosition (Camera camera) {
+			for (int x = 0; x < Width; x++) {
+				for (int y = 0; y < Height; y++) {
+					tiles[x, y].UpdateCameraScreenPosition(camera);
+				}
+			}
+		}
+
 		/*
 		 * Author : Frank Alfano
 		 * 
@@ -76,36 +77,34 @@ namespace MonoZombie {
 		 * 
 		 * return					:
 		 */
-		public void Draw (SpriteBatch spriteBatch, Player player) {
+		public void Draw (SpriteBatch spriteBatch) {
 			for (int x = 0; x < Width; x++) {
 				for (int y = 0; y < Height; y++) {
-					// if the player intersects with the tile run dection code
-					tiles[x, y].CheckCollision(player);					
-					
 					tiles[x, y].Draw(spriteBatch);
 				}
 			}
 		}
 
 		/*
-		public GameObject[ ] CheckCollisions (GameObject gameObject) {
-			List<GameObject> intersectingTiles = new List<GameObject>( );
+		 * Author : Frank Alfano
+		 * 
+		 * * See GameObject class method for explanation
+		 */
+		public bool CheckUpdateCollision (GameObject other) {
+			// Whether or not the "other" gameobject is colliding with any of the tiles on the map
+			bool foundCollision = false;
 
-			for (int x = 0; x < Width; x++) {
-				for (int y = 0; y < Height; y++) {
-					Tile tile = tiles[x, y];
+			// Loop through all the collidable tiles on the map
+			for (int i = 0; i < CollidableMapTiles.Length; i++) {
+				GameObject tile = CollidableMapTiles[i];
 
-					if (!tile.IsWalkable) {
-						if (tile.Rect.Intersects(gameObject.Rect)) {
-							intersectingTiles.Add(tile);
-						}
-					}
+				if (tile.CheckUpdateCollision(other)) {
+					foundCollision = true;
 				}
 			}
 
-			return intersectingTiles.ToArray( );
+			return foundCollision;
 		}
-		*/
 
 		/*
 		 * Author : Frank Alfano
@@ -114,9 +113,9 @@ namespace MonoZombie {
 		 * 
 		 * string filepath					: The path to the map file
 		 * 
-		 * return Tile[,]					: The loaded 2D array of tiles
+		 * return							: 
 		 */
-		private Tile[ , ] LoadMap (string filepath) {
+		private void LoadMap (string filepath) {
 			// Read all the lines from the file
 			string[ ] lines = File.ReadAllLines(filepath);
 
@@ -138,12 +137,20 @@ namespace MonoZombie {
 
 				// Based on the current indexes of the map tiles, get their positions on the screen
 				// First, get the dimensions of the actual tile sprite in pixels
-				Vector2 tileSpriteDimensions = Game1.grassTextures[0].Bounds.Size.ToVector2( );
+				Vector2 tileBaseSpriteDimensions = Main.grassTextures[0].Bounds.Size.ToVector2( );
+				Vector2 tileSpriteDimensions = tileBaseSpriteDimensions * SpriteManager.ObjectScale;
 
 				// Calculate the x and y of the tile incorperating the fact that the sprites need to be scaled up for the game
-				int tileX = currX * (int) (tileSpriteDimensions.X * SpriteManager.ObjectScale);
-				int tileY = currY * (int) (tileSpriteDimensions.Y * SpriteManager.ObjectScale);
-				Vector2 tilePosition = new Vector2(tileX, tileY);
+				// Also, shift the sprites a bit to get their center position rather than the top left position. This makes it a lot
+				// easier to draw they using the methods in the SpriteManager class
+				int tileX = (int) ((currX * tileSpriteDimensions.X) + (tileSpriteDimensions.X / 2));
+				int tileY = (int) ((currY * tileSpriteDimensions.Y) + (tileSpriteDimensions.Y / 2));
+
+				// Make sure to reposition the tiles so that way the map is centered around the center of the screen
+				// This also means the player will spawn at the center of the screen
+				int mapPixelWidth = mapWidth * (int) tileSpriteDimensions.X;
+				int mapPixelHeight = mapHeight * (int) tileSpriteDimensions.Y;
+				Vector2 tilePosition = new Vector2((Main.ScreenDimensions.X / 2) - (mapPixelWidth / 2) + tileX, (Main.ScreenDimensions.Y / 2) - (mapPixelHeight / 2) + tileY);
 
 				// Get the type of the tile from the file
 				TileType tileType = (TileType) Enum.Parse(typeof(TileType), lines[i], true);
@@ -152,7 +159,32 @@ namespace MonoZombie {
 				loadedTiles[currX, currY] = new Tile(tileType, tilePosition, !(tileType == TileType.Lava || tileType == TileType.Wall));
 			}
 
-			return loadedTiles;
+			tiles = loadedTiles;
+
+			// Get all of the tiles in the map that have colliders
+			CollidableMapTiles = GetColliders( );
+		}
+
+		/*
+		 * Author : Frank Alfano
+		 * 
+		 * Get all tiles that are not walkable (or "colliders" as I am calling them)
+		 * 
+		 * return GameObject[]			: A list of all the collidable tiles on the map
+		 */
+		private GameObject[ ] GetColliders ( ) {
+			List<GameObject> tileColliders = new List<GameObject>( );
+
+			// Loop through all the tiles and only get the ones that are collidable
+			for (int x = 0; x < Width; x++) {
+				for (int y = 0; y < Height; y++) {
+					if (!tiles[x, y].IsWalkable) {
+						tileColliders.Add(tiles[x, y]);
+					}
+				}
+			}
+
+			return tileColliders.ToArray( );
 		}
 	}
 }
