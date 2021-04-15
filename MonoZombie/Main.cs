@@ -294,8 +294,8 @@ namespace MonoZombie {
 							{
 								foreach(Bullet bullet in ListOfBullets)
 								{
-									//If the bullet is colliding with a zombie and hasn't already hit one.
-									if(bullet.CheckUpdateCollision(zombie) && bullet.IsActive)
+									//If the bullet is colliding with a living zombie and hasn't already hit one.
+									if(bullet.CheckUpdateCollision(zombie) && zombie.IsAlive && bullet.IsActive)
 									{
 										zombie.TakeDamage(10);
 										bullet.IsActive = false;
