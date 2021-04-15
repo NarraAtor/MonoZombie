@@ -261,8 +261,11 @@ namespace MonoZombie {
 
 							if (aZombieIsAlive!) {
 								roundIsOngoing = false;
+								roundNumber++;
+								//allowaccess to shop
+								//run shop methods when opened
 							}
-							
+
 
 							map.Update(gameTime, currMouseState, currKeyboardState);
 
