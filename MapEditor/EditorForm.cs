@@ -25,7 +25,7 @@ namespace MapEditor
         private StreamReader reader;
 
         //Purpose: Creates a new map
-        //Restrictions: Length and width must be integers between 10 and 30 inclusive
+        //Restrictions: Length and width must be integers between 20 and 50 inclusive
         //Params: width for pixels wide, height for pixels tall
         public EditorForm(int width, int height)
         {
@@ -42,8 +42,8 @@ namespace MapEditor
                 {
                     pictureBoxes[w, h] = new PictureBox();//creates a new picturebox
                     pictureBoxes[w, h].BackColor = Color.FromArgb(-16744448);
-                    pictureBoxes[w, h].Size = new Size(410 / height, 410 / height);//scales the size according to height
-                    pictureBoxes[w, h].Location = new Point(w * (410 / height) + 5, h * (410 / height) + 20);//scales location according to height
+                    pictureBoxes[w, h].Size = new Size(500 / height, 500 / height);//scales the size according to height
+                    pictureBoxes[w, h].Location = new Point(w * (500 / height) + 5, h * (500 / height) + 20);//scales location according to height
                     pictureBoxes[w, h].MouseDown += ChangeBackgroundColor;//assign the click event to the picturebox
                     pictureBoxes[w, h].MouseEnter += KeepColoring;//assign the drag event to the picturebox
                     groupBoxMap.Controls.Add(pictureBoxes[w, h]);//add it to the groupbox
@@ -51,7 +51,7 @@ namespace MapEditor
                 }
             }
             //adjust the group box and and client size according to the number of boxes wide
-            groupBoxMap.Size = new Size(width * (410 / height) + 10, 430);
+            groupBoxMap.Size = new Size(width * (500 / height) + 10, 430);
             ClientSize = new Size(130 + groupBoxMap.Width, 461);
         }
 
@@ -61,8 +61,8 @@ namespace MapEditor
         public EditorForm(string file)
         {
             InitializeComponent();
-            if (!ReadFile(file))
-            {//if the file could not be loaded, and an existing map is not already being displayed
+            if (!ReadFile(file))//if the file could not be loaded, and an existing map is not already being displayed
+            {
                 Close();//close the window
             }
         }
@@ -85,25 +85,25 @@ namespace MapEditor
                 bool heightTooLow = false;
                 bool heightTooHigh = false;
 
-                if (!widthNaN && width < 10)
+                if (!widthNaN && width < 20)
                 {
                     widthTooLow = true;
                 }
-                if (!widthNaN && width > 30)
+                if (!widthNaN && width > 50)
                 {
                     widthTooHigh = true;
                 }
-                if (!heightNaN && height < 10)
+                if (!heightNaN && height < 20)
                 {
                     heightTooLow = true;
                 }
-                if (!heightNaN && height > 30)
+                if (!heightNaN && height > 50)
                 {
                     heightTooHigh = true;
                 }
 
-                if (widthNaN || heightNaN || widthTooLow || widthTooHigh || heightTooLow || heightTooHigh)
-                {//if any errors get flagged,
+                if (widthNaN || heightNaN || widthTooLow || widthTooHigh || heightTooLow || heightTooHigh)//if any errors get flagged,
+                {
                     string errors = "Errors:";
                     if (widthNaN)
                     {
@@ -111,11 +111,11 @@ namespace MapEditor
                     }
                     if (widthTooLow)
                     {
-                        errors += "\n - Width too small. Minimum is 10";
+                        errors += "\n - Width too small. Minimum is 20";
                     }
                     if (widthTooHigh)
                     {
-                        errors += "\n - Width too high. Maximum is 30";
+                        errors += "\n - Width too high. Maximum is 50";
                     }
                     if (heightNaN)
                     {
@@ -123,17 +123,17 @@ namespace MapEditor
                     }
                     if (heightTooLow)
                     {
-                        errors += "\n - Height too small. Minimum is 10";
+                        errors += "\n - Height too small. Minimum is 20";
                     }
                     if (heightTooHigh)
                     {
-                        errors += "\n - Height too high. Maximum is 30";
+                        errors += "\n - Height too high. Maximum is 50";
                     }
                     MessageBox.Show(errors, "Error loading map", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return false;//lists the errors, and then returns false to show that the file could not be loaded
                 }
-                if (pictureBoxes != null)
-                {//if there is an existing picture
+                if (pictureBoxes != null)//if there is an existing picture
+                {
                     for (int w = 0; w < pictureBoxes.GetLength(0); w++)
                     {
                         for (int h = 0; h < pictureBoxes.GetLength(1); h++)
@@ -189,20 +189,20 @@ namespace MapEditor
                 MessageBox.Show("File loaded successfully", "File loaded", MessageBoxButtons.OK, MessageBoxIcon.Information);//confirmation message
                 pendingChanges = false;//no pending changes
             }
-            catch (NullReferenceException err)
-            {//in case it is unable to read width and height
+            catch (NullReferenceException err)//in case it is unable to read width and height
+            {
                 MessageBox.Show(err.Message + "\nUnable to read width and height.", "Error occurred", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
-            catch (Exception err)
-            {//any other errors
+            catch (Exception err)//any other errors
+            {
                 MessageBox.Show(err.Message, "Error occurred", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
             finally
             {
-                if (writer != null)
-                {//if stream does not close, closes it
+                if (writer != null)//if stream does not close, closes it
+                {
                     writer.Close();
                 }
             }
@@ -265,8 +265,8 @@ namespace MapEditor
                     {
                         for (int h = 0; h < height; h++)
                         {
-                            switch(pictureBoxes[w, h].BackColor.ToArgb())
-                            {//records state of every tile
+                            switch(pictureBoxes[w, h].BackColor.ToArgb())//records state of every tile
+                            {
                                 case -16744448:
                                     writer.WriteLine($"{Tile.Grass}");
                                     break;
@@ -304,12 +304,12 @@ namespace MapEditor
                         Text = Text.Substring(0, Text.LastIndexOf(" *"));
                     }
                 }
-                catch (Exception err)
-                {//in case any errors occur
+                catch (Exception err)//in case any errors occur
+                {
                     MessageBox.Show(err.Message, "Error occurred", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                finally
-                {//if stream is still open, closes it
+                finally//if stream is still open, closes it
+                {
                     if (writer != null)
                     {
                         writer.Close();
@@ -323,14 +323,14 @@ namespace MapEditor
         //Params: sender for button clicked, e for any arguments attached
         private void buttonLoadFile_Click(object sender, EventArgs e)
         {
-            if (pendingChanges)
-            {//in case there are any unsaved changes
+            if (pendingChanges)//in case there are any unsaved changes
+            {
                 DialogResult unsaved = MessageBox.Show("There are unsaved changes. Are you sure you want to proceed?",
                     "Unsaved changes",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question);
-                if (unsaved == DialogResult.No)
-                {//if no, closes and does not proceed
+                if (unsaved == DialogResult.No)//if no, closes and does not proceed
+                {
                     return;
                 }
             }

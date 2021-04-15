@@ -79,7 +79,7 @@ namespace MapEditor
             this.textBoxHeight.Name = "textBoxHeight";
             this.textBoxHeight.Size = new System.Drawing.Size(102, 20);
             this.textBoxHeight.TabIndex = 3;
-            this.textBoxHeight.Text = "20";
+            this.textBoxHeight.Text = "30";
             // 
             // textBoxWidth
             // 
@@ -87,7 +87,7 @@ namespace MapEditor
             this.textBoxWidth.Name = "textBoxWidth";
             this.textBoxWidth.Size = new System.Drawing.Size(102, 20);
             this.textBoxWidth.TabIndex = 2;
-            this.textBoxWidth.Text = "20";
+            this.textBoxWidth.Text = "30";
             // 
             // labelHeight
             // 
