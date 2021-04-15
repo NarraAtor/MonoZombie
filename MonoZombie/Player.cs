@@ -90,12 +90,6 @@ namespace MonoZombie
              * Check mouse state in Main()
              */
 
-
-            //double speedX = Math.Cos(angle);
-            //double speedY = Math.Sin(angle);
-            //
-            //return new Bullet(bulletTexture, new Vector2(X, Y), speedX, speedY, 15);
-
             if(attackSpdTimer >= 1/attacksPerSecond)
             {
                 Game1.ListOfBullets.Add( new Bullet(bulletTexture, new Vector2(X, Y), angle, 15));
