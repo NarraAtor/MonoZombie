@@ -264,7 +264,7 @@ namespace MonoZombie {
                                 }
                             }
 
-							if (aZombieIsAlive!) {
+							if (!aZombieIsAlive) {
 								roundIsOngoing = false;
 								roundNumber++;
 								//allowaccess to shop
