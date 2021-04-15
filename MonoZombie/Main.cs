@@ -323,6 +323,22 @@ namespace MonoZombie {
 							player.UpdateCameraScreenPosition(camera);
 							map.UpdateCameraScreenPosition(camera);
 
+							foreach(Enemy zombie in listOfZombies)
+							{
+								zombie.UpdateCameraScreenPosition(camera);
+							}
+
+							foreach(Turret turret in listOfTurrets)
+							{
+								turret.UpdateCameraScreenPosition(camera);
+							}
+
+							//Bullets spawn in the center of the screen for some reason when I use UpdateCameraScreenPosition
+							//foreach (Bullet bullet in listOfBullets)
+							//{
+							//	bullet.UpdateCameraScreenPosition(camera);
+							//}
+
 							if (GetKeyDown(Keys.Escape)) {
 								gameState = GameState.Pause;
 							}
