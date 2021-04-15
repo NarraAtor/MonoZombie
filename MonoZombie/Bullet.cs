@@ -55,8 +55,9 @@ namespace MonoZombie
         /// </summary>
         public void Move()
         {
-            X += (int)speedX;
-            Y += (int)speedY;
+            //X += (int)speedX;
+            //Y += (int)speedY;
+            MoveBy(new Vector2((float)speedX, (float)speedY));
         }
 
         /// <summary>

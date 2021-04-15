@@ -334,10 +334,10 @@ namespace MonoZombie {
 							}
 
 							//Bullets spawn in the center of the screen for some reason when I use UpdateCameraScreenPosition
-							//foreach (Bullet bullet in listOfBullets)
-							//{
-							//	bullet.UpdateCameraScreenPosition(camera);
-							//}
+							foreach (Bullet bullet in listOfBullets)
+							{
+								bullet.UpdateCameraScreenPosition(camera);
+							}
 
 							if (GetKeyDown(Keys.Escape)) {
 								gameState = GameState.Pause;
