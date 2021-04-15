@@ -15,9 +15,9 @@ namespace MonoZombie {
 		protected bool canRotate;
 		protected bool canMove;
 
-		protected int MoveSpeed {
+		public int MoveSpeed {
 			get;
-			private set;
+			protected set;
 		}
 
 		public Rectangle Rect {
@@ -65,7 +65,7 @@ namespace MonoZombie {
 		// The angle that the game object is rotated to in radians
 		public float Angle {
 			get;
-			private set;
+			protected set;
 		}
 
 		public GameObject (Texture2D texture, Vector2 centerPosition, int moveSpeed = 0, bool canRotate = false, bool canMove = true) {
@@ -96,7 +96,7 @@ namespace MonoZombie {
 		 * 
 		 * return					:
 		 */
-		public virtual void Update (MouseState mouse, KeyboardState keyboard) {
+		public virtual void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
 
 		}
 

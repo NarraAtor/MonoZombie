@@ -120,7 +120,7 @@ namespace MonoZombie
                 float distancetoZombie;
                 foreach (Enemy zombie in enemies)
                 {
-                    distancetoZombie = Distance(new Vector2(zombie.X, zombie.Y), new Vector2(X, Y));
+                    distancetoZombie = Game1.Distance(new Vector2(zombie.X, zombie.Y), new Vector2(X, Y));
                     if (distancetoZombie <= range && distancetoZombie < closestRange)
                     {
                         closestRange = distancetoZombie;
@@ -131,7 +131,7 @@ namespace MonoZombie
                 if (!(target is null))
                 {
                     RotateTo(new Vector2(target.X, target.Y));
-                    Game1.ListOfBullets.Add(new Bullet(bulletTexture, new Vector2(X, Y), angle, 15));
+                    Game1.ListOfBullets.Add(new Bullet(bulletTexture, new Vector2(X, Y), Angle, 15));
                     attackSpdTimer = 0;
                 }
                 //target.Health -= damage;
@@ -143,13 +143,13 @@ namespace MonoZombie
         {
             //base.Draw(turret, Holder, tint);
             //base.Draw(GunPart, Holder, tint);
-            SpriteManager.DrawImage(sb, turret, position, angle: 0, scale: SpriteManager.ObjectScale);
+            SpriteManager.DrawImage(sb, turret, Rect, angle: 0);
             //Change the angle the gun is drawn at since the asset is drawn a bit differently 
             //(about 90 degrees off from where it's actually facing).
-            SpriteManager.DrawImage(sb, GunPart, position, angle: angle + (MathF.PI/2), scale: SpriteManager.ObjectScale);
+            SpriteManager.DrawImage(sb, GunPart, Rect, angle: Angle + (MathF.PI/2));
         }
 
-        public void Update(Enemy target, Texture2D bulletTexture, GameTime gameTime)
+        public void UpdateTurret(Enemy target, Texture2D bulletTexture, GameTime gameTime)
         {
             attackSpdTimer += gameTime.ElapsedGameTime.TotalSeconds;
             Detect(Game1.ListOfZombies, bulletTexture, gameTime);

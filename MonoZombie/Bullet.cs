@@ -40,9 +40,10 @@ namespace MonoZombie
             : base(texture, position, canRotate: true)
         {
             this.bulletSpeed = bulletSpeed;
-            this.angle = angle + (MathF.PI/2);
             this.speedX = -(bulletSpeed * Math.Cos(angle));
             this.speedY = bulletSpeed * Math.Sin(-angle);
+
+            Angle = angle + (MathF.PI / 2);
         }
 
 
@@ -64,7 +65,7 @@ namespace MonoZombie
         /// <param name="spriteBatch"></param>
         public override void Draw(SpriteBatch spriteBatch)
         {
-            SpriteManager.DrawImage(spriteBatch, texture, position, true, angle, SpriteManager.ObjectScale);
+            SpriteManager.DrawImage(spriteBatch, texture, Rect, angle: Angle);
         }
 
         /// Don't check for collision here

@@ -188,7 +188,7 @@ namespace MonoZombie {
 
 			// Texture-reliant intitialization
 			turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
-			player = new Player(playerImage, ScreenDimensions / 2, 10, 10, 3);
+			player = new Player(playerImage, ScreenDimensions / 2, 10, 5, 3);
 			zombie = new Enemy(enemyImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2), 100, 1, 5);
 
 			// Create the camera
@@ -256,20 +256,27 @@ namespace MonoZombie {
                                 //Check if any zombies are in range of the turrets
                                 foreach (Turret turret in listOfTurrets)
                                 {
-                                    turret.Update(zombie, bulletImage, gameTime);
+                                    turret.UpdateTurret(zombie, bulletImage, gameTime);
                                 }
                             }
 
 							if (aZombieIsAlive!) {
 								roundIsOngoing = false;
 							}
-							
+
+							if (currMouseState.LeftButton == ButtonState.Pressed) {
+								player.Shoot(bulletImage, currMouseState, gameTime);
+							}
+
+							foreach (Bullet bullet in listOfBullets) {
+								bullet.Move( );
+							}
 
 							// Update the player
-							player.Update(currMouseState, currKeyboardState);
+							player.Update(gameTime, currMouseState, currKeyboardState);
 
 							// Update the map
-							map.Update(currMouseState, currKeyboardState);
+							map.Update(gameTime, currMouseState, currKeyboardState);
 
 							// Check gameobject collisions
 							map.CheckUpdateCollision(player);
@@ -277,18 +284,9 @@ namespace MonoZombie {
 							// check zombie-player collisions
 							// check bullet-zombie collisions
 
+							// Update the camera screen positions of the game objects
 							player.UpdateCameraScreenPosition(camera);
 							map.UpdateCameraScreenPosition(camera);
-
-							if (currMouseState.LeftButton == ButtonState.Pressed)
-							{
-								player.Shoot(bulletImage, currMouseState, gameTime);
-							}
-
-							foreach(Bullet bullet in listOfBullets)
-							{
-								bullet.Move();
-							}
 
 							if (GetKeyDown(Keys.Escape)) {
 								gameState = GameState.Pause;
@@ -358,9 +356,6 @@ namespace MonoZombie {
 							// Draw the player
 							player.Draw(_spriteBatch);
 
-							SpriteManager.DrawDebugRect(_spriteBatch, _graphics, player.Rect, Color.Red);
-							SpriteManager.DrawDebugRect(_spriteBatch, _graphics, map[0, 0].Rect, Color.Blue);
-
 							/*
 							turret.Draw(_spriteBatch, Color.White);
 
@@ -386,11 +381,11 @@ namespace MonoZombie {
 
 							// Draw UI elements
 							SpriteManager.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), scale: SpriteManager.UIScale);
-							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Currency: {currency}", Color.Black, new Vector2(30, 30));
-							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Round Number: {roundNumber}", Color.Black, new Vector2(30, 45));
-							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Player Health: {player.Health}", Color.Black, new Vector2(30, 60));
-							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Zombie Timer: {zombie.Timer}", Color.Black, new Vector2(30, 75));
-							SpriteManager.DrawText(_spriteBatch, 0.5f, $"Zombie Health: {zombie.Health}", Color.Black, new Vector2(30, 90));
+							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 30), $"Currency: {currency}", Color.Black, fontScale: 0.5f);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 45), $"Round Number: {roundNumber}", Color.Black, fontScale: 0.5f);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 60), $"Player Health: {player.Health}", Color.Black, fontScale: 0.5f);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 75), $"Zombie Timer: {zombie.Timer}", Color.Black, fontScale: 0.5f);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 90), $"Zombie Health: {zombie.Health}", Color.Black, fontScale: 0.5f);
 
 							break;
 						case GameState.Pause:

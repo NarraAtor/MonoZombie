@@ -11,7 +11,8 @@ using Microsoft.Xna.Framework.Input;
 namespace MonoZombie {
 	public class Player : GameObject {
 		private int health;
-		private int attackSpd;
+		private double attackSpdTimer;
+		private double attacksPerSecond;
 
 		public int Health {
 			get {
@@ -22,9 +23,9 @@ namespace MonoZombie {
 			}
 		}
 
-		public Player (Texture2D texture, Vector2 position, int health, int attackSpd, int playerSpeed) : base(texture, position, moveSpeed: playerSpeed, canRotate: true) {
+		public Player (Texture2D texture, Vector2 position, int health, double attacksPerSecond, int playerSpeed) : base(texture, position, moveSpeed: playerSpeed, canRotate: true) {
 			this.health = health;
-			this.attackSpd = attackSpd;
+			this.attacksPerSecond = attacksPerSecond;
 		}
 
 		/*
@@ -32,7 +33,7 @@ namespace MonoZombie {
 		 * 
 		 * Overridden from the base GameObject class
 		 */
-		public new void Update (MouseState mouse, KeyboardState keyboard) {
+		public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
 			// Move the player based on keyboard input
 			Move(keyboard);
 
@@ -93,7 +94,7 @@ namespace MonoZombie {
 
             if(attackSpdTimer >= 1/attacksPerSecond)
             {
-                Game1.ListOfBullets.Add( new Bullet(bulletTexture, new Vector2(X, Y), angle, 15));
+                Game1.ListOfBullets.Add( new Bullet(bulletTexture, new Vector2(X, Y), Angle, 15));
                 attackSpdTimer = 0;
             }
 
