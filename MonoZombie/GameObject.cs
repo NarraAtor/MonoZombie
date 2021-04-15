@@ -62,7 +62,7 @@ namespace MonoZombie {
 			}
 		}
 
-		// The angle that the game object is rotated to
+		// The angle that the game object is rotated to in radians
 		public float Angle {
 			get;
 			private set;

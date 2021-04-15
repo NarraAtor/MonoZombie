@@ -34,13 +34,15 @@ namespace MonoZombie
         /// <param name="y"></param>
         /// <param name="speedX"> How much the bullet will be moving in the horizontal direction </param>
         /// <param name="speedY"> How much the bullet will be moving in the vertical direction </param>
+        /// <param name="angle"> The angle the player was facing when the bullet was shot </param>
         /// <param name="bulletSpeed"> How fast the bullet is going to be moving</param>
-        public Bullet(Texture2D texture, Vector2 position, double speedX, double speedY, int bulletSpeed) 
+        public Bullet(Texture2D texture, Vector2 position, float angle, int bulletSpeed) 
             : base(texture, position, canRotate: true)
         {
             this.bulletSpeed = bulletSpeed;
-            this.speedX = bulletSpeed * speedX;
-            this.speedY = bulletSpeed * speedY;
+            this.angle = angle + (MathF.PI/2);
+            this.speedX = -(bulletSpeed * Math.Cos(angle));
+            this.speedY = bulletSpeed * Math.Sin(-angle);
         }
 
 
@@ -53,6 +55,16 @@ namespace MonoZombie
         {
             X += (int)speedX;
             Y += (int)speedY;
+        }
+
+        /// <summary>
+        /// Purpose: Draws the bullet
+        /// Restrictions:
+        /// </summary>
+        /// <param name="spriteBatch"></param>
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            SpriteManager.DrawImage(spriteBatch, texture, position, true, angle, SpriteManager.ObjectScale);
         }
 
         /// Don't check for collision here

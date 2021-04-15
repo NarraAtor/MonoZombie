@@ -5,6 +5,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
+// Author : Frank Alfano, Eric Fotang, Jack Shyshko
+// Purpose : Manages player values and mechanics like shooting
+
 namespace MonoZombie {
 	public class Player : GameObject {
 		private int health;
@@ -35,7 +38,10 @@ namespace MonoZombie {
 
 			// Rotate the player to look at the mouse
 			RotateTo(mouse.Position.ToVector2( ));
-		}
+
+            attackSpdTimer += gameTime.ElapsedGameTime.TotalSeconds;
+
+        }
 
 
 		/*
@@ -65,16 +71,17 @@ namespace MonoZombie {
 		}
 
 
-		/// <summary>
-		/// This is going to generate a bullet 
-		/// in the direction that the player is facing 
-		/// Use the player's angle to transform into
-		/// bullet speed in different axis
-		/// </summary>
-		/// <param name="bulletTexture"> Bullet texture parameter </param>
-		/// <returns> </returns>
-		public Bullet Shoot (Texture2D bulletTexture) {
-			/*
+        /// <summary>
+        /// This is going to generate a bullet 
+        /// in the direction that the player is facing 
+        /// Use the player's angle to transform into
+        /// bullet speed in different axis
+        /// </summary>
+        /// <param name="bulletTexture"> Bullet texture parameter </param>
+        /// <returns> </returns>
+        public void Shoot(Texture2D bulletTexture, MouseState mouse, GameTime gameTime)
+        {
+            /*
              * Possible implementations:
              *  → Have a firerate timer
              *  → Do it by click
@@ -84,12 +91,13 @@ namespace MonoZombie {
              * Check mouse state in Main()
              */
 
+            if(attackSpdTimer >= 1/attacksPerSecond)
+            {
+                Game1.ListOfBullets.Add( new Bullet(bulletTexture, new Vector2(X, Y), angle, 15));
+                attackSpdTimer = 0;
+            }
 
-			double speedX = Math.Cos(Angle);
-			double speedY = Math.Sin(Angle);
-
-			return new Bullet(bulletTexture, new Vector2(X, Y), speedX, speedY, 15);
-		}
+        }
 
 		public void TakeDamage (int damage) { health -= damage; }
 
