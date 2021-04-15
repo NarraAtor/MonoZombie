@@ -23,9 +23,8 @@ namespace MonoZombie
         double speedY;                         // how much the bullet moves in y axis;
 
         int damage;
-        // Making a damage function would prove impossible, at least at the moment, as Enemy has nothing within it
 
-
+        public bool IsActive { get; set; }
         /// <summary>
         /// Instantiates a Bullet object
         /// </summary>
@@ -44,6 +43,8 @@ namespace MonoZombie
             this.speedY = bulletSpeed * Math.Sin(-angle);
 
             Angle = angle + (MathF.PI / 2);
+
+            IsActive = true;
         }
 
 

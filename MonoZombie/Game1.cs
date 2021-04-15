@@ -82,6 +82,7 @@ namespace MonoZombie {
 		private static int roundNumber;
 		private static bool roundIsOngoing;
 		private static bool aZombieIsAlive;
+		private static bool aBulletIsInactive;
 
 		public static Player Player {
 			get {
@@ -129,6 +130,7 @@ namespace MonoZombie {
             listOfTurrets = new List<Turret>();
 			listOfBullets = new List<Bullet>();
             aZombieIsAlive = false;
+			aBulletIsInactive = false;
 
 			base.Initialize( );
 		}
@@ -235,7 +237,9 @@ namespace MonoZombie {
 							//{
 							//	menuState = MenuState.GameOver;
 							//}
-							
+
+							aBulletIsInactive = false;
+
 							//This code rewards the player when a zombie is killed and makes the round end when in contact with a zombie.
 							aZombieIsAlive = false;
 
@@ -283,6 +287,34 @@ namespace MonoZombie {
 							// check zombie-map collisions
 							// check zombie-player collisions
 							// check bullet-zombie collisions
+							foreach(Enemy zombie in listOfZombies)
+							{
+								foreach(Bullet bullet in ListOfBullets)
+								{
+									//If the bullet is colliding with a zombie and hasn't already hit one.
+									if(bullet.CheckUpdateCollision(zombie) && bullet.IsActive)
+									{
+										zombie.TakeDamage(10);
+										bullet.IsActive = false;
+										aBulletIsInactive = true;
+									}
+								}
+							}
+
+							if(aBulletIsInactive)
+							{
+								//Delete inactive bullets by creating a new list without the the inactive bullets.
+								List<Bullet> newBulletList = new List<Bullet>();
+								for (int i = 0; i < listOfBullets.Count; i++)
+								{
+									if (listOfBullets[i].IsActive)
+									{
+										newBulletList.Add(listOfBullets[i]);
+									}
+								}
+								listOfBullets = newBulletList;
+							}
+							
 
 							// Update the camera screen positions of the game objects
 							player.UpdateCameraScreenPosition(camera);
@@ -356,7 +388,7 @@ namespace MonoZombie {
 							// Draw the player
 							player.Draw(_spriteBatch);
 
-							/*
+							
 							turret.Draw(_spriteBatch, Color.White);
 
                             foreach(Enemy zombie in listOfZombies)
@@ -368,7 +400,7 @@ namespace MonoZombie {
                             {
                                 turret.Draw(_spriteBatch, Color.White);
                             }
-							*/
+							
 
 							// Draw the bullets
 							foreach (Bullet bullet in listOfBullets)
