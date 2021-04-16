@@ -223,7 +223,6 @@ namespace MonoZombie
             // Texture-reliant intitialization
             turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
             player = new Player(playerImage, ScreenDimensions / 2, 10, 5, 3);
-            zombie = new Enemy(enemyImage, zombieSpawnPoints[rng.Next(0, zombieSpawnPoints.Length)], zombieHealth, zombieMoveSpeed, zombieAttackSpeed);
 
             // Create the camera
             camera = new Camera(player);
@@ -233,14 +232,14 @@ namespace MonoZombie
             {
                 menuState = MenuState.Game;
                 gameState = GameState.Playing;
-                roundIsOngoing = true;
+                roundIsOngoing = false;
             });
 
             menuPlayEasyModeButton = new UIButton("Easy Mode", ScreenDimensions / 2 + new Vector2(0f, 100f), () =>
             {
                 menuState = MenuState.Game;
                 gameState = GameState.Playing;
-                roundIsOngoing = true;
+                roundIsOngoing = false;
                 easyModeTEST = true;
             });
 
@@ -526,8 +525,6 @@ namespace MonoZombie
                             SpriteManager.DrawText(_spriteBatch, new Vector2(30, 30), $"Currency: {currency}", Color.Black, fontScale: 0.5f);
                             SpriteManager.DrawText(_spriteBatch, new Vector2(30, 45), $"Round Number: {roundNumber}", Color.Black, fontScale: 0.5f);
                             SpriteManager.DrawText(_spriteBatch, new Vector2(30, 60), $"Player Health: {player.Health}", Color.Black, fontScale: 0.5f);
-                            SpriteManager.DrawText(_spriteBatch, new Vector2(30, 75), $"Zombie Timer: {zombie.Timer}", Color.Black, fontScale: 0.5f);
-                            SpriteManager.DrawText(_spriteBatch, new Vector2(30, 90), $"Zombie Health: {zombie.Health}", Color.Black, fontScale: 0.5f);
 
                             break;
                         case GameState.Pause:
