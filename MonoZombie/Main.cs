@@ -89,6 +89,10 @@ namespace MonoZombie
         private static bool roundIsOngoing;
         private static bool aZombieIsAlive;
         private static bool aBulletIsInactive;
+        private List<Turret> turretButtonList;                      // the list that holds all of the turret images
+        private List<String> turretNames;                           // holds the names of the turret types, please update
+                                                                    // when new turrets are added to the ButtonList
+        private Turret turretInPurchase;							// the turret that the player is currently purchasing from the shop.
 
         //Constant variables
         private const int zombieHealth = 100;
@@ -153,7 +157,9 @@ namespace MonoZombie
             aZombieIsAlive = false;
             aBulletIsInactive = false;
             easyModeTEST = false;
-            
+            turretButtonList = new List<Turret>();
+            turretNames = new List<String>();
+
             rng = new Random();
 
             base.Initialize();
@@ -242,6 +248,16 @@ namespace MonoZombie
                 roundIsOngoing = false;
                 easyModeTEST = true;
             });
+
+            pauseResumeButton = new UIButton("Resume", new Vector2(ScreenDimensions.X / 2, ScreenDimensions.Y / 3 * 2), () =>
+            {
+                gameState = GameState.Playing;
+            }, true);
+            pauseMenuButton = new UIButton("Menu", new Vector2(ScreenDimensions.X / 2, ScreenDimensions.Y / 3), () =>
+            {
+                menuState = MenuState.MainMenu;
+                roundIsOngoing = false;
+            }, true);
 
             // test zombie list
             listOfZombies.Add(zombie);
@@ -422,6 +438,7 @@ namespace MonoZombie
                             if (GetKeyDown(Keys.Escape))
                             {
                                 gameState = GameState.Pause;
+
                             }
 
                             if (GetKeyDown(Keys.Tab))
@@ -438,6 +455,9 @@ namespace MonoZombie
                                 gameState = GameState.Playing;
                             }
 
+                            pauseResumeButton.Update(gameTime, currMouseState);
+                            pauseMenuButton.Update(gameTime, currMouseState);
+
                             break;
                         case GameState.Shop:
                             currentStateTEST = "Game - Shop";
@@ -447,6 +467,15 @@ namespace MonoZombie
                                 gameState = GameState.Playing;
                             }
 
+                            for (int i = 0; i < turretButtonList.Count; i++)
+                                if (currMouseState.X > turretButtonList[i].Rect.Left && currMouseState.X < turretButtonList[i].Rect.Right
+                                        && currMouseState.Y > turretButtonList[i].Rect.Bottom)
+                                {
+                                    if (currMouseState.LeftButton == ButtonState.Pressed)
+                                    {
+                                        turretInPurchase = turretButtonList[i];
+                                    }
+                                }
                             break;
                     }
                     break;
@@ -527,10 +556,10 @@ namespace MonoZombie
 
                             break;
                         case GameState.Pause:
-
+                            DrawPauseMenu();
                             break;
                         case GameState.Shop:
-
+                            DrawShop();
                             break;
                     }
 
@@ -575,6 +604,27 @@ namespace MonoZombie
         public static float Distance(Vector2 point1, Vector2 point2)
         {
             return MathF.Sqrt(MathF.Pow(point1.X - point2.X, 2) + MathF.Pow(point1.Y - point2.Y, 2));
+        }
+
+        private void DrawPauseMenu()
+        {
+            //			_spriteBatch.Draw(new Rectangle(0,0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight), Color.LightBlue);
+            _spriteBatch.DrawString(font, "Paused", new Vector2(_graphics.PreferredBackBufferWidth / 2 - 50, 30), Color.White);
+
+            pauseResumeButton.Draw(_spriteBatch);
+            pauseMenuButton.Draw(_spriteBatch);
+
+        }
+
+        private void DrawShop()
+        {
+            _spriteBatch.DrawString(font, "Shop", new Vector2(_graphics.PreferredBackBufferWidth / 2 - 40, 30), Color.White);
+
+            for (int i = 0; i < turretButtonList.Count; i++)
+            {
+                turretButtonList[i].Draw(_spriteBatch, Color.White);
+                _spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].Y, turretButtonList[i].Y + 75), Color.White);
+            }
         }
     }
 }
