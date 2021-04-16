@@ -306,7 +306,8 @@ namespace MonoZombie
                                 {
                                     foreach (Enemy zombie in listOfZombies)
                                     {
-                                        zombie.Health = zombieHealth + (10 * (roundNumber - 75));
+                                        if (!(zombie is null))
+                                            zombie.Health = zombieHealth + (10 * (roundNumber - 75));
                                     }
                                 }
                                 //Otherwise just add a zombie to the list.
@@ -316,13 +317,15 @@ namespace MonoZombie
                                     listOfZombies.Add(new Enemy(enemyImage, zombieSpawnPoints[rng.Next(0, zombieSpawnPoints.Length)], zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
                                     foreach(Enemy zombie in listOfZombies)
                                     {
-                                        zombie.Health = zombieHealth;
+                                        if (!(zombie is null))
+                                            zombie.Health = zombieHealth;
                                     }
                                 }
 
                                 foreach(Enemy zombie in listOfZombies)
                                 {
-                                    zombie.IsAlive = true;
+                                    if (!(zombie is null))
+                                        zombie.IsAlive = true;
                                 }
 
                                 roundIsOngoing = true;
@@ -530,7 +533,8 @@ namespace MonoZombie
 
                             foreach (Enemy zombie in listOfZombies)
                             {
-                                zombie.Draw(_spriteBatch);
+                                if (!(zombie is null))
+                                    zombie.Draw(_spriteBatch);
                             }
 
                             foreach (Turret turret in listOfTurrets)
