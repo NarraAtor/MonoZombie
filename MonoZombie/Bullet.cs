@@ -23,9 +23,8 @@ namespace MonoZombie
         double speedY;                         // how much the bullet moves in y axis;
 
         int damage;
-        // Making a damage function would prove impossible, at least at the moment, as Enemy has nothing within it
 
-
+        public bool IsActive { get; set; }
         /// <summary>
         /// Instantiates a Bullet object
         /// </summary>
@@ -40,9 +39,12 @@ namespace MonoZombie
             : base(texture, position, canRotate: true)
         {
             this.bulletSpeed = bulletSpeed;
-            this.angle = angle + (MathF.PI/2);
             this.speedX = -(bulletSpeed * Math.Cos(angle));
             this.speedY = bulletSpeed * Math.Sin(-angle);
+
+            Angle = angle + (MathF.PI / 2);
+
+            IsActive = true;
         }
 
 
@@ -53,8 +55,9 @@ namespace MonoZombie
         /// </summary>
         public void Move()
         {
-            X += (int)speedX;
-            Y += (int)speedY;
+            //X += (int)speedX;
+            //Y += (int)speedY;
+            MoveBy(new Vector2((float)speedX, (float)speedY));
         }
 
         /// <summary>
@@ -64,7 +67,7 @@ namespace MonoZombie
         /// <param name="spriteBatch"></param>
         public override void Draw(SpriteBatch spriteBatch)
         {
-            SpriteManager.DrawImage(spriteBatch, texture, position, true, angle, SpriteManager.ObjectScale);
+            SpriteManager.DrawImage(spriteBatch, texture, Rect, angle: Angle);
         }
 
         /// Don't check for collision here

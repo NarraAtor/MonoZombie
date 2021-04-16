@@ -31,7 +31,7 @@ namespace MapEditor
         }
 
         //Purpose: Creates a new map
-        //Restrictions: Length and width must be integers between 10 and 30 inclusive
+        //Restrictions: Length and width must be integers between 20 and 50 inclusive
         //Params: sender for the button that was clicked, e for any arguments attached
         private void buttonCreateMap_Click(object sender, EventArgs e)
         {
@@ -47,25 +47,25 @@ namespace MapEditor
             bool heightTooLow = false;
             bool heightTooHigh = false;
 
-            if (!widthNaN && width < 10)
+            if (!widthNaN && width < 20)
             {
                 widthTooLow = true;
             }
-            if (!widthNaN && width > 30)
+            if (!widthNaN && width > 50)
             {
                 widthTooHigh = true;
             }
-            if (!heightNaN && height < 10)
+            if (!heightNaN && height < 20)
             {
                 heightTooLow = true;
             }
-            if (!heightNaN && height > 30)
+            if (!heightNaN && height > 50)
             {
                 heightTooHigh = true;
             }
 
-            if (widthNaN || heightNaN || widthTooLow || widthTooHigh || heightTooLow || heightTooHigh)
-            {//if any errors get flagged,
+            if (widthNaN || heightNaN || widthTooLow || widthTooHigh || heightTooLow || heightTooHigh)//if any errors get flagged,
+            {
                 string errors = "Errors:";//Lists all the errors
                 if (widthNaN)
                 {
@@ -73,11 +73,11 @@ namespace MapEditor
                 }
                 if (widthTooLow)
                 {
-                    errors += "\n - Width too small. Minimum is 10";
+                    errors += "\n - Width too small. Minimum is 20";
                 }
                 if (widthTooHigh)
                 {
-                    errors += "\n - Width too high. Maximum is 30";
+                    errors += "\n - Width too high. Maximum is 50";
                 }
                 if (heightNaN)
                 {
@@ -85,11 +85,11 @@ namespace MapEditor
                 }
                 if (heightTooLow)
                 {
-                    errors += "\n - Height too small. Minimum is 10";
+                    errors += "\n - Height too small. Minimum is 20";
                 }
                 if (heightTooHigh)
                 {
-                    errors += "\n - Height too high. Maximum is 30";
+                    errors += "\n - Height too high. Maximum is 50";
                 }
                 MessageBox.Show(errors, "Error creating map", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;//displays the errors, and then returns
@@ -100,7 +100,7 @@ namespace MapEditor
         }
 
         //Purpose: Loads an existing map
-        //Restrictions: Length and width must be integers between 10 and 30 inclusive
+        //Restrictions: Length and width must be integers between 20 and 50 inclusive
         //Params: sender for the button that was clicked, e for any arguments attached
         private void buttonLoadMap_Click(object sender, EventArgs e)
         {
@@ -116,8 +116,8 @@ namespace MapEditor
                 {
                     ef.ShowDialog();
                 }
-                catch
-                {//if anything goes wrong, Editor form closes and this error message displays
+                catch//if anything goes wrong, Editor form closes and this error message displays
+                {
                     MessageBox.Show("Could not open up file. Please check the file for any errors.", 
                         "Error loading map", 
                         MessageBoxButtons.OK, 

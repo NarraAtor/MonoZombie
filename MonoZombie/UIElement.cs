@@ -11,19 +11,12 @@ using System.Text;
 namespace MonoZombie {
 	public abstract class UIElement {
 		protected Rectangle rect;
-		protected bool centered;
+		protected bool isCentered;
 
-		public UIElement (Vector2 dimensions, Vector2 position, bool centered = false) : this(new Rectangle(position.ToPoint( ), dimensions.ToPoint( )), centered) {
-		}
+		public UIElement (Texture2D texture, Vector2 position, bool isCentered = true) {
+			this.isCentered = isCentered;
 
-		public UIElement (Rectangle rect, bool centered = false) {
-			this.rect = rect;
-			this.centered = centered;
-
-			// If the UIElement should be centered, shift its rectangle accordingly
-			if (centered) {
-				this.rect.Location -= (rect.Size.ToVector2( ) / 2).ToPoint( );
-			}
+			rect = SpriteManager.GetBoundingRect(texture, position, scale: SpriteManager.UIScale, isCentered: this.isCentered);
 		}
 
 		public abstract void Update (GameTime gameTime, MouseState mouse);

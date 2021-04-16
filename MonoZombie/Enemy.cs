@@ -7,18 +7,23 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MonoZombie
 {
-    class Enemy : GameObject
+    public class Enemy : GameObject
     {
-        int health;
-        int speed;
-        int attSpeed;
-        double timeAtLastFrame;
-        double attTime;
-        double timer;
+        private int health;
+        private int speed;
+        private int attSpeed;
+        private double timeAtLastFrame;
+        private double attTime;
+        private double timer;
+        private bool isAlive;
+
         //testing property
         public double Timer { get { return timer; } }
 
-        bool isAlive;
+        public bool IsAlive { get { return isAlive; } set { isAlive = value; } }
+        public int Health { get { return health; } set { health = value; } }
+
+
 
         public Enemy(Texture2D texture, Vector2 position, int health, int speed, int attSpeed) 
             : base(texture, position, canRotate: true)
@@ -56,8 +61,7 @@ namespace MonoZombie
             health -= damage;
         }
 
-        public bool IsAlive { get { return isAlive; } }
-        public int Health { get { return health; } set { health = value; } }
+        
 
         public void Die() { isAlive = false; }
 
@@ -75,6 +79,16 @@ namespace MonoZombie
             //timer += timeBetweenFrames;
             Attack(player);
             //timeAtLastFrame = currentTime;
+        }
+
+        /// <summary>
+        /// Purpose: Only draw the zombie if it is alive.
+        /// </summary>
+        /// <param name="spriteBatch">the zombie to draw to</param>
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            if(IsAlive)
+            base.Draw(spriteBatch);
         }
     }
 }
