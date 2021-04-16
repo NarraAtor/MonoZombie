@@ -20,7 +20,7 @@ namespace MonoZombie
         //testing property
         public double Timer { get { return timer; } }
 
-        public bool IsAlive { get { return isAlive; } }
+        public bool IsAlive { get { return isAlive; } set{ isAlive = value; }
         public int Health { get { return health; } set { health = value; } }
 
 
