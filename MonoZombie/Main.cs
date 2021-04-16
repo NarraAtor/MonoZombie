@@ -153,11 +153,7 @@ namespace MonoZombie
             aZombieIsAlive = false;
             aBulletIsInactive = false;
             easyModeTEST = false;
-            leftSideOfMap = new Vector2(map[0,0].X,);
-            rightSideOfMap = new Vector2(ScreenDimensions.X, ScreenDimensions.Y / 2);
-            topSideOfMap = new Vector2(ScreenDimensions.X / 2, 0);
-            bottomSideOfMap = new Vector2(ScreenDimensions.X / 2, ScreenDimensions.Y);
-            zombieSpawnPoints = new Vector2[] { leftSideOfMap, rightSideOfMap, topSideOfMap, bottomSideOfMap };
+            
             rng = new Random();
 
             base.Initialize();
@@ -216,6 +212,13 @@ namespace MonoZombie
             _graphics.PreferredBackBufferWidth = (int)ScreenDimensions.X;
             _graphics.PreferredBackBufferHeight = (int)ScreenDimensions.Y;
             _graphics.ApplyChanges();
+
+            // Map-reliant intialization
+            leftSideOfMap = new Vector2(map[0, (map.Height - 1) / 2].X, map[0, (map.Height - 1) / 2].Y);
+            rightSideOfMap = new Vector2(map[(map.Width - 1), (map.Height - 1) / 2].X, map[(map.Width - 1), (map.Height - 1) / 2].Y);
+            topSideOfMap = new Vector2(map[(map.Width - 1) / 2, 0].X, map[(map.Width - 1) / 2, 0].Y);
+            bottomSideOfMap = new Vector2(map[(map.Width - 1) / 2, (map.Height - 1)].X, map[(map.Width - 1) / 2, (map.Height - 1)].Y);
+            zombieSpawnPoints = new Vector2[] { leftSideOfMap, rightSideOfMap, topSideOfMap, bottomSideOfMap };
 
             // Texture-reliant intitialization
             turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
@@ -294,6 +297,7 @@ namespace MonoZombie
                                 //Otherwise just add a zombie to the list.
                                 else
                                 {
+                                    //Testing each of the spawn points.
                                     listOfZombies.Add(new Enemy(enemyImage, zombieSpawnPoints[rng.Next(0, zombieSpawnPoints.Length)], zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
                                     foreach(Enemy zombie in listOfZombies)
                                     {
