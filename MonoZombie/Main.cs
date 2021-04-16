@@ -280,7 +280,7 @@ namespace MonoZombie
                                 //Otherwise just add a zombie to the list.
                                 else
                                 {
-                                    listOfZombies.Add(new Enemy(enemyImage, new Vector2(listOfZombies[0].X + 10, listOfZombies[0].Y + 10), zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
+                                    listOfZombies.Add(new Enemy(enemyImage, new Vector2(listOfZombies[listOfZombies.Count - 1].X + 10, listOfZombies[listOfZombies.Count - 1].Y + 10), zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
                                     foreach(Enemy zombie in listOfZombies)
                                     {
                                         zombie.Health = zombieHealth;
@@ -291,6 +291,8 @@ namespace MonoZombie
                                 {
                                     zombie.IsAlive = true;
                                 }
+
+                                roundIsOngoing = true;
                             }
 
 
@@ -326,7 +328,7 @@ namespace MonoZombie
                             {
                                 roundIsOngoing = false;
                                 roundNumber++;
-                                gameState = GameState.Shop;
+                                //gameState = GameState.Shop;
                                 //allowaccess to shop
                                 //run shop methods when opened
                             }
