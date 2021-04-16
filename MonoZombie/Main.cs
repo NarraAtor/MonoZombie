@@ -37,6 +37,7 @@ namespace MonoZombie {
 
 		//Test variables
 		private string currentStateTEST;
+		private bool easyModeTEST;
 
 		public static Vector2 ScreenDimensions = new Vector2(1280, 720);
 		private Camera camera;
@@ -51,6 +52,7 @@ namespace MonoZombie {
 
 		// UI Button Variables
 		private UIButton menuPlayButton;
+		private UIButton menuPlayEasyModeButton;
 		private UIButton menuQuitButton;
 		private UIButton pauseResumeButton;
 		private UIButton pauseMenuButton;
@@ -131,6 +133,7 @@ namespace MonoZombie {
 			listOfBullets = new List<Bullet>();
             aZombieIsAlive = false;
 			aBulletIsInactive = false;
+			easyModeTEST = false;
 
 			base.Initialize( );
 		}
@@ -203,6 +206,14 @@ namespace MonoZombie {
 				roundIsOngoing = true;
 			});
 
+			menuPlayEasyModeButton = new UIButton("Easy Mode", ScreenDimensions / 2 + new Vector2(0f, 100f), ( ) =>
+			{
+				menuState = MenuState.Game;
+				gameState = GameState.Playing;
+				roundIsOngoing = true;
+				easyModeTEST = true;
+			});
+
 			// test zombie list
 			listOfZombies.Add(zombie);
 
@@ -223,6 +234,7 @@ namespace MonoZombie {
 
 					// Update the menu UI elements
 					menuPlayButton.Update(gameTime, currMouseState);
+					menuPlayEasyModeButton.Update(gameTime, currMouseState);
 
 					break;
 				case MenuState.Game:
@@ -233,10 +245,10 @@ namespace MonoZombie {
 							currentStateTEST = "Game - Playing";
 
 							//Check if the player is dead
-							//if(player.Health <= 0)
-							//{
-							//	menuState = MenuState.GameOver;
-							//}
+							if(player.Health <= 0 && !easyModeTEST)
+							{
+								menuState = MenuState.GameOver;
+							}
 
 							aBulletIsInactive = false;
 
@@ -396,6 +408,7 @@ namespace MonoZombie {
 					// Draw menu UI objects
 					SpriteManager.DrawImage(_spriteBatch, titleTexture, ScreenDimensions * new Vector2(0.5f, 0.25f), scale: SpriteManager.UIScale, isCentered: true);
 					menuPlayButton.Draw(_spriteBatch);
+					menuPlayEasyModeButton.Draw(_spriteBatch);
 
 					break;
 				case MenuState.Game:
