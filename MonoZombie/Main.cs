@@ -312,7 +312,6 @@ namespace MonoZombie
                                 roundIsOngoing = true;
                             }
 
-
                             aBulletIsInactive = false;
 
                             //This code rewards the player when a zombie is killed and makes the round end when in contact with a zombie.
