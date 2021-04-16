@@ -48,6 +48,8 @@ namespace MonoZombie {
 		public static Texture2D buttonTexture;
 		public static Texture2D tabTexture;
 
+		
+
 		// UI Button Variables
 		private UIButton menuPlayButton;
 		private UIButton menuQuitButton;
@@ -82,6 +84,11 @@ namespace MonoZombie {
 		private static int roundNumber;
 		private static bool roundIsOngoing;
 		private static bool aZombieIsAlive;
+
+		private List<Turret> turretButtonList;                      // the list that holds all of the turret images
+		private List<String> turretNames;                           // holds the names of the turret types, please update
+																	// when new turrets are added to the ButtonList
+		private Turret turretInPurchase;							// the turret that the player is currently purchasing from the shop.
 
 		public static Player Player {
 			get {
@@ -118,10 +125,13 @@ namespace MonoZombie {
 			listOfBullets = new List<Bullet>();
             aZombieIsAlive = false;
 
+			turretButtonList = new List<Turret>();
+			turretNames = new List<String>();
+
 			base.Initialize( );
 		}
 
-		protected override void LoadContent ( ) {
+		protected override void LoadContent() {
 			_spriteBatch = new SpriteBatch(GraphicsDevice);
 
 			// Load textures for game objects
@@ -132,13 +142,13 @@ namespace MonoZombie {
 			bulletImage = Content.Load<Texture2D>("bullet");
 
 			// Load map tile textures
-			grassTextures = new Texture2D[ ] {
+			grassTextures = new Texture2D[] {
 				Content.Load<Texture2D>("GrassTile1"),
 				Content.Load<Texture2D>("GrassTile2"),
 				Content.Load<Texture2D>("GrassTile3")
 			};
 
-			wallTextures = new Texture2D[ ] {
+			wallTextures = new Texture2D[] {
 				Content.Load<Texture2D>("WallTile1"),
 				Content.Load<Texture2D>("WallTile2"),
 				Content.Load<Texture2D>("WallTile3")
@@ -173,9 +183,9 @@ namespace MonoZombie {
 			// Update the dimensions of the screen
 			screenDimensions = new Vector2(map.PixelWidth, map.PixelHeight);
 
-			_graphics.PreferredBackBufferWidth = (int) screenDimensions.X;
-			_graphics.PreferredBackBufferHeight = (int) screenDimensions.Y;
-			_graphics.ApplyChanges( );
+			_graphics.PreferredBackBufferWidth = (int)screenDimensions.X;
+			_graphics.PreferredBackBufferHeight = (int)screenDimensions.Y;
+			_graphics.ApplyChanges();
 
 			//Texture reliant intitialization
 			turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
@@ -183,14 +193,27 @@ namespace MonoZombie {
 			zombie = new Enemy(enemyImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2), 100, 1, 5);
 
 			// Create UI Buttons
-			menuPlayButton = new UIButton("Play", screenDimensions / 2, ( ) => {
+			menuPlayButton = new UIButton("Play", screenDimensions / 2, () => {
 				menuState = MenuState.Game;
 				gameState = GameState.Playing;
 				roundIsOngoing = true;
 			}, true);
+			pauseResumeButton = new UIButton("Resume", new Vector2(screenDimensions.X / 2, screenDimensions.Y / 3 * 2), () =>
+			{
+				gameState = GameState.Playing;
+			}, true);
+			pauseMenuButton = new UIButton("Menu", new Vector2(screenDimensions.X / 2, screenDimensions.Y / 3), () =>
+			{
+				menuState = MenuState.MainMenu;
+				roundIsOngoing = false;
+			}, true);
 
 			// test zombie list
 			// listOfZombies.Add(zombie);
+
+
+			turretButtonList.Add(new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(_graphics.PreferredBackBufferHeight/3, _graphics.PreferredBackBufferWidth/3)));
+			turretNames.Add("Archer");
 
 			base.LoadContent( );
 		}
@@ -276,6 +299,8 @@ namespace MonoZombie {
 								gameState = GameState.Playing;
 							}
 
+							pauseResumeButton.Update(gameTime, currMouseState);
+							pauseMenuButton.Update(gameTime, currMouseState);
 							break;
 						case GameState.Shop:
 							currentStateTEST = "Game - Shop";
@@ -284,7 +309,17 @@ namespace MonoZombie {
 								gameState = GameState.Playing;
 							}
 
-							break;
+							for (int i = 0; i < turretButtonList.Count; i++)
+							if (currMouseState.X > turretButtonList[i].Rect.Left && currMouseState.X < turretButtonList[i].Rect.Right 
+									&& currMouseState.Y > turretButtonList[i].Rect.Bottom)
+                            {
+									if (currMouseState.LeftButton == ButtonState.Pressed)
+                                    {
+										turretInPurchase = turretButtonList[i];
+                                    }
+                            }
+
+								break;
 					}
 					break;
 
@@ -359,10 +394,10 @@ namespace MonoZombie {
 
 							break;
 						case GameState.Pause:
-
+							DrawPauseMenu();
 							break;
 						case GameState.Shop:
-
+							DrawShop();
 							break;
 					}
 
@@ -391,6 +426,27 @@ namespace MonoZombie {
 		 */
 		private bool GetKeyDown (Keys key) {
 			return (currKeyboardState.IsKeyDown(key) && !prevKeyboardState.IsKeyDown(key));
+		}
+
+		private void DrawPauseMenu()
+		{
+			//			_spriteBatch.Draw(new Rectangle(0,0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight), Color.LightBlue);
+			_spriteBatch.DrawString(font, "Paused", new Vector2(_graphics.PreferredBackBufferWidth / 2 - 50, 30), Color.White);
+
+			pauseResumeButton.Draw(_spriteBatch);
+			pauseMenuButton.Draw(_spriteBatch);
+
+		}
+
+		private void DrawShop()
+		{
+			_spriteBatch.DrawString(font, "Shop", new Vector2(_graphics.PreferredBackBufferWidth / 2 - 40, 30), Color.White);
+
+			for (int i = 0; i < turretButtonList.Count; i++)
+            {
+				turretButtonList[i].Draw(_spriteBatch, Color.White);
+				_spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].Y, turretButtonList[i].Y+75), Color.White);
+            }			
 		}
 	}
 }
