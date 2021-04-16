@@ -83,6 +83,9 @@ namespace MonoZombie {
 		private static bool roundIsOngoing;
 		private static bool aZombieIsAlive;
 		private static bool aBulletIsInactive;
+		private const int zombieHealth = 100;
+		private const int zombieMoveSpeed = 1;
+		private const int zombieAttackSpeed = 5;
 
 		public static Player Player {
 			get {
@@ -191,7 +194,7 @@ namespace MonoZombie {
 			// Texture-reliant intitialization
 			turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
 			player = new Player(playerImage, ScreenDimensions / 2, 10, 5, 3);
-			zombie = new Enemy(enemyImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2), 100, 1, 5);
+			zombie = new Enemy(enemyImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2), zombieHealth, zombieMoveSpeed, zombieAttackSpeed);
 
 			// Create the camera
 			camera = new Camera(player);
@@ -238,6 +241,7 @@ namespace MonoZombie {
 							//	menuState = MenuState.GameOver;
 							//}
 
+							if(roundNumber >= )
 							aBulletIsInactive = false;
 
 							//This code rewards the player when a zombie is killed and makes the round end when in contact with a zombie.
@@ -267,6 +271,7 @@ namespace MonoZombie {
 							if (!aZombieIsAlive) {
 								roundIsOngoing = false;
 								roundNumber++;
+								gameState = GameState.Shop;
 								//allowaccess to shop
 								//run shop methods when opened
 							}
