@@ -89,9 +89,17 @@ namespace MonoZombie
         private static bool roundIsOngoing;
         private static bool aZombieIsAlive;
         private static bool aBulletIsInactive;
+
+        //Constant variables
         private const int zombieHealth = 100;
         private const int zombieMoveSpeed = 1;
         private const int zombieAttackSpeed = 5;
+        private static Vector2 leftSideOfMap;
+        private static Vector2 rightSideOfMap;
+        private static Vector2 topSideOfMap;
+        private static Vector2 bottomSideOfMap;
+        private static Vector2[] zombieSpawnPoints;
+        private static Random rng;
 
         public static Player Player
         {
@@ -145,6 +153,12 @@ namespace MonoZombie
             aZombieIsAlive = false;
             aBulletIsInactive = false;
             easyModeTEST = false;
+            leftSideOfMap = new Vector2(map[0,0].X,);
+            rightSideOfMap = new Vector2(ScreenDimensions.X, ScreenDimensions.Y / 2);
+            topSideOfMap = new Vector2(ScreenDimensions.X / 2, 0);
+            bottomSideOfMap = new Vector2(ScreenDimensions.X / 2, ScreenDimensions.Y);
+            zombieSpawnPoints = new Vector2[] { leftSideOfMap, rightSideOfMap, topSideOfMap, bottomSideOfMap };
+            rng = new Random();
 
             base.Initialize();
         }
@@ -206,7 +220,7 @@ namespace MonoZombie
             // Texture-reliant intitialization
             turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
             player = new Player(playerImage, ScreenDimensions / 2, 10, 5, 3);
-            zombie = new Enemy(enemyImage, new Vector2((_graphics.PreferredBackBufferWidth / 2) + 30, _graphics.PreferredBackBufferHeight / 2), zombieHealth, zombieMoveSpeed, zombieAttackSpeed);
+            zombie = new Enemy(enemyImage, zombieSpawnPoints[rng.Next(0, zombieSpawnPoints.Length)], zombieHealth, zombieMoveSpeed, zombieAttackSpeed);
 
             // Create the camera
             camera = new Camera(player);
@@ -280,7 +294,7 @@ namespace MonoZombie
                                 //Otherwise just add a zombie to the list.
                                 else
                                 {
-                                    listOfZombies.Add(new Enemy(enemyImage, new Vector2(listOfZombies[listOfZombies.Count - 1].X + 10, listOfZombies[listOfZombies.Count - 1].Y + 10), zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
+                                    listOfZombies.Add(new Enemy(enemyImage, zombieSpawnPoints[rng.Next(0, zombieSpawnPoints.Length)], zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
                                     foreach(Enemy zombie in listOfZombies)
                                     {
                                         zombie.Health = zombieHealth;
