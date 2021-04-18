@@ -124,7 +124,7 @@ namespace MonoZombie {
 				GameObject tile = CollidableMapTiles[i];
 
 				double distanceSqrd = Math.Pow(other.Rect.Center.X - tile.Rect.Center.X, 2) + Math.Pow(other.Rect.Center.Y - tile.Rect.Center.Y, 2);
-				double totalRadiiSqrd = Math.Pow(((other.Rect.Height / 2) + (tile.Rect.Height / 2)), 2);
+				double totalRadiiSqrd = Math.Pow(((other.Rect.Width / 3) + (tile.Rect.Width / 3)), 2);
 				if (distanceSqrd <= totalRadiiSqrd)
                 {
 					foundCollision = true;
