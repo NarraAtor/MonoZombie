@@ -230,7 +230,7 @@ namespace MonoZombie
             zombieSpawnPoints = new Vector2[] { leftSideOfMap, rightSideOfMap, topSideOfMap, bottomSideOfMap };
 
             // Texture-reliant intitialization
-            turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
+            //turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
             player = new Player(playerImage, ScreenDimensions / 2, 10, 5, 3);
 
             // Create the camera
@@ -269,7 +269,7 @@ namespace MonoZombie
 
 
             //test turret list
-            listOfTurrets.Add(turret);
+            //listOfTurrets.Add(turret);
 
             base.LoadContent();
         }
@@ -313,7 +313,6 @@ namespace MonoZombie
                                 {
                                     foreach (Enemy zombie in listOfZombies)
                                     {
-                                        if (!(zombie is null))
                                             zombie.Health = zombieHealth + (10 * (roundNumber - 75));
                                     }
                                 }
@@ -324,14 +323,12 @@ namespace MonoZombie
                                     listOfZombies.Add(new Enemy(enemyImage, zombieSpawnPoints[rng.Next(0, zombieSpawnPoints.Length)], zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
                                     foreach(Enemy zombie in listOfZombies)
                                     {
-                                        if (!(zombie is null))
                                             zombie.Health = zombieHealth;
                                     }
                                 }
 
                                 foreach(Enemy zombie in listOfZombies)
                                 {
-                                    if (!(zombie is null))
                                         zombie.IsAlive = true;
                                 }
 
@@ -345,8 +342,6 @@ namespace MonoZombie
 
                             foreach (Enemy zombie in listOfZombies)
                             {
-                                if(!(zombie is null))
-                                {
                                     //If a zombie just died, set indicate that it is dead an increment currency.
                                     if (zombie.Health <= 0 && zombie.IsAlive)
                                     {
@@ -366,7 +361,6 @@ namespace MonoZombie
                                     {
                                         turret.UpdateTurret(zombie, bulletImage, gameTime);
                                     }
-                                }
                                 
                             }
 
@@ -435,7 +429,6 @@ namespace MonoZombie
 
                             foreach (Enemy zombie in listOfZombies)
                             {
-                                if(!(zombie is null))
                                 zombie.UpdateCameraScreenPosition(camera);
                             }
 
@@ -554,7 +547,6 @@ namespace MonoZombie
 
                             foreach (Enemy zombie in listOfZombies)
                             {
-                                if (!(zombie is null))
                                     zombie.Draw(_spriteBatch);
                             }
 
