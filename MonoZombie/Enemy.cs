@@ -23,8 +23,6 @@ namespace MonoZombie
         public bool IsAlive { get { return isAlive; } set { isAlive = value; } }
         public int Health { get { return health; } set { health = value; } }
 
-
-
         public Enemy(Texture2D texture, Vector2 position, int health, int speed, int attSpeed)
             : base(texture, position, canRotate: true)
         {
@@ -60,11 +58,6 @@ namespace MonoZombie
         {
             health -= damage;
         }
-
-
-
-        public void Die() { isAlive = false; }
-
 
         /// <summary>
         /// Update, make sure the time works 
