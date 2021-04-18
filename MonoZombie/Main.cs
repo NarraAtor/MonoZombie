@@ -344,6 +344,7 @@ namespace MonoZombie
                             foreach (Enemy zombie in listOfZombies)
                             {
                                 //If a zombie just died, set indicate that it is dead an increment currency.
+                                //To resolve the dead zombie movement glitch, we'll teleport the zombies out of harm's way.
                                 if (zombie.Health <= 0 && zombie.IsAlive)
                                 {
                                     zombie.Die();
@@ -400,7 +401,9 @@ namespace MonoZombie
                                 foreach (Bullet bullet in ListOfBullets)
                                 {
                                     //If the bullet is colliding with a living zombie and hasn't already hit one.
-                                    if (bullet.CheckUpdateCollision(zombie) && zombie.IsAlive && bullet.IsActive)
+                                    //GameObject's CheckUpdateCollision() moves gameObjects even though it is a bool.
+                                    //I'm gonna use Rectangle.Intersects instead.
+                                    if (bullet.Rect.Intersects(zombie.Rect) && zombie.IsAlive && bullet.IsActive)
                                     {
                                         zombie.TakeDamage(10);
                                         bullet.IsActive = false;
