@@ -252,6 +252,11 @@ namespace MonoZombie
                 easyModeTEST = true;
             });
 
+            menuQuitButton = new UIButton("Quit", ScreenDimensions / 2 + new Vector2(0f, 200f), () =>
+            {
+                Exit();
+            });
+
             pauseResumeButton = new UIButton("Resume", new Vector2(ScreenDimensions.X / 2, ScreenDimensions.Y / 3 * 2), () =>
             {
                 gameState = GameState.Playing;
@@ -283,6 +288,7 @@ namespace MonoZombie
                     // Update the menu UI elements
                     menuPlayButton.Update(gameTime, currMouseState);
                     menuPlayEasyModeButton.Update(gameTime, currMouseState);
+                    menuQuitButton.Update(gameTime, currMouseState);
 
                     break;
                 case MenuState.Game:
@@ -524,6 +530,7 @@ namespace MonoZombie
                     SpriteManager.DrawImage(_spriteBatch, titleTexture, ScreenDimensions * new Vector2(0.5f, 0.25f), scale: SpriteManager.UIScale, isCentered: true);
                     menuPlayButton.Draw(_spriteBatch);
                     menuPlayEasyModeButton.Draw(_spriteBatch);
+                    menuQuitButton.Draw(_spriteBatch);
 
                     break;
                 case MenuState.Game:
