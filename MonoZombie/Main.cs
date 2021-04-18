@@ -267,13 +267,9 @@ namespace MonoZombie
                 roundIsOngoing = false;
             }, true);
 
-            turretButtonList.Add(new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(_graphics.PreferredBackBufferWidth/2, _graphics.PreferredBackBufferHeight/2)));
-            turretNames.Add("Archer");
 
             //test turret list
             //listOfTurrets.Add(turret);
-
-            turretList = new List<Turret>();
 
             base.LoadContent();
         }
@@ -334,7 +330,6 @@ namespace MonoZombie
                                 foreach (Enemy zombie in listOfZombies)
                                 {
                                     zombie.IsAlive = true;
-                                    zombie.
                                 }
 
                                 roundIsOngoing = true;
@@ -413,6 +408,9 @@ namespace MonoZombie
                                 }
                             }
 
+                            //check bullet-wall collisions
+                            
+
                             if (aBulletIsInactive)
                             {
                                 //Delete inactive bullets by creating a new list without the the inactive bullets.
@@ -438,11 +436,6 @@ namespace MonoZombie
                             }
 
                             foreach (Turret turret in listOfTurrets)
-                            {
-                                turret.UpdateCameraScreenPosition(camera);
-                            }
-
-                            foreach (Turret turret in turretList)
                             {
                                 turret.UpdateCameraScreenPosition(camera);
                             }
@@ -489,7 +482,7 @@ namespace MonoZombie
                                 if (currMouseState.X > turretButtonList[i].Rect.Left && currMouseState.X < turretButtonList[i].Rect.Right
                                         && currMouseState.Y > turretButtonList[i].Rect.Bottom)
                                 {
-                                    if (prevMouseState.LeftButton == ButtonState.Released && currMouseState.LeftButton == ButtonState.Pressed)
+                                    if (currMouseState.LeftButton == ButtonState.Pressed)
                                     {
                                         turretInPurchase = turretButtonList[i];
                                         gameState = GameState.ShopInPlacment;
@@ -501,7 +494,6 @@ namespace MonoZombie
                             if (prevMouseState.LeftButton == ButtonState.Released && currMouseState.LeftButton == ButtonState.Pressed)
                             {
                                 turretList.Add(turretInPurchase);
-                                gameState = GameState.Playing;
                             }
                             break;
                     }
@@ -509,7 +501,7 @@ namespace MonoZombie
 
                 case MenuState.GameOver:
                     currentStateTEST = "GameOver";
-                    
+
                     if (GetKeyDown(Keys.Enter))
                     {
                         menuState = MenuState.MainMenu;
@@ -564,11 +556,6 @@ namespace MonoZombie
                             foreach (Turret turret in listOfTurrets)
                             {
                                 turret.Draw(_spriteBatch, Color.White);
-                            }
-
-                            foreach (Turret turret in turretList)
-                            {
-                                turret.Draw(_spriteBatch);
                             }
 
 
@@ -659,7 +646,7 @@ namespace MonoZombie
             for (int i = 0; i < turretButtonList.Count; i++)
             {
                 turretButtonList[i].Draw(_spriteBatch, Color.White);
-                _spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].X - 70, turretButtonList[i].Y + 50), Color.White);
+                _spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].Y, turretButtonList[i].Y + 75), Color.White);
             }
         }
     }
