@@ -262,6 +262,8 @@ namespace MonoZombie
                 roundIsOngoing = false;
             }, true);
 
+            turretButtonList.Add(new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(_graphics.PreferredBackBufferWidth/2, _graphics.PreferredBackBufferHeight/2)));
+            turretNames.Add("Archer");
 
             //test turret list
             listOfTurrets.Add(turret);
@@ -644,7 +646,7 @@ namespace MonoZombie
             for (int i = 0; i < turretButtonList.Count; i++)
             {
                 turretButtonList[i].Draw(_spriteBatch, Color.White);
-                _spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].Y, turretButtonList[i].Y + 75), Color.White);
+                _spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].X - 70, turretButtonList[i].Y + 50), Color.White);
             }
         }
     }
