@@ -229,7 +229,7 @@ namespace MonoZombie
 
             // Texture-reliant intitialization
             //turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
-            player = new Player(playerImage, ScreenDimensions / 2, 10, 5, 3);
+            player = new Player(playerImage, ScreenDimensions / 2, 100, 5, 3);
 
             // Create the camera
             camera = new Camera(player);
