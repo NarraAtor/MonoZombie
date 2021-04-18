@@ -317,7 +317,6 @@ namespace MonoZombie
                                 //Otherwise just add a zombie to the list.
                                 else
                                 {
-                                    //Testing each of the spawn points.
                                     listOfZombies.Add(new Enemy(enemyImage, zombieSpawnPoints[rng.Next(0, zombieSpawnPoints.Length)], zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
                                     foreach (Enemy zombie in listOfZombies)
                                     {
@@ -325,10 +324,13 @@ namespace MonoZombie
                                     }
                                 }
 
+                                //Return all zombies back to life and spawn them at one of the 4 locations around the map.
                                 foreach (Enemy zombie in listOfZombies)
                                 {
                                     zombie.IsAlive = true;
-                                    //zombie.
+                                    Vector2 newZombiePosition = zombieSpawnPoints[rng.Next(0, zombieSpawnPoints.Length)];
+                                    zombie.X = (int) newZombiePosition.X;
+                                    zombie.Y = (int) newZombiePosition.Y;
                                 }
 
                                 roundIsOngoing = true;
