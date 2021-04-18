@@ -412,7 +412,14 @@ namespace MonoZombie
                             }
 
                             //check bullet-wall collisions
-                            
+                            foreach(Bullet bullet in ListOfBullets)
+                            {
+                                if (map.CheckRadiusCollision(bullet))
+                                {
+                                    bullet.IsActive = false;
+                                    aBulletIsInactive = true;
+                                }
+                            }
 
                             if (aBulletIsInactive)
                             {
