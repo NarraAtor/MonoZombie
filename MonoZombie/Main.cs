@@ -230,7 +230,7 @@ namespace MonoZombie
             zombieSpawnPoints = new Vector2[] { leftSideOfMap, rightSideOfMap, topSideOfMap, bottomSideOfMap };
 
             // Texture-reliant intitialization
-            turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
+            //turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
             player = new Player(playerImage, ScreenDimensions / 2, 10, 5, 3);
 
             // Create the camera
@@ -252,6 +252,11 @@ namespace MonoZombie
                 easyModeTEST = true;
             });
 
+            menuQuitButton = new UIButton("Quit", ScreenDimensions / 2 + new Vector2(0f, 200f), () =>
+            {
+                Exit();
+            });
+
             pauseResumeButton = new UIButton("Resume", new Vector2(ScreenDimensions.X / 2, ScreenDimensions.Y / 3 * 2), () =>
             {
                 gameState = GameState.Playing;
@@ -266,7 +271,7 @@ namespace MonoZombie
             turretNames.Add("Archer");
 
             //test turret list
-            listOfTurrets.Add(turret);
+            //listOfTurrets.Add(turret);
 
             turretList = new List<Turret>();
 
@@ -287,6 +292,7 @@ namespace MonoZombie
                     // Update the menu UI elements
                     menuPlayButton.Update(gameTime, currMouseState);
                     menuPlayEasyModeButton.Update(gameTime, currMouseState);
+                    menuQuitButton.Update(gameTime, currMouseState);
 
                     break;
                 case MenuState.Game:
@@ -311,8 +317,7 @@ namespace MonoZombie
                                 {
                                     foreach (Enemy zombie in listOfZombies)
                                     {
-                                        if (!(zombie is null))
-                                            zombie.Health = zombieHealth + (10 * (roundNumber - 75));
+                                        zombie.Health = zombieHealth + (10 * (roundNumber - 75));
                                     }
                                 }
                                 //Otherwise just add a zombie to the list.
@@ -320,17 +325,16 @@ namespace MonoZombie
                                 {
                                     //Testing each of the spawn points.
                                     listOfZombies.Add(new Enemy(enemyImage, zombieSpawnPoints[rng.Next(0, zombieSpawnPoints.Length)], zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
-                                    foreach(Enemy zombie in listOfZombies)
+                                    foreach (Enemy zombie in listOfZombies)
                                     {
-                                        if (!(zombie is null))
-                                            zombie.Health = zombieHealth;
+                                        zombie.Health = zombieHealth;
                                     }
                                 }
 
-                                foreach(Enemy zombie in listOfZombies)
+                                foreach (Enemy zombie in listOfZombies)
                                 {
-                                    if (!(zombie is null))
-                                        zombie.IsAlive = true;
+                                    zombie.IsAlive = true;
+                                    zombie.
                                 }
 
                                 roundIsOngoing = true;
@@ -343,29 +347,26 @@ namespace MonoZombie
 
                             foreach (Enemy zombie in listOfZombies)
                             {
-                                if(!(zombie is null))
+                                //If a zombie just died, set indicate that it is dead an increment currency.
+                                if (zombie.Health <= 0 && zombie.IsAlive)
                                 {
-                                    //If a zombie just died, set indicate that it is dead an increment currency.
-                                    if (zombie.Health <= 0 && zombie.IsAlive)
-                                    {
-                                        zombie.Die();
-                                        currency++;
-                                    }
-
-
-                                    if (zombie.IsAlive)
-                                    {
-                                        aZombieIsAlive = true;
-                                        zombie.Update(gameTime, player);
-                                    }
-
-                                    //Check if any zombies are in range of the turrets
-                                    foreach (Turret turret in listOfTurrets)
-                                    {
-                                        turret.UpdateTurret(zombie, bulletImage, gameTime);
-                                    }
+                                    zombie.Die();
+                                    currency++;
                                 }
-                                
+
+
+                                if (zombie.IsAlive)
+                                {
+                                    aZombieIsAlive = true;
+                                    zombie.Update(gameTime, player);
+                                }
+
+                                //Check if any zombies are in range of the turrets
+                                foreach (Turret turret in listOfTurrets)
+                                {
+                                    turret.UpdateTurret(zombie, bulletImage, gameTime);
+                                }
+
                             }
 
                             if (!aZombieIsAlive)
@@ -433,7 +434,6 @@ namespace MonoZombie
 
                             foreach (Enemy zombie in listOfZombies)
                             {
-                                if(!(zombie is null))
                                 zombie.UpdateCameraScreenPosition(camera);
                             }
 
@@ -503,7 +503,7 @@ namespace MonoZombie
                                 turretList.Add(turretInPurchase);
                                 gameState = GameState.Playing;
                             }
-                            break;                            
+                            break;
                     }
                     break;
 
@@ -540,6 +540,7 @@ namespace MonoZombie
                     SpriteManager.DrawImage(_spriteBatch, titleTexture, ScreenDimensions * new Vector2(0.5f, 0.25f), scale: SpriteManager.UIScale, isCentered: true);
                     menuPlayButton.Draw(_spriteBatch);
                     menuPlayEasyModeButton.Draw(_spriteBatch);
+                    menuQuitButton.Draw(_spriteBatch);
 
                     break;
                 case MenuState.Game:
@@ -552,13 +553,12 @@ namespace MonoZombie
                             // Draw the player
                             player.Draw(_spriteBatch);
 
-
-                            turret.Draw(_spriteBatch, Color.White);
+                            //Turret test code, remove comment when implemented
+                            //turret.Draw(_spriteBatch, Color.White);
 
                             foreach (Enemy zombie in listOfZombies)
                             {
-                                if (!(zombie is null))
-                                    zombie.Draw(_spriteBatch);
+                                zombie.Draw(_spriteBatch);
                             }
 
                             foreach (Turret turret in listOfTurrets)
