@@ -19,7 +19,8 @@ namespace MonoZombie
     {
         Playing,
         Pause,
-        Shop
+        Shop,
+        ShopInPlacment
     }
 
     /// <summary>
@@ -38,6 +39,7 @@ namespace MonoZombie
         private KeyboardState currKeyboardState;
         private KeyboardState prevKeyboardState;
         private MouseState currMouseState;
+        private MouseState prevMouseState;
 
         //Test variables
         private string currentStateTEST;
@@ -93,6 +95,7 @@ namespace MonoZombie
         private List<String> turretNames;                           // holds the names of the turret types, please update
                                                                     // when new turrets are added to the ButtonList
         private Turret turretInPurchase;							// the turret that the player is currently purchasing from the shop.
+        private List<Turret> turretList;                            // turrets that exist in the game;
 
         //Constant variables
         private const int zombieHealth = 100;
@@ -477,9 +480,17 @@ namespace MonoZombie
                                     if (currMouseState.LeftButton == ButtonState.Pressed)
                                     {
                                         turretInPurchase = turretButtonList[i];
+                                        gameState = GameState.ShopInPlacment;
+                                        break;
                                     }
                                 }
                             break;
+                        case GameState.ShopInPlacment:
+                            if (prevMouseState.LeftButton == ButtonState.Released && currMouseState.LeftButton == ButtonState.Pressed)
+                            {
+                                turretList.Add(turretInPurchase);
+                            }
+                            break;                            
                     }
                     break;
 
@@ -496,7 +507,7 @@ namespace MonoZombie
 
             // Update the past keyboard state to the current one as Update() has ended this frame
             prevKeyboardState = currKeyboardState;
-
+            prevMouseState = currMouseState;
             base.Update(gameTime);
         }
 
@@ -564,6 +575,9 @@ namespace MonoZombie
                             break;
                         case GameState.Shop:
                             DrawShop();
+                            break;
+                        case GameState.ShopInPlacment:
+                            turretInPurchase.Draw(_spriteBatch);
                             break;
                     }
 
