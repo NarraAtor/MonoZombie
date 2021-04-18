@@ -409,6 +409,9 @@ namespace MonoZombie
                                 }
                             }
 
+                            //check bullet-wall collisions
+                            
+
                             if (aBulletIsInactive)
                             {
                                 //Delete inactive bullets by creating a new list without the the inactive bullets.
@@ -543,7 +546,7 @@ namespace MonoZombie
                             // Draw the player
                             player.Draw(_spriteBatch);
 
-
+                            //Turret test code, remove comment when implemented
                             //turret.Draw(_spriteBatch, Color.White);
 
                             foreach (Enemy zombie in listOfZombies)
