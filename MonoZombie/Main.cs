@@ -547,7 +547,7 @@ namespace MonoZombie
 
                             foreach (Enemy zombie in listOfZombies)
                             {
-                                    zombie.Draw(_spriteBatch);
+                                zombie.Draw(_spriteBatch);
                             }
 
                             foreach (Turret turret in listOfTurrets)
