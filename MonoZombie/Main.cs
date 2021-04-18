@@ -542,8 +542,8 @@ namespace MonoZombie
                             // Draw the player
                             player.Draw(_spriteBatch);
 
-
-                            turret.Draw(_spriteBatch, Color.White);
+                            //Turret test code, remove comment when implemented
+                            //turret.Draw(_spriteBatch, Color.White);
 
                             foreach (Enemy zombie in listOfZombies)
                             {
