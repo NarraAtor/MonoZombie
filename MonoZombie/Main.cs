@@ -83,9 +83,7 @@ namespace MonoZombie
         private static List<Turret> listOfTurrets;
         private static List<Enemy> listOfZombies;
         private static List<Bullet> listOfBullets;
-        private static Turret turret;
         private static Player player;
-        private static Enemy zombie;
         private static int currency;
         private static int roundNumber;
         private static bool roundIsOngoing;
@@ -330,7 +328,7 @@ namespace MonoZombie
                                 foreach (Enemy zombie in listOfZombies)
                                 {
                                     zombie.IsAlive = true;
-                                    zombie.
+                                    //zombie.
                                 }
 
                                 roundIsOngoing = true;
