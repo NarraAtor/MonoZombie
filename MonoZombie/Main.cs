@@ -351,7 +351,6 @@ namespace MonoZombie
                                     currency++;
                                 }
 
-
                                 if (zombie.IsAlive)
                                 {
                                     aZombieIsAlive = true;
