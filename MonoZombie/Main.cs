@@ -19,7 +19,8 @@ namespace MonoZombie
     {
         Playing,
         Pause,
-        Shop
+        Shop,
+        ShopInPlacment
     }
 
     /// <summary>
@@ -38,6 +39,7 @@ namespace MonoZombie
         private KeyboardState currKeyboardState;
         private KeyboardState prevKeyboardState;
         private MouseState currMouseState;
+        private MouseState prevMouseState;
 
         //Test variables
         private string currentStateTEST;
@@ -89,6 +91,11 @@ namespace MonoZombie
         private static bool roundIsOngoing;
         private static bool aZombieIsAlive;
         private static bool aBulletIsInactive;
+        private List<Turret> turretButtonList;                      // the list that holds all of the turret images
+        private List<String> turretNames;                           // holds the names of the turret types, please update
+                                                                    // when new turrets are added to the ButtonList
+        private Turret turretInPurchase;							// the turret that the player is currently purchasing from the shop.
+        private List<Turret> turretList;                            // turrets that exist in the game;
 
         //Constant variables
         private const int zombieHealth = 100;
@@ -153,7 +160,9 @@ namespace MonoZombie
             aZombieIsAlive = false;
             aBulletIsInactive = false;
             easyModeTEST = false;
-            
+            turretButtonList = new List<Turret>();
+            turretNames = new List<String>();
+
             rng = new Random();
 
             base.Initialize();
@@ -243,8 +252,16 @@ namespace MonoZombie
                 easyModeTEST = true;
             });
 
-            // test zombie list
-            listOfZombies.Add(zombie);
+            pauseResumeButton = new UIButton("Resume", new Vector2(ScreenDimensions.X / 2, ScreenDimensions.Y / 3 * 2), () =>
+            {
+                gameState = GameState.Playing;
+            }, true);
+            pauseMenuButton = new UIButton("Menu", new Vector2(ScreenDimensions.X / 2, ScreenDimensions.Y / 3), () =>
+            {
+                menuState = MenuState.MainMenu;
+                roundIsOngoing = false;
+            }, true);
+
 
             //test turret list
             listOfTurrets.Add(turret);
@@ -290,7 +307,8 @@ namespace MonoZombie
                                 {
                                     foreach (Enemy zombie in listOfZombies)
                                     {
-                                        zombie.Health = zombieHealth + (10 * (roundNumber - 75));
+                                        if (!(zombie is null))
+                                            zombie.Health = zombieHealth + (10 * (roundNumber - 75));
                                     }
                                 }
                                 //Otherwise just add a zombie to the list.
@@ -300,13 +318,15 @@ namespace MonoZombie
                                     listOfZombies.Add(new Enemy(enemyImage, zombieSpawnPoints[rng.Next(0, zombieSpawnPoints.Length)], zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
                                     foreach(Enemy zombie in listOfZombies)
                                     {
-                                        zombie.Health = zombieHealth;
+                                        if (!(zombie is null))
+                                            zombie.Health = zombieHealth;
                                     }
                                 }
 
                                 foreach(Enemy zombie in listOfZombies)
                                 {
-                                    zombie.IsAlive = true;
+                                    if (!(zombie is null))
+                                        zombie.IsAlive = true;
                                 }
 
                                 roundIsOngoing = true;
@@ -319,25 +339,29 @@ namespace MonoZombie
 
                             foreach (Enemy zombie in listOfZombies)
                             {
-                                //If a zombie just died, set indicate that it is dead an increment currency.
-                                if (zombie.Health <= 0 && zombie.IsAlive)
+                                if(!(zombie is null))
                                 {
-                                    zombie.Die();
-                                    currency++;
-                                }
+                                    //If a zombie just died, set indicate that it is dead an increment currency.
+                                    if (zombie.Health <= 0 && zombie.IsAlive)
+                                    {
+                                        zombie.Die();
+                                        currency++;
+                                    }
 
 
-                                if (zombie.IsAlive)
-                                {
-                                    aZombieIsAlive = true;
-                                    zombie.Update(gameTime, player);
-                                }
+                                    if (zombie.IsAlive)
+                                    {
+                                        aZombieIsAlive = true;
+                                        zombie.Update(gameTime, player);
+                                    }
 
-                                //Check if any zombies are in range of the turrets
-                                foreach (Turret turret in listOfTurrets)
-                                {
-                                    turret.UpdateTurret(zombie, bulletImage, gameTime);
+                                    //Check if any zombies are in range of the turrets
+                                    foreach (Turret turret in listOfTurrets)
+                                    {
+                                        turret.UpdateTurret(zombie, bulletImage, gameTime);
+                                    }
                                 }
+                                
                             }
 
                             if (!aZombieIsAlive)
@@ -405,6 +429,7 @@ namespace MonoZombie
 
                             foreach (Enemy zombie in listOfZombies)
                             {
+                                if(!(zombie is null))
                                 zombie.UpdateCameraScreenPosition(camera);
                             }
 
@@ -422,6 +447,7 @@ namespace MonoZombie
                             if (GetKeyDown(Keys.Escape))
                             {
                                 gameState = GameState.Pause;
+
                             }
 
                             if (GetKeyDown(Keys.Tab))
@@ -438,6 +464,9 @@ namespace MonoZombie
                                 gameState = GameState.Playing;
                             }
 
+                            pauseResumeButton.Update(gameTime, currMouseState);
+                            pauseMenuButton.Update(gameTime, currMouseState);
+
                             break;
                         case GameState.Shop:
                             currentStateTEST = "Game - Shop";
@@ -447,7 +476,24 @@ namespace MonoZombie
                                 gameState = GameState.Playing;
                             }
 
+                            for (int i = 0; i < turretButtonList.Count; i++)
+                                if (currMouseState.X > turretButtonList[i].Rect.Left && currMouseState.X < turretButtonList[i].Rect.Right
+                                        && currMouseState.Y > turretButtonList[i].Rect.Bottom)
+                                {
+                                    if (currMouseState.LeftButton == ButtonState.Pressed)
+                                    {
+                                        turretInPurchase = turretButtonList[i];
+                                        gameState = GameState.ShopInPlacment;
+                                        break;
+                                    }
+                                }
                             break;
+                        case GameState.ShopInPlacment:
+                            if (prevMouseState.LeftButton == ButtonState.Released && currMouseState.LeftButton == ButtonState.Pressed)
+                            {
+                                turretList.Add(turretInPurchase);
+                            }
+                            break;                            
                     }
                     break;
 
@@ -464,7 +510,7 @@ namespace MonoZombie
 
             // Update the past keyboard state to the current one as Update() has ended this frame
             prevKeyboardState = currKeyboardState;
-
+            prevMouseState = currMouseState;
             base.Update(gameTime);
         }
 
@@ -501,7 +547,8 @@ namespace MonoZombie
 
                             foreach (Enemy zombie in listOfZombies)
                             {
-                                zombie.Draw(_spriteBatch);
+                                if (!(zombie is null))
+                                    zombie.Draw(_spriteBatch);
                             }
 
                             foreach (Turret turret in listOfTurrets)
@@ -527,10 +574,13 @@ namespace MonoZombie
 
                             break;
                         case GameState.Pause:
-
+                            DrawPauseMenu();
                             break;
                         case GameState.Shop:
-
+                            DrawShop();
+                            break;
+                        case GameState.ShopInPlacment:
+                            turretInPurchase.Draw(_spriteBatch);
                             break;
                     }
 
@@ -575,6 +625,27 @@ namespace MonoZombie
         public static float Distance(Vector2 point1, Vector2 point2)
         {
             return MathF.Sqrt(MathF.Pow(point1.X - point2.X, 2) + MathF.Pow(point1.Y - point2.Y, 2));
+        }
+
+        private void DrawPauseMenu()
+        {
+            //			_spriteBatch.Draw(new Rectangle(0,0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight), Color.LightBlue);
+            _spriteBatch.DrawString(font, "Paused", new Vector2(_graphics.PreferredBackBufferWidth / 2 - 50, 30), Color.White);
+
+            pauseResumeButton.Draw(_spriteBatch);
+            pauseMenuButton.Draw(_spriteBatch);
+
+        }
+
+        private void DrawShop()
+        {
+            _spriteBatch.DrawString(font, "Shop", new Vector2(_graphics.PreferredBackBufferWidth / 2 - 40, 30), Color.White);
+
+            for (int i = 0; i < turretButtonList.Count; i++)
+            {
+                turretButtonList[i].Draw(_spriteBatch, Color.White);
+                _spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].Y, turretButtonList[i].Y + 75), Color.White);
+            }
         }
     }
 }
