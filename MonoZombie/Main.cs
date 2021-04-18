@@ -347,7 +347,7 @@ namespace MonoZombie
                                 //To resolve the dead zombie movement glitch, we'll teleport the zombies out of harm's way.
                                 if (zombie.Health <= 0 && zombie.IsAlive)
                                 {
-                                    zombie.Die();
+                                    zombie.IsAlive = false;
                                     currency++;
                                 }
 
