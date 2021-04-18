@@ -307,7 +307,7 @@ namespace MonoZombie
                                 {
                                     foreach (Enemy zombie in listOfZombies)
                                     {
-                                            zombie.Health = zombieHealth + (10 * (roundNumber - 75));
+                                        zombie.Health = zombieHealth + (10 * (roundNumber - 75));
                                     }
                                 }
                                 //Otherwise just add a zombie to the list.
@@ -315,15 +315,16 @@ namespace MonoZombie
                                 {
                                     //Testing each of the spawn points.
                                     listOfZombies.Add(new Enemy(enemyImage, zombieSpawnPoints[rng.Next(0, zombieSpawnPoints.Length)], zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
-                                    foreach(Enemy zombie in listOfZombies)
+                                    foreach (Enemy zombie in listOfZombies)
                                     {
-                                            zombie.Health = zombieHealth;
+                                        zombie.Health = zombieHealth;
                                     }
                                 }
 
-                                foreach(Enemy zombie in listOfZombies)
+                                foreach (Enemy zombie in listOfZombies)
                                 {
-                                        zombie.IsAlive = true;
+                                    zombie.IsAlive = true;
+                                    zombie.
                                 }
 
                                 roundIsOngoing = true;
@@ -336,26 +337,26 @@ namespace MonoZombie
 
                             foreach (Enemy zombie in listOfZombies)
                             {
-                                    //If a zombie just died, set indicate that it is dead an increment currency.
-                                    if (zombie.Health <= 0 && zombie.IsAlive)
-                                    {
-                                        zombie.Die();
-                                        currency++;
-                                    }
+                                //If a zombie just died, set indicate that it is dead an increment currency.
+                                if (zombie.Health <= 0 && zombie.IsAlive)
+                                {
+                                    zombie.Die();
+                                    currency++;
+                                }
 
 
-                                    if (zombie.IsAlive)
-                                    {
-                                        aZombieIsAlive = true;
-                                        zombie.Update(gameTime, player);
-                                    }
+                                if (zombie.IsAlive)
+                                {
+                                    aZombieIsAlive = true;
+                                    zombie.Update(gameTime, player);
+                                }
 
-                                    //Check if any zombies are in range of the turrets
-                                    foreach (Turret turret in listOfTurrets)
-                                    {
-                                        turret.UpdateTurret(zombie, bulletImage, gameTime);
-                                    }
-                                
+                                //Check if any zombies are in range of the turrets
+                                foreach (Turret turret in listOfTurrets)
+                                {
+                                    turret.UpdateTurret(zombie, bulletImage, gameTime);
+                                }
+
                             }
 
                             if (!aZombieIsAlive)
@@ -486,7 +487,7 @@ namespace MonoZombie
                             {
                                 turretList.Add(turretInPurchase);
                             }
-                            break;                            
+                            break;
                     }
                     break;
 
@@ -536,11 +537,11 @@ namespace MonoZombie
                             player.Draw(_spriteBatch);
 
 
-                            turret.Draw(_spriteBatch, Color.White);
+                            //turret.Draw(_spriteBatch, Color.White);
 
                             foreach (Enemy zombie in listOfZombies)
                             {
-                                    zombie.Draw(_spriteBatch);
+                                zombie.Draw(_spriteBatch);
                             }
 
                             foreach (Turret turret in listOfTurrets)
