@@ -268,6 +268,8 @@ namespace MonoZombie
             //test turret list
             listOfTurrets.Add(turret);
 
+            turretList = new List<Turret>();
+
             base.LoadContent();
         }
 
@@ -440,6 +442,11 @@ namespace MonoZombie
                                 turret.UpdateCameraScreenPosition(camera);
                             }
 
+                            foreach (Turret turret in turretList)
+                            {
+                                turret.UpdateCameraScreenPosition(camera);
+                            }
+
                             //Bullets spawn in the center of the screen for some reason when I use UpdateCameraScreenPosition
                             foreach (Bullet bullet in listOfBullets)
                             {
@@ -482,7 +489,7 @@ namespace MonoZombie
                                 if (currMouseState.X > turretButtonList[i].Rect.Left && currMouseState.X < turretButtonList[i].Rect.Right
                                         && currMouseState.Y > turretButtonList[i].Rect.Bottom)
                                 {
-                                    if (currMouseState.LeftButton == ButtonState.Pressed)
+                                    if (prevMouseState.LeftButton == ButtonState.Released && currMouseState.LeftButton == ButtonState.Pressed)
                                     {
                                         turretInPurchase = turretButtonList[i];
                                         gameState = GameState.ShopInPlacment;
@@ -494,6 +501,7 @@ namespace MonoZombie
                             if (prevMouseState.LeftButton == ButtonState.Released && currMouseState.LeftButton == ButtonState.Pressed)
                             {
                                 turretList.Add(turretInPurchase);
+                                gameState = GameState.Playing;
                             }
                             break;                            
                     }
@@ -501,7 +509,7 @@ namespace MonoZombie
 
                 case MenuState.GameOver:
                     currentStateTEST = "GameOver";
-
+                    
                     if (GetKeyDown(Keys.Enter))
                     {
                         menuState = MenuState.MainMenu;
@@ -556,6 +564,11 @@ namespace MonoZombie
                             foreach (Turret turret in listOfTurrets)
                             {
                                 turret.Draw(_spriteBatch, Color.White);
+                            }
+
+                            foreach (Turret turret in turretList)
+                            {
+                                turret.Draw(_spriteBatch);
                             }
 
 
