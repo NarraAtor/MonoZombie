@@ -259,8 +259,6 @@ namespace MonoZombie
                 roundIsOngoing = false;
             }, true);
 
-            // test zombie list
-            listOfZombies.Add(zombie);
 
             //test turret list
             listOfTurrets.Add(turret);
@@ -338,25 +336,29 @@ namespace MonoZombie
 
                             foreach (Enemy zombie in listOfZombies)
                             {
-                                //If a zombie just died, set indicate that it is dead an increment currency.
-                                if (zombie.Health <= 0 && zombie.IsAlive)
+                                if(!(zombie is null))
                                 {
-                                    zombie.Die();
-                                    currency++;
-                                }
+                                    //If a zombie just died, set indicate that it is dead an increment currency.
+                                    if (zombie.Health <= 0 && zombie.IsAlive)
+                                    {
+                                        zombie.Die();
+                                        currency++;
+                                    }
 
 
-                                if (zombie.IsAlive)
-                                {
-                                    aZombieIsAlive = true;
-                                    zombie.Update(gameTime, player);
-                                }
+                                    if (zombie.IsAlive)
+                                    {
+                                        aZombieIsAlive = true;
+                                        zombie.Update(gameTime, player);
+                                    }
 
-                                //Check if any zombies are in range of the turrets
-                                foreach (Turret turret in listOfTurrets)
-                                {
-                                    turret.UpdateTurret(zombie, bulletImage, gameTime);
+                                    //Check if any zombies are in range of the turrets
+                                    foreach (Turret turret in listOfTurrets)
+                                    {
+                                        turret.UpdateTurret(zombie, bulletImage, gameTime);
+                                    }
                                 }
+                                
                             }
 
                             if (!aZombieIsAlive)
@@ -424,6 +426,7 @@ namespace MonoZombie
 
                             foreach (Enemy zombie in listOfZombies)
                             {
+                                if(!(zombie is null))
                                 zombie.UpdateCameraScreenPosition(camera);
                             }
 
