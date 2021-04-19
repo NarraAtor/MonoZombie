@@ -33,9 +33,11 @@ namespace MonoZombie
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        // Game states
         private MenuState menuState;
         private GameState gameState;
 
+        // Input states
         private KeyboardState currKeyboardState;
         private KeyboardState prevKeyboardState;
         private MouseState currMouseState;
@@ -45,6 +47,7 @@ namespace MonoZombie
         private string currentStateTEST;
         private bool easyModeTEST;
 
+        // Camera
         public static Vector2 ScreenDimensions = new Vector2(1280, 720);
         private Camera camera;
 
@@ -80,9 +83,7 @@ namespace MonoZombie
         public static Texture2D playerImage;
         private static Texture2D enemyImage;
         private static Texture2D bulletImage;
-        private static List<Turret> listOfTurrets;
-        private static List<Enemy> listOfZombies;
-        private static List<Bullet> listOfBullets;
+
         private static Player player;
         private static int currency;
         private static int roundNumber;
@@ -106,37 +107,13 @@ namespace MonoZombie
         private static Vector2[] zombieSpawnPoints;
         private static Random rng;
 
-        public static Player Player
-        {
-            get
-            {
-                return player;
-            }
-        }
+        public static Player Player { get; }
 
-        public static List<Bullet> ListOfBullets
-        {
-            get
-            {
-                return listOfBullets;
-            }
-            set
-            {
-                listOfBullets = value;
-            }
-        }
+        public static List<Bullet> ListOfBullets { get; }
 
-        public static List<Enemy> ListOfZombies
-        {
-            get
-            {
-                return listOfZombies;
-            }
-            set
-            {
-                listOfZombies = value;
-            }
-        }
+        public static List<Enemy> ListOfZombies { get; }
+
+        public static List<Turret> ListOfTurrets { get; }
 
         public Main()
         {
@@ -152,12 +129,11 @@ namespace MonoZombie
             gameState = GameState.Playing;
             currency = 0;
             roundNumber = 1;
-            listOfZombies = new List<Enemy>();
-            listOfTurrets = new List<Turret>();
-            listOfBullets = new List<Bullet>();
+
             aZombieIsAlive = false;
             aBulletIsInactive = false;
             easyModeTEST = false;
+
             turretButtonList = new List<Turret>();
             turretNames = new List<String>();
 
@@ -309,7 +285,7 @@ namespace MonoZombie
                                 //Start to buff zombies once we reach a certain number.
                                 if (roundNumber >= 75)
                                 {
-                                    foreach (Enemy zombie in listOfZombies)
+                                    foreach (Enemy zombie in ListOfZombies)
                                     {
                                         zombie.Health = zombieHealth + (10 * (roundNumber - 75));
                                     }
@@ -317,15 +293,15 @@ namespace MonoZombie
                                 //Otherwise just add a zombie to the list.
                                 else
                                 {
-                                    listOfZombies.Add(new Enemy(enemyImage, zombieSpawnPoints[rng.Next(0, zombieSpawnPoints.Length)], zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
-                                    foreach (Enemy zombie in listOfZombies)
+                                    ListOfZombies.Add(new Enemy(enemyImage, zombieSpawnPoints[rng.Next(0, zombieSpawnPoints.Length)], zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
+                                    foreach (Enemy zombie in ListOfZombies)
                                     {
                                         zombie.Health = zombieHealth;
                                     }
                                 }
 
                                 //Return all zombies back to life and spawn them at one of the 4 locations around the map.
-                                foreach (Enemy zombie in listOfZombies)
+                                foreach (Enemy zombie in ListOfZombies)
                                 {
                                     zombie.IsAlive = true;
                                     Vector2 newZombiePosition = zombieSpawnPoints[rng.Next(0, zombieSpawnPoints.Length)];
@@ -341,7 +317,7 @@ namespace MonoZombie
                             //This code rewards the player when a zombie is killed and makes the round end when in contact with a zombie.
                             aZombieIsAlive = false;
 
-                            foreach (Enemy zombie in listOfZombies)
+                            foreach (Enemy zombie in ListOfZombies)
                             {
                                 //If a zombie just died, set indicate that it is dead an increment currency.
                                 //To resolve the dead zombie movement glitch, we'll teleport the zombies out of harm's way.
@@ -358,7 +334,7 @@ namespace MonoZombie
                                 }
 
                                 //Check if any zombies are in range of the turrets
-                                foreach (Turret turret in listOfTurrets)
+                                foreach (Turret turret in ListOfTurrets)
                                 {
                                     turret.UpdateTurret(zombie, bulletImage, gameTime);
                                 }
@@ -379,7 +355,7 @@ namespace MonoZombie
                                 player.Shoot(bulletImage, currMouseState, gameTime);
                             }
 
-                            foreach (Bullet bullet in listOfBullets)
+                            foreach (Bullet bullet in ListOfBullets)
                             {
                                 bullet.Move();
                             }
@@ -395,7 +371,7 @@ namespace MonoZombie
                             // check zombie-map collisions
                             // check zombie-player collisions
                             // check bullet-zombie collisions
-                            foreach (Enemy zombie in listOfZombies)
+                            foreach (Enemy zombie in ListOfZombies)
                             {
                                 foreach (Bullet bullet in ListOfBullets)
                                 {
@@ -425,33 +401,32 @@ namespace MonoZombie
                             {
                                 //Delete inactive bullets by creating a new list without the the inactive bullets.
                                 List<Bullet> newBulletList = new List<Bullet>();
-                                for (int i = 0; i < listOfBullets.Count; i++)
+                                for (int i = 0; i < ListOfBullets.Count; i++)
                                 {
-                                    if (listOfBullets[i].IsActive)
+                                    if (ListOfBullets[i].IsActive)
                                     {
-                                        newBulletList.Add(listOfBullets[i]);
+                                        newBulletList.Add(ListOfBullets[i]);
                                     }
                                 }
-                                listOfBullets = newBulletList;
+                                ListOfBullets = newBulletList; // WILL FIX
                             }
-
 
                             // Update the camera screen positions of the game objects
                             player.UpdateCameraScreenPosition(camera);
                             map.UpdateCameraScreenPosition(camera);
 
-                            foreach (Enemy zombie in listOfZombies)
+                            foreach (Enemy zombie in ListOfZombies)
                             {
                                 zombie.UpdateCameraScreenPosition(camera);
                             }
 
-                            foreach (Turret turret in listOfTurrets)
+                            foreach (Turret turret in ListOfTurrets)
                             {
                                 turret.UpdateCameraScreenPosition(camera);
                             }
 
                             //Bullets spawn in the center of the screen for some reason when I use UpdateCameraScreenPosition
-                            foreach (Bullet bullet in listOfBullets)
+                            foreach (Bullet bullet in ListOfBullets)
                             {
                                 bullet.UpdateCameraScreenPosition(camera);
                             }
@@ -558,19 +533,19 @@ namespace MonoZombie
                             //Turret test code, remove comment when implemented
                             //turret.Draw(_spriteBatch, Color.White);
 
-                            foreach (Enemy zombie in listOfZombies)
+                            foreach (Enemy zombie in ListOfZombies)
                             {
                                 zombie.Draw(_spriteBatch);
                             }
 
-                            foreach (Turret turret in listOfTurrets)
+                            foreach (Turret turret in ListOfTurrets)
                             {
                                 turret.Draw(_spriteBatch, Color.White);
                             }
 
 
                             // Draw the bullets
-                            foreach (Bullet bullet in listOfBullets)
+                            foreach (Bullet bullet in ListOfBullets)
                             {
                                 bullet.Draw(_spriteBatch);
                             }

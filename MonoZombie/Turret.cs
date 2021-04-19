@@ -23,7 +23,7 @@ namespace MonoZombie
     /// Purpose: Manages turrets and their function.
     /// Restrictions:
     /// </summary>
-    class Turret : GameObject
+    public class Turret : GameObject
     {
         private int range;
         private int damage;

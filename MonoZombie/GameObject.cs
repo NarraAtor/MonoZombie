@@ -173,6 +173,27 @@ namespace MonoZombie {
 		}
 
 		/*
+		 * Author : Frank Alfano
+		 * 
+		 * Removes (or destroys) an object from its list in the Main class
+		 * 
+		 * return bool							: Whether or not the object was successfully destroyed
+		 */
+		public bool Destroy ( ) {
+			if (this is Bullet) {
+				Main.ListOfBullets.Remove((Bullet) this);
+			} else if (this is Enemy) {
+				Main.ListOfZombies.Remove((Enemy) this);
+			} else if (this is Turret) {
+				Main.ListOfTurrets.Remove((Turret) this);
+			} else {
+				return false;
+			}
+
+			return true;
+		}
+
+		/*
 		 * Author : Frank Alfano, Matthew Sorrentino
 		 * 
 		 * Check collision as well as update the position of both colliding gameobjects based on the collision
