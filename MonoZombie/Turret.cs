@@ -6,154 +6,155 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 //Matthew Sorrentino / Eric Fotang
 //creates a turret object w a draw and update method
-namespace MonoZombie
-{
-    public enum TurretType
-    {
-        Cannon,
-        Archer,
-        Magic,
-        Trap,
-        Buff,//these work diffrently than the rest 
-        DeBuff//these work diffrently then the rest 
-    }
+namespace MonoZombie {
+	public enum TurretType {
+		Cannon,
+		Archer,
+		Magic,
+		Trap,
+		Buff,//these work diffrently than the rest 
+		DeBuff//these work diffrently then the rest 
+	}
 
-    /// <summary>
-    /// Authors:Eric, Matthew
-    /// Purpose: Manages turrets and their function.
-    /// Restrictions:
-    /// </summary>
-    public class Turret : GameObject
-    {
-        private int range;
-        private int damage;
-        private int price;
-        private double attackSpdTimer;
-        private double attacksPerSecond;
-        private Texture2D turret;//the base image of the turret
-        private Texture2D GunPart;//The  rotating head of the turret
-        private Rectangle Holder;//the location and size of the turret
-        private Enemy target; // the target to shoot at
+	/// <summary>
+	/// Authors:Eric, Matthew
+	/// Purpose: Manages turrets and their function.
+	/// Restrictions:
+	/// </summary>
+	public class Turret : GameObject {
+		protected float timeSinceLastAttack;
+		protected float attacksPerSecond;
 
-        public int Price
-        {
-            get { return price; }
-        }
-        public Turret(TurretType type, Texture2D Base, Texture2D Head, Vector2 position) : base(Base, position, canRotate: true)
-        {
-            //goes through each of the diffrent turret types and then sets stats accordingly 
+		private Texture2D turretBaseTexture; // The base image of the turret
+		private Texture2D turretHeadTexture; // The rotating head of the turret
 
-            Holder.X = X;
-            Holder.Y = Y;
-            Holder.Width = 50;
-            Holder.Height = 50;
-            turret = Base;
-            GunPart = Head;
-            switch (type)
-            {
+		private int range;
+		private int damage;
+		private Enemy target; // the target to shoot at
 
-                case TurretType.Cannon:
-                    {
-                        range = 50;
-                        damage = 100;
-                        price = 200;
-                        break;
-                    }
-                case TurretType.Archer:
-                    {
-                        range = 50;
-                        damage = 100;
-                        price = 300;
-                        attacksPerSecond = 5;
-                        //TODO: Adjust the rectangle so it is centered
+		public int Price {
+			get;
+			private set;
+		}
 
-                        break;
-                    }
+		public bool CanAttack {
+			get {
+				return (timeSinceLastAttack >= 1 / attacksPerSecond);
+			}
+		}
 
-                case TurretType.Buff:
-                    {
-                        range = 50;
-                        damage = 100;
-                        price = 400;
-                        break;
-                    }
+		public Turret (TurretType type, Texture2D turretBaseTexture, Texture2D turretHeadTexture, Vector2 position) : base(turretHeadTexture, position, canRotate: true) {
+			// Goes through each of the diffrent turret types and then sets stats accordingly 
 
-                case TurretType.DeBuff:
-                    {
-                        range = 50;
-                        damage = 100;
-                        price = 500;
-                        break;
-                    }
+			this.turretBaseTexture = turretBaseTexture;
+			this.turretHeadTexture = turretHeadTexture;
 
-                case TurretType.Magic:
-                    {
-                        range = 50;
-                        damage = 100;
-                        price = 500;
-                        break;
-                    }
+			switch (type) {
 
-                case TurretType.Trap:
-                    {
-                        range = 50;
-                        damage = 100;
-                        price = 500;
-                        break;
-                    }
+				case TurretType.Cannon: {
+						range = 50;
+						damage = 100;
+						Price = 200;
+						break;
+					}
+				case TurretType.Archer: {
+						range = 50;
+						damage = 100;
+						Price = 300;
+						attacksPerSecond = 5;
+						break;
+					}
 
-            }
-        }
+				case TurretType.Buff: {
+						range = 50;
+						damage = 100;
+						Price = 400;
+						break;
+					}
 
-        /// <summary>
-        /// Purpose: Detects the closest zombie in this turret's range and fires a bullet at it.
-        /// Restrictions:
-        /// </summary>
-        /// <param name="enemies">the list of enemies to attack.</param>
-        /// <param name="bulletTexture">the texture of the bullets</param>
-        /// <param name="gameTime">the information on time in game.</param>
-        public void Detect(List<Enemy> enemies, Texture2D bulletTexture, GameTime gameTime)
-        {
-            if (attackSpdTimer >= 1 / attacksPerSecond)
-            {
-                float closestRange = float.MaxValue;
-                float distancetoZombie;
-                foreach (Enemy zombie in enemies)
-                {
-                    distancetoZombie = Main.Distance(new Vector2(zombie.X, zombie.Y), new Vector2(X, Y));
-                    if (distancetoZombie <= range && distancetoZombie < closestRange)
-                    {
-                        closestRange = distancetoZombie;
-                        target = zombie;
-                    }
-                }
+				case TurretType.DeBuff: {
+						range = 50;
+						damage = 100;
+						Price = 500;
+						break;
+					}
 
-                if (!(target is null))
-                {
-                    RotateTo(new Vector2(target.X, target.Y));
-                    Main.ListOfBullets.Add(new Bullet(bulletTexture, new Vector2(X, Y), Angle, 15));
-                    attackSpdTimer = 0;
-                }
-                //target.Health -= damage;
-            }
+				case TurretType.Magic: {
+						range = 50;
+						damage = 100;
+						Price = 500;
+						break;
+					}
 
-        }
+				case TurretType.Trap: {
+						range = 50;
+						damage = 100;
+						Price = 500;
+						break;
+					}
 
-        public void Draw(SpriteBatch sb, Color tint)
-        {
-            //base.Draw(turret, Holder, tint);
-            //base.Draw(GunPart, Holder, tint);
-            SpriteManager.DrawImage(sb, turret, Rect, angle: 0);
-            //Change the angle the gun is drawn at since the asset is drawn a bit differently 
-            //(about 90 degrees off from where it's actually facing).
-            SpriteManager.DrawImage(sb, GunPart, Rect, angle: Angle + (MathF.PI/2));
-        }
+			}
+		}
 
-        public void UpdateTurret(Enemy target, Texture2D bulletTexture, GameTime gameTime)
-        {
-            attackSpdTimer += gameTime.ElapsedGameTime.TotalSeconds;
-            Detect(Main.ListOfZombies, bulletTexture, gameTime);
-        }
-    }
+		/// <summary>
+		/// Purpose: Detects the closest zombie in this turret's range.
+		/// Restrictions:
+		/// </summary>
+		/// <param name="enemies">the list of enemies to attack.</param>
+		/// <param name="bulletTexture">the texture of the bullets</param>
+		/// <param name="gameTime">the information on time in game.</param>
+		public void DetectTarget ( ) {
+			// Reset the target just in case the current target has moved out of its range
+			target = null;
+
+			// The closest zombie in range of the turret
+			float closestRange = range;
+
+			// Loop through each of the enemies currently on the map to find the closest one
+			foreach (Enemy zombie in Main.ListOfZombies) {
+				// Get the distance from this turret to the current zombie
+				float distancetoZombie = Main.Distance(zombie.Position, Position);
+
+				// Check to see if the current zombie is the closest one discovered
+				if (distancetoZombie < closestRange) {
+					closestRange = distancetoZombie;
+					target = zombie;
+				}
+			}
+		}
+
+		/*
+		 * Author : Frank Alfano, Eric Fotang
+		 * 
+		 * * Overriden from GameObject class
+		 */
+		public new void Update (GameTime gameTime, MouseState mouseState, KeyboardState keyboardState) {
+			// Update the last time since this game object has attacked
+			timeSinceLastAttack += (float) gameTime.ElapsedGameTime.TotalSeconds;
+
+			// Detect nearby targets
+			DetectTarget( );
+
+			// If the current target is not equal to null, then rotate the turret to look towards it
+			if (target != null) {
+				RotateTo(target.Position);
+
+				// If the turret can shoot a bullet, shoot a bullet
+				if (timeSinceLastAttack >= 1 / attacksPerSecond) {
+					Main.ListOfBullets.Add(new Bullet(Main.bulletTexture, centerPosition, Angle, 15));
+
+					timeSinceLastAttack = 0;
+				}
+			}
+		}
+
+		public new void Draw (SpriteBatch spriteBatch) {
+			SpriteManager.DrawImage(spriteBatch, turretBaseTexture, Rect, angle: 0);
+
+			//Change the angle the gun is drawn at since the asset is drawn a bit differently 
+			//(about 90 degrees off from where it's actually facing).
+			SpriteManager.DrawImage(spriteBatch, turretHeadTexture, Rect, angle: Angle + (MathF.PI / 2));
+		}
+	}
 }
 

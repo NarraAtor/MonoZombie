@@ -85,30 +85,6 @@ namespace MonoZombie {
 			}
 		}
 
-		/*
-		 * Author : Frank Alfano
-		 * 
-		 * * See GameObject class method for explanation
-		 */
-		public bool CheckUpdateCollision (GameObject other) 
-		{
-			// Whether or not the "other" gameobject is colliding with any of the tiles on the map
-			bool foundCollision = false;
-
-			// Loop through all the collidable tiles on the map
-			for (int i = 0; i < CollidableMapTiles.Length; i++) 
-			{
-				GameObject tile = CollidableMapTiles[i];
-
-				if (tile.CheckUpdateCollision(other)) 
-				{
-					foundCollision = true;
-				}
-			}
-
-			return foundCollision;
-		}
-
 		// Author: Ken Adachi-Bartholomay
 		// Purpose: Checks for circle-circle collision between tiles and another object (primarily used for bullets)
 		// Params: other for the other gameObject to check collision with any tiles
@@ -178,7 +154,7 @@ namespace MonoZombie {
 				// This also means the player will spawn at the center of the screen
 				int mapPixelWidth = mapWidth * (int) tileSpriteDimensions.X;
 				int mapPixelHeight = mapHeight * (int) tileSpriteDimensions.Y;
-				Vector2 tilePosition = new Vector2((Main.ScreenDimensions.X / 2) - (mapPixelWidth / 2) + tileX, (Main.ScreenDimensions.Y / 2) - (mapPixelHeight / 2) + tileY);
+				Vector2 tilePosition = new Vector2((Main.SCREEN_DIMENSIONS.X / 2) - (mapPixelWidth / 2) + tileX, (Main.SCREEN_DIMENSIONS.Y / 2) - (mapPixelHeight / 2) + tileY);
 
 				// Get the type of the tile from the file
 				TileType tileType = (TileType) Enum.Parse(typeof(TileType), lines[i], true);

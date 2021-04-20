@@ -11,7 +11,7 @@ namespace MonoZombie {
 	public static class SpriteManager {
 		// How much to scale the UI and game objects up by in-game
 		public static float UIScale = 5;
-		public static float ObjectScale = 2f;
+		public static float ObjectScale = 4f;
 
 		/*
 		 * Author : Frank Alfano

@@ -27,16 +27,7 @@ namespace MonoZombie {
 		}
 
 		/*
-		 * Author : Frank Alfano
-		 * 
-		 * Overridden from the base GameObject class
-		 */
-		public new bool CheckUpdateCollision (GameObject other) {
-			return !IsWalkable && base.CheckUpdateCollision(other);
-		}
-
-		/*
-		 * Author : Frank Alfano, Ken A.
+		 * Author : Frank Alfano, Ken Adachi-Bartholomay
 		 * 
 		 * Get a texture for the tile based on its type
 		 * 

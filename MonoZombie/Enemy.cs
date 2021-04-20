@@ -5,86 +5,67 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace MonoZombie
-{
-    public class Enemy : GameObject
-    {
-        private int health;
-        private int speed;
-        private int attSpeed;
-        private double timeAtLastFrame;
-        private double attTime;
-        private double timer;
-        private bool isAlive;
+namespace MonoZombie {
+	public class Enemy : GameObject {
+		protected float timeSinceLastAttack;
+		protected float attacksPerSecond;
 
-        //testing property
-        public double Timer { get { return timer; } }
+		public int Health {
+			get;
+			private set;
+		}
 
-        public bool IsAlive { get { return isAlive; } set { isAlive = value; } }
-        public int Health { get { return health; } set { health = value; } }
+		public bool IsDead {
+			get {
+				return (Health <= 0);
+			}
+		}
 
-        public Enemy(Texture2D texture, Vector2 position, int health, int speed, int attSpeed)
-            : base(texture, position, canRotate: true)
-        {
-            this.health = health;
-            this.speed = speed;
-            this.attSpeed = attSpeed;
-            isAlive = true;
-            timer = 0;
-        }
+		public bool CanAttack {
+			get {
+				return (timeSinceLastAttack >= 1 / attacksPerSecond);
+			}
+		}
 
+		public Enemy (Texture2D texture, Vector2 position, int health, int moveSpeed, float attacksPerSecond) : base(texture, position, moveSpeed: moveSpeed, canRotate: true) {
+			Health = health;
+			this.attacksPerSecond = attacksPerSecond;
+		}
 
-        /// <summary>
-        /// Attacks the player every few seconds
-        /// Uses timer to calculate whether it can attack or not
-        /// Variable attack speed to be implemented
-        /// </summary>
-        /// <param name="player"></param>
-        public void Attack(Player player)
-        {
-            //Eric: GameObject never assigns to radius so I simply replaced the if statment with a rectangle intersects bool
-            //if (Distance(new Point(X, Y), new Point(player.X, player.Y)) < radius)
-            if (Rect.Intersects(player.Rect))
-            {
-                if (timer > 1)
-                {
-                    player.TakeDamage(10);
-                    timer = 0;
-                }
-            }
-        }
+		public void TakeDamage (int damage) {
+			Health -= damage;
+		}
 
-        public void TakeDamage(int damage)
-        {
-            health -= damage;
-        }
+		/// <summary>
+		/// Update, make sure the time works 
+		/// </summary>
+		/// <param name="time"></param>
+		public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
+			// Update the last time since this game object has attacked
+			timeSinceLastAttack += (float) gameTime.ElapsedGameTime.TotalSeconds;
 
-        /// <summary>
-        /// Update, make sure the time works 
-        /// </summary>
-        /// <param name="time"></param>
-        public void Update(GameTime time, Player player)
-        {
-            if (isAlive)
-            {
-                canMove = true;
-                timer += time.ElapsedGameTime.TotalSeconds;
-                Attack(player);
-            }
-            else
-            {
-                canMove = false;
-            }
-        }
+			// If the zombie is dead, then destroy it and add some currency to the player
+			if (IsDead) {
+				// CHANGE 10 TO LIKE A RANDOM NUMBER OR SOMETHING
+				Main.currency += 10;
 
-        /// <summary>
-        /// Purpose: Only draw the zombie if it is alive.
-        /// </summary>
-        /// <param name="spriteBatch">the zombie to draw to</param>
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            if (IsAlive)
-                base.Draw(spriteBatch);
-        }
-    }
+				Destroy( );
+			}
+		}
+
+		public new bool CheckUpdateCollision (GameObject other) {
+			bool didCollide = base.CheckUpdateCollision(other);
+
+			// If the zombie has collided with the player and can attack, attack the player
+			if (didCollide && typeof(Player).IsInstanceOfType(other)) {
+				if (CanAttack) {
+					((Player) other).TakeDamage(10);
+
+					timeSinceLastAttack = 0;
+				}
+			}
+
+			return didCollide;
+		}
+	}
 }

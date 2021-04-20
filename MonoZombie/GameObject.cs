@@ -11,14 +11,13 @@ using System.Text;
 namespace MonoZombie {
 	public abstract class GameObject {
 		protected Texture2D texture;
+
 		protected Vector2 centerPosition;
+
 		protected bool canRotate;
 		protected bool canMove;
 
-		public int MoveSpeed {
-			get;
-			protected set;
-		}
+		protected float moveSpeed;
 
 		public Rectangle Rect {
 			get {
@@ -34,6 +33,12 @@ namespace MonoZombie {
 		public int CamY {
 			get;
 			private set;
+		}
+
+		public Vector2 Position {
+			get {
+				return centerPosition;
+			}
 		}
 
 		// The game object's pixel position X value on the screen
@@ -68,17 +73,16 @@ namespace MonoZombie {
 			protected set;
 		}
 
-		public GameObject (Texture2D texture, Vector2 centerPosition, int moveSpeed = 0, bool canRotate = false, bool canMove = true) {
+		public GameObject (Texture2D texture, Vector2 centerPosition, float moveSpeed = 0, bool canRotate = false, bool canMove = true) {
 			this.texture = texture;
 			this.centerPosition = centerPosition;
 			this.canRotate = canRotate;
 			this.canMove = canMove;
-
-			MoveSpeed = moveSpeed;
+			this.moveSpeed = moveSpeed;
 
 			// Calculate the initial camera position
-			CamX = X - (int) (Main.ScreenDimensions / 2).X;
-			CamY = Y - (int) (Main.ScreenDimensions / 2).Y;
+			CamX = X - (int) (Main.SCREEN_DIMENSIONS / 2).X;
+			CamY = Y - (int) (Main.SCREEN_DIMENSIONS / 2).Y;
 		}
 
 		/*
@@ -93,13 +97,22 @@ namespace MonoZombie {
 		 * GameTime gameTime		: Used to get the current time in the game
 		 * MouseState mouse			: The current state of the mouse
 		 * KeyboardState keyboard	: The current state of the keyboard
+		 * Camera camera			: The camera object in the Main class
 		 * 
 		 * return					:
 		 */
 		public virtual void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
-
 		}
-
+		
+		/*
+		 * Author : Frank Alfano
+		 * 
+		 * Update this game objects position based on the camera
+		 * 
+		 * Camera camera			: The camera object
+		 * 
+		 * return					:
+		 */
 		public void UpdateCameraScreenPosition (Camera camera) {
 			// Update the position of the game object based on the target game object
 			centerPosition = camera.CalculateScreenPosition(this);
@@ -180,11 +193,12 @@ namespace MonoZombie {
 		 * return bool							: Whether or not the object was successfully destroyed
 		 */
 		public bool Destroy ( ) {
-			if (this is Bullet) {
+			if (typeof(Bullet).IsInstanceOfType(this)) {
 				Main.ListOfBullets.Remove((Bullet) this);
-			} else if (this is Enemy) {
+				Console.WriteLine($"{Position}");
+			} else if (typeof(Enemy).IsInstanceOfType(this)) {
 				Main.ListOfZombies.Remove((Enemy) this);
-			} else if (this is Turret) {
+			} else if (typeof(Turret).IsInstanceOfType(this)) {
 				Main.ListOfTurrets.Remove((Turret) this);
 			} else {
 				return false;
@@ -250,6 +264,15 @@ namespace MonoZombie {
 			other.MoveBy(moveOtherBy);
 
 			return true;
+		}
+
+		/*
+		 * Author : Frank Alfano
+		 * 
+		 * Just checks to see if this game object is colliding with another one without update its position
+		 */
+		public bool CheckCollision (GameObject other) {
+			return (Rectangle.Intersect(other.Rect, Rect).Size != Point.Zero);
 		}
 	}
 }
