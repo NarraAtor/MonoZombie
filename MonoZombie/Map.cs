@@ -90,17 +90,45 @@ namespace MonoZombie {
 		 * 
 		 * * See GameObject class method for explanation
 		 */
-		public bool CheckUpdateCollision (GameObject other) {
+		public bool CheckUpdateCollision (GameObject other) 
+		{
 			// Whether or not the "other" gameobject is colliding with any of the tiles on the map
 			bool foundCollision = false;
 
 			// Loop through all the collidable tiles on the map
-			for (int i = 0; i < CollidableMapTiles.Length; i++) {
+			for (int i = 0; i < CollidableMapTiles.Length; i++) 
+			{
 				GameObject tile = CollidableMapTiles[i];
 
-				if (tile.CheckUpdateCollision(other)) {
+				if (tile.CheckUpdateCollision(other)) 
+				{
 					foundCollision = true;
 				}
+			}
+
+			return foundCollision;
+		}
+
+		// Author: Ken Adachi-Bartholomay
+		// Purpose: Checks for circle-circle collision between tiles and another object (primarily used for bullets)
+		// Params: other for the other gameObject to check collision with any tiles
+		// Restrictions: Shouldn't be used for anything other than bullets/other small objects
+		public bool CheckRadiusCollision (GameObject other)
+        {
+			// Whether or not the "other" gameobject is colliding with any of the tiles on the map
+			bool foundCollision = false;
+
+			// Loop through all the collidable tiles on the map
+			for (int i = 0; i < CollidableMapTiles.Length; i++)
+			{
+				GameObject tile = CollidableMapTiles[i];
+
+				double distanceSqrd = Math.Pow(other.Rect.Center.X - tile.Rect.Center.X, 2) + Math.Pow(other.Rect.Center.Y - tile.Rect.Center.Y, 2);
+				double totalRadiiSqrd = Math.Pow(((other.Rect.Width / 3) + (tile.Rect.Width / 3)), 2);
+				if (distanceSqrd <= totalRadiiSqrd)
+                {
+					foundCollision = true;
+                }
 			}
 
 			return foundCollision;

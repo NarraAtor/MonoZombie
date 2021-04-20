@@ -83,9 +83,7 @@ namespace MonoZombie
         private static List<Turret> listOfTurrets;
         private static List<Enemy> listOfZombies;
         private static List<Bullet> listOfBullets;
-        private static Turret turret;
         private static Player player;
-        private static Enemy zombie;
         private static int currency;
         private static int roundNumber;
         private static bool roundIsOngoing;
@@ -231,7 +229,7 @@ namespace MonoZombie
 
             // Texture-reliant intitialization
             //turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
-            player = new Player(playerImage, ScreenDimensions / 2, 10, 5, 3);
+            player = new Player(playerImage, ScreenDimensions / 2, 100, 5, 3);
 
             // Create the camera
             camera = new Camera(player);
@@ -267,13 +265,9 @@ namespace MonoZombie
                 roundIsOngoing = false;
             }, true);
 
-            turretButtonList.Add(new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(_graphics.PreferredBackBufferWidth/2, _graphics.PreferredBackBufferHeight/2)));
-            turretNames.Add("Archer");
 
             //test turret list
             //listOfTurrets.Add(turret);
-
-            turretList = new List<Turret>();
 
             base.LoadContent();
         }
@@ -323,7 +317,6 @@ namespace MonoZombie
                                 //Otherwise just add a zombie to the list.
                                 else
                                 {
-                                    //Testing each of the spawn points.
                                     listOfZombies.Add(new Enemy(enemyImage, zombieSpawnPoints[rng.Next(0, zombieSpawnPoints.Length)], zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
                                     foreach (Enemy zombie in listOfZombies)
                                     {
@@ -331,9 +324,13 @@ namespace MonoZombie
                                     }
                                 }
 
+                                //Return all zombies back to life and spawn them at one of the 4 locations around the map.
                                 foreach (Enemy zombie in listOfZombies)
                                 {
                                     zombie.IsAlive = true;
+                                    Vector2 newZombiePosition = zombieSpawnPoints[rng.Next(0, zombieSpawnPoints.Length)];
+                                    zombie.X = (int) newZombiePosition.X;
+                                    zombie.Y = (int) newZombiePosition.Y;
                                 }
 
                                 roundIsOngoing = true;
@@ -347,12 +344,12 @@ namespace MonoZombie
                             foreach (Enemy zombie in listOfZombies)
                             {
                                 //If a zombie just died, set indicate that it is dead an increment currency.
+                                //To resolve the dead zombie movement glitch, we'll teleport the zombies out of harm's way.
                                 if (zombie.Health <= 0 && zombie.IsAlive)
                                 {
-                                    zombie.Die();
+                                    zombie.IsAlive = false;
                                     currency++;
                                 }
-
 
                                 if (zombie.IsAlive)
                                 {
@@ -403,12 +400,24 @@ namespace MonoZombie
                                 foreach (Bullet bullet in ListOfBullets)
                                 {
                                     //If the bullet is colliding with a living zombie and hasn't already hit one.
-                                    if (bullet.CheckUpdateCollision(zombie) && zombie.IsAlive && bullet.IsActive)
+                                    //GameObject's CheckUpdateCollision() moves gameObjects even though it is a bool.
+                                    //I'm gonna use Rectangle.Intersects instead.
+                                    if (bullet.Rect.Intersects(zombie.Rect) && zombie.IsAlive && bullet.IsActive)
                                     {
                                         zombie.TakeDamage(10);
                                         bullet.IsActive = false;
                                         aBulletIsInactive = true;
                                     }
+                                }
+                            }
+
+                            //check bullet-wall collisions
+                            foreach(Bullet bullet in ListOfBullets)
+                            {
+                                if (map.CheckRadiusCollision(bullet))
+                                {
+                                    bullet.IsActive = false;
+                                    aBulletIsInactive = true;
                                 }
                             }
 
@@ -437,11 +446,6 @@ namespace MonoZombie
                             }
 
                             foreach (Turret turret in listOfTurrets)
-                            {
-                                turret.UpdateCameraScreenPosition(camera);
-                            }
-
-                            foreach (Turret turret in turretList)
                             {
                                 turret.UpdateCameraScreenPosition(camera);
                             }
@@ -488,7 +492,7 @@ namespace MonoZombie
                                 if (currMouseState.X > turretButtonList[i].Rect.Left && currMouseState.X < turretButtonList[i].Rect.Right
                                         && currMouseState.Y > turretButtonList[i].Rect.Bottom)
                                 {
-                                    if (prevMouseState.LeftButton == ButtonState.Released && currMouseState.LeftButton == ButtonState.Pressed)
+                                    if (currMouseState.LeftButton == ButtonState.Pressed)
                                     {
                                         turretInPurchase = turretButtonList[i];
                                         gameState = GameState.ShopInPlacment;
@@ -500,7 +504,6 @@ namespace MonoZombie
                             if (prevMouseState.LeftButton == ButtonState.Released && currMouseState.LeftButton == ButtonState.Pressed)
                             {
                                 turretList.Add(turretInPurchase);
-                                gameState = GameState.Playing;
                             }
                             break;
                     }
@@ -508,7 +511,7 @@ namespace MonoZombie
 
                 case MenuState.GameOver:
                     currentStateTEST = "GameOver";
-                    
+
                     if (GetKeyDown(Keys.Enter))
                     {
                         menuState = MenuState.MainMenu;
@@ -565,11 +568,6 @@ namespace MonoZombie
                                 turret.Draw(_spriteBatch, Color.White);
                             }
 
-                            foreach (Turret turret in turretList)
-                            {
-                                turret.Draw(_spriteBatch);
-                            }
-
 
                             // Draw the bullets
                             foreach (Bullet bullet in listOfBullets)
@@ -600,9 +598,7 @@ namespace MonoZombie
 
                     break;
                 case MenuState.GameOver:
-                    
-                    _spriteBatch.DrawString(font, "Game Over!", new Vector2(_graphics.PreferredBackBufferWidth / 2-50, _graphics.PreferredBackBufferHeight / 5 * 2), Color.DarkRed);
-                    _spriteBatch.DrawString(font, "Press 'Enter' to return to main menu!", new Vector2(_graphics.PreferredBackBufferWidth / 2 - 400, _graphics.PreferredBackBufferHeight / 5 * 4), Color.White);
+
                     break;
             }
 
@@ -660,7 +656,7 @@ namespace MonoZombie
             for (int i = 0; i < turretButtonList.Count; i++)
             {
                 turretButtonList[i].Draw(_spriteBatch, Color.White);
-                _spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].X - 70, turretButtonList[i].Y + 50), Color.White);
+                _spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].Y, turretButtonList[i].Y + 75), Color.White);
             }
         }
     }

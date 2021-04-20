@@ -23,9 +23,7 @@ namespace MonoZombie
         public bool IsAlive { get { return isAlive; } set { isAlive = value; } }
         public int Health { get { return health; } set { health = value; } }
 
-
-
-        public Enemy(Texture2D texture, Vector2 position, int health, int speed, int attSpeed) 
+        public Enemy(Texture2D texture, Vector2 position, int health, int speed, int attSpeed)
             : base(texture, position, canRotate: true)
         {
             this.health = health;
@@ -46,9 +44,9 @@ namespace MonoZombie
         {
             //Eric: GameObject never assigns to radius so I simply replaced the if statment with a rectangle intersects bool
             //if (Distance(new Point(X, Y), new Point(player.X, player.Y)) < radius)
-            if(Rect.Intersects(player.Rect))
+            if (Rect.Intersects(player.Rect))
             {
-                if (timer > 1) 
+                if (timer > 1)
                 {
                     player.TakeDamage(10);
                     timer = 0;
@@ -61,24 +59,22 @@ namespace MonoZombie
             health -= damage;
         }
 
-        
-
-        public void Die() { isAlive = false; }
-
-
         /// <summary>
         /// Update, make sure the time works 
         /// </summary>
         /// <param name="time"></param>
         public void Update(GameTime time, Player player)
         {
-            //double currentTime;
-            //Double.TryParse(time.ToString(), out currentTime); //- timeAtLastFrame;
-            timer += time.ElapsedGameTime.TotalSeconds;
-            //double timeBetweenFrames = currentTime - timeAtLastFrame;
-            //timer += timeBetweenFrames;
-            Attack(player);
-            //timeAtLastFrame = currentTime;
+            if (isAlive)
+            {
+                canMove = true;
+                timer += time.ElapsedGameTime.TotalSeconds;
+                Attack(player);
+            }
+            else
+            {
+                canMove = false;
+            }
         }
 
         /// <summary>
@@ -87,8 +83,8 @@ namespace MonoZombie
         /// <param name="spriteBatch">the zombie to draw to</param>
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if(IsAlive)
-            base.Draw(spriteBatch);
+            if (IsAlive)
+                base.Draw(spriteBatch);
         }
     }
 }
