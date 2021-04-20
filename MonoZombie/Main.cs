@@ -48,16 +48,10 @@ namespace MonoZombie
         private bool easyModeTEST;
 
         // Camera
-        public static Vector2 ScreenDimensions = new Vector2(1280, 720);
         private Camera camera;
 
         // Fonts
         public static SpriteFont font;
-
-        // UI Textures
-        public static Texture2D titleTexture;
-        public static Texture2D buttonTexture;
-        public static Texture2D tabTexture;
 
         // UI Button Variables
         private UIButton menuPlayButton;
@@ -66,6 +60,9 @@ namespace MonoZombie
         private UIButton pauseResumeButton;
         private UIButton pauseMenuButton;
         private UIButton gameOverMenuButton;
+
+        // Map
+        private Map map;
 
         // Map Tile Texture Arrays
         // * These are arrays because when a tile is created, it picks a random texture from these
@@ -76,30 +73,38 @@ namespace MonoZombie
         public static Texture2D[] lavaTextures;
         public static Texture2D[] speedTextures;
 
-        private Map map;
+        // Game Object Textures
+        public static Texture2D turretHeadTexture;
+        public static Texture2D turretBaseTexture;
+        public static Texture2D playerTexture;
+        public static Texture2D enemyTexture;
+        public static Texture2D bulletTexture;
 
-        private static Texture2D turretImage;
-        private static Texture2D baseImage;
-        public static Texture2D playerImage;
-        private static Texture2D enemyImage;
-        private static Texture2D bulletImage;
+        // UI Textures
+        public static Texture2D titleTexture;
+        public static Texture2D buttonTexture;
+        public static Texture2D tabTexture;
 
-        private static Player player;
-        private static int currency;
-        private static int roundNumber;
-        private static bool roundIsOngoing;
-        private static bool aZombieIsAlive;
-        private static bool aBulletIsInactive;
+        // Game Objects
+        private Player player;
+
+        // Game Logic Variables
+        public static int currency;
+        private int roundNumber;
+
         private List<Turret> turretButtonList;                      // the list that holds all of the turret images
         private List<String> turretNames;                           // holds the names of the turret types, please update
                                                                     // when new turrets are added to the ButtonList
         private Turret turretInPurchase;							// the turret that the player is currently purchasing from the shop.
         private List<Turret> turretList;                            // turrets that exist in the game;
 
-        //Constant variables
-        private const int zombieHealth = 100;
-        private const int zombieMoveSpeed = 1;
-        private const int zombieAttackSpeed = 5;
+        // Constants
+        public const int ZOMBIE_BASE_HEALTH = 100; // The default health of the zombie
+        public const int ZOMBIE_BASE_MOVESPEED = 2; // The default movespeed of the zombie
+        public const int ZOMBIE_BASE_ATTACKSPEED = 1; // The default attackspeed of the zombie
+        public const int ZOMBIE_BASE_COUNT = 5; // The starting number of zombies in round 1
+        public static Vector2 SCREEN_DIMENSIONS = new Vector2(1280, 720);
+
         private static Vector2 leftSideOfMap;
         private static Vector2 rightSideOfMap;
         private static Vector2 topSideOfMap;
@@ -107,13 +112,17 @@ namespace MonoZombie
         private static Vector2[] zombieSpawnPoints;
         private static Random rng;
 
-        public static Player Player { get; }
+        public static List<Bullet> ListOfBullets {
+            get;
+        } = new List<Bullet>( );
 
-        public static List<Bullet> ListOfBullets { get; }
+        public static List<Enemy> ListOfZombies {
+            get;
+        } = new List<Enemy>( );
 
-        public static List<Enemy> ListOfZombies { get; }
-
-        public static List<Turret> ListOfTurrets { get; }
+        public static List<Turret> ListOfTurrets {
+            get;
+        } = new List<Turret>( );
 
         public Main()
         {
@@ -127,11 +136,7 @@ namespace MonoZombie
             // TODO: Add your initialization logic here
             menuState = MenuState.MainMenu;
             gameState = GameState.Playing;
-            currency = 0;
-            roundNumber = 1;
 
-            aZombieIsAlive = false;
-            aBulletIsInactive = false;
             easyModeTEST = false;
 
             turretButtonList = new List<Turret>();
@@ -147,11 +152,11 @@ namespace MonoZombie
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // Load textures for game objects
-            baseImage = Content.Load<Texture2D>("TurretBase");
-            turretImage = Content.Load<Texture2D>("TurretHead");
-            playerImage = Content.Load<Texture2D>("playerproto");
-            enemyImage = Content.Load<Texture2D>("zombieproto");
-            bulletImage = Content.Load<Texture2D>("bullet");
+            turretBaseTexture = Content.Load<Texture2D>("TurretBase");
+            turretHeadTexture = Content.Load<Texture2D>("TurretHead");
+            playerTexture = Content.Load<Texture2D>("playerproto");
+            enemyTexture = Content.Load<Texture2D>("zombieproto");
+            bulletTexture = Content.Load<Texture2D>("bullet");
 
             // Load map tile textures
             grassTextures = new Texture2D[] {
@@ -192,8 +197,8 @@ namespace MonoZombie
             // Load the map
             map = new Map("../../../MapLevels\\CurrentMapDesign.level");
 
-            _graphics.PreferredBackBufferWidth = (int)ScreenDimensions.X;
-            _graphics.PreferredBackBufferHeight = (int)ScreenDimensions.Y;
+            _graphics.PreferredBackBufferWidth = (int)SCREEN_DIMENSIONS.X;
+            _graphics.PreferredBackBufferHeight = (int)SCREEN_DIMENSIONS.Y;
             _graphics.ApplyChanges();
 
             // Map-reliant intialization
@@ -203,47 +208,42 @@ namespace MonoZombie
             bottomSideOfMap = new Vector2(map[(map.Width - 1) / 2, (map.Height - 1)].X, map[(map.Width - 1) / 2, (map.Height - 1)].Y);
             zombieSpawnPoints = new Vector2[] { leftSideOfMap, rightSideOfMap, topSideOfMap, bottomSideOfMap };
 
-            // Texture-reliant intitialization
-            //turret = new Turret(TurretType.Archer, baseImage, turretImage, new Vector2(100, 100));
-            player = new Player(playerImage, ScreenDimensions / 2, 100, 5, 3);
+            player = new Player(playerTexture, SCREEN_DIMENSIONS / 2, 100, 5, 3);
 
             // Create the camera
             camera = new Camera(player);
 
             // Create UI Buttons
-            menuPlayButton = new UIButton("Play", ScreenDimensions / 2, () =>
+            menuPlayButton = new UIButton("Play", SCREEN_DIMENSIONS / 2, () =>
             {
                 menuState = MenuState.Game;
                 gameState = GameState.Playing;
-                roundIsOngoing = false;
             });
 
-            menuPlayEasyModeButton = new UIButton("Easy Mode", ScreenDimensions / 2 + new Vector2(0f, 100f), () =>
+            menuPlayEasyModeButton = new UIButton("Easy Mode", SCREEN_DIMENSIONS / 2 + new Vector2(0f, 100f), () =>
             {
                 menuState = MenuState.Game;
                 gameState = GameState.Playing;
-                roundIsOngoing = false;
                 easyModeTEST = true;
             });
 
-            menuQuitButton = new UIButton("Quit", ScreenDimensions / 2 + new Vector2(0f, 200f), () =>
+            menuQuitButton = new UIButton("Quit", SCREEN_DIMENSIONS / 2 + new Vector2(0f, 200f), () =>
             {
                 Exit();
             });
 
-            pauseResumeButton = new UIButton("Resume", new Vector2(ScreenDimensions.X / 2, ScreenDimensions.Y / 3 * 2), () =>
+            pauseResumeButton = new UIButton("Resume", new Vector2(SCREEN_DIMENSIONS.X / 2, SCREEN_DIMENSIONS.Y / 3 * 2), () =>
             {
                 gameState = GameState.Playing;
-            }, true);
-            pauseMenuButton = new UIButton("Menu", new Vector2(ScreenDimensions.X / 2, ScreenDimensions.Y / 3), () =>
+            });
+
+            pauseMenuButton = new UIButton("Menu", new Vector2(SCREEN_DIMENSIONS.X / 2, SCREEN_DIMENSIONS.Y / 3), () =>
             {
                 menuState = MenuState.MainMenu;
-                roundIsOngoing = false;
-            }, true);
+            });
 
-
-            //test turret list
-            //listOfTurrets.Add(turret);
+            // Start the game
+            StartNextRound( );
 
             base.LoadContent();
         }
@@ -273,168 +273,86 @@ namespace MonoZombie
                         case GameState.Playing:
                             currentStateTEST = "Game - Playing";
 
-                            //Check if the player is dead
-                            if (player.Health <= 0 && !easyModeTEST)
-                            {
+                            // Update all game objects
+                            player.Update(gameTime, currMouseState, currKeyboardState);
+
+                            for (int i = ListOfTurrets.Count - 1; i >= 0; i--) {
+                                ListOfTurrets[i].Update(gameTime, currMouseState, currKeyboardState);
+                            }
+
+                            for (int i = ListOfBullets.Count - 1; i >= 0; i--) {
+                                ListOfBullets[i].Update(gameTime, currMouseState, currKeyboardState);
+                            }
+
+                            for (int i = ListOfZombies.Count - 1; i >= 0; i--) {
+                                ListOfZombies[i].Update(gameTime, currMouseState, currKeyboardState);
+                            }
+
+                            // Do game logic calculations
+
+                            // Check if the player is dead
+                            if (player.IsDead && !easyModeTEST) {
                                 menuState = MenuState.GameOver;
                             }
 
-                            //For now, if the round is over then immediately start the next round.
-                            if (!roundIsOngoing)
-                            {
-                                //Start to buff zombies once we reach a certain number.
-                                if (roundNumber >= 75)
-                                {
-                                    foreach (Enemy zombie in ListOfZombies)
-                                    {
-                                        zombie.Health = zombieHealth + (10 * (roundNumber - 75));
+                            // If there are no more zombies, then advance to the next round
+                            if (ListOfZombies.Count == 0) {
+                                StartNextRound( );
+							}
+
+                            // Check collisions
+                            // * The reason I think we should do it like this is because each of the game objects
+                            // have their own custom collisions functions, and in order for each of them to work
+                            // we need to call them like this
+                            foreach (GameObject wallTile in map.CollidableMapTiles) {
+                                // Update the player colliding with the wall
+                                player.CheckUpdateCollision(wallTile);
+
+								// Update zombies colliding with walls, other zombies, and the player
+								foreach (Enemy zombie in ListOfZombies) {
+                                    zombie.CheckUpdateCollision(wallTile);
+                                    zombie.CheckUpdateCollision(player);
+                                }
+
+								// Update bullets colliding with walls and zombies
+								// * Since bullets and zombies can be destroyed within this loop, we cant do a foreach or there will be an error
+                                for (int i = ListOfBullets.Count - 1; i >= 0; i--) {
+                                    // If the bullet gets too far from the player, destroy it so it doesn't cause lag
+                                    if (Distance(ListOfBullets[i].Position, player.Position) > 1000) {
+                                        ListOfBullets[i].Destroy( );
+                                        continue;
                                     }
-                                }
-                                //Otherwise just add a zombie to the list.
-                                else
-                                {
-                                    ListOfZombies.Add(new Enemy(enemyImage, zombieSpawnPoints[rng.Next(0, zombieSpawnPoints.Length)], zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
-                                    foreach (Enemy zombie in ListOfZombies)
-                                    {
-                                        zombie.Health = zombieHealth;
-                                    }
-                                }
 
-                                //Return all zombies back to life and spawn them at one of the 4 locations around the map.
-                                foreach (Enemy zombie in ListOfZombies)
-                                {
-                                    zombie.IsAlive = true;
-                                    Vector2 newZombiePosition = zombieSpawnPoints[rng.Next(0, zombieSpawnPoints.Length)];
-                                    zombie.X = (int) newZombiePosition.X;
-                                    zombie.Y = (int) newZombiePosition.Y;
-                                }
+                                    // The bullet collision was successfull with either the wall tile or a zombie, then we dont want to check any more collisions
+                                    // with the current bullet because the object will be destroyed
+                                    if (ListOfBullets[i].CheckCollision(wallTile)) {
+                                        continue;
+									}
 
-                                roundIsOngoing = true;
-                            }
-
-                            aBulletIsInactive = false;
-
-                            //This code rewards the player when a zombie is killed and makes the round end when in contact with a zombie.
-                            aZombieIsAlive = false;
-
-                            foreach (Enemy zombie in ListOfZombies)
-                            {
-                                //If a zombie just died, set indicate that it is dead an increment currency.
-                                //To resolve the dead zombie movement glitch, we'll teleport the zombies out of harm's way.
-                                if (zombie.Health <= 0 && zombie.IsAlive)
-                                {
-                                    zombie.IsAlive = false;
-                                    currency++;
-                                }
-
-                                if (zombie.IsAlive)
-                                {
-                                    aZombieIsAlive = true;
-                                    zombie.Update(gameTime, player);
-                                }
-
-                                //Check if any zombies are in range of the turrets
-                                foreach (Turret turret in ListOfTurrets)
-                                {
-                                    turret.UpdateTurret(zombie, bulletImage, gameTime);
-                                }
-
-                            }
-
-                            if (!aZombieIsAlive)
-                            {
-                                roundIsOngoing = false;
-                                roundNumber++;
-                                //gameState = GameState.Shop;
-                                //allowaccess to shop
-                                //run shop methods when opened
-                            }
-
-                            if (currMouseState.LeftButton == ButtonState.Pressed)
-                            {
-                                player.Shoot(bulletImage, currMouseState, gameTime);
-                            }
-
-                            foreach (Bullet bullet in ListOfBullets)
-                            {
-                                bullet.Move();
-                            }
-
-                            // Update the player
-                            player.Update(gameTime, currMouseState, currKeyboardState);
-
-                            // Update the map
-                            map.Update(gameTime, currMouseState, currKeyboardState);
-
-                            // Check gameobject collisions
-                            map.CheckUpdateCollision(player);
-                            // check zombie-map collisions
-                            // check zombie-player collisions
-                            // check bullet-zombie collisions
-                            foreach (Enemy zombie in ListOfZombies)
-                            {
-                                foreach (Bullet bullet in ListOfBullets)
-                                {
-                                    //If the bullet is colliding with a living zombie and hasn't already hit one.
-                                    //GameObject's CheckUpdateCollision() moves gameObjects even though it is a bool.
-                                    //I'm gonna use Rectangle.Intersects instead.
-                                    if (bullet.Rect.Intersects(zombie.Rect) && zombie.IsAlive && bullet.IsActive)
-                                    {
-                                        zombie.TakeDamage(10);
-                                        bullet.IsActive = false;
-                                        aBulletIsInactive = true;
+                                    for (int j = ListOfZombies.Count - 1; j >= 0; j--) {
+                                        if (ListOfBullets[i].CheckCollision(ListOfZombies[j])) {
+                                            break;
+                                        }
                                     }
                                 }
                             }
 
-                            //check bullet-wall collisions
-                            foreach(Bullet bullet in ListOfBullets)
-                            {
-                                if (map.CheckRadiusCollision(bullet))
-                                {
-                                    bullet.IsActive = false;
-                                    aBulletIsInactive = true;
-                                }
-                            }
-
-                            if (aBulletIsInactive)
-                            {
-                                //Delete inactive bullets by creating a new list without the the inactive bullets.
-                                List<Bullet> newBulletList = new List<Bullet>();
-                                for (int i = 0; i < ListOfBullets.Count; i++)
-                                {
-                                    if (ListOfBullets[i].IsActive)
-                                    {
-                                        newBulletList.Add(ListOfBullets[i]);
-                                    }
-                                }
-                                ListOfBullets = newBulletList; // WILL FIX
-                            }
-
-                            // Update the camera screen positions of the game objects
+                            // Update camera screen positions of all game objects
                             player.UpdateCameraScreenPosition(camera);
+
                             map.UpdateCameraScreenPosition(camera);
 
-                            foreach (Enemy zombie in ListOfZombies)
-                            {
-                                zombie.UpdateCameraScreenPosition(camera);
+                            for (int i = ListOfTurrets.Count - 1; i >= 0; i--) {
+                                ListOfTurrets[i].UpdateCameraScreenPosition(camera);
                             }
 
-                            foreach (Turret turret in ListOfTurrets)
-                            {
-                                turret.UpdateCameraScreenPosition(camera);
-                            }
-
-                            //Bullets spawn in the center of the screen for some reason when I use UpdateCameraScreenPosition
-                            foreach (Bullet bullet in ListOfBullets)
-                            {
-                                bullet.UpdateCameraScreenPosition(camera);
+                            for (int i = ListOfZombies.Count - 1; i >= 0; i--) {
+                                ListOfZombies[i].UpdateCameraScreenPosition(camera);
                             }
 
                             if (GetKeyDown(Keys.Escape))
                             {
                                 gameState = GameState.Pause;
-
                             }
 
                             if (GetKeyDown(Keys.Tab))
@@ -498,6 +416,7 @@ namespace MonoZombie
             // Update the past keyboard state to the current one as Update() has ended this frame
             prevKeyboardState = currKeyboardState;
             prevMouseState = currMouseState;
+
             base.Update(gameTime);
         }
 
@@ -514,7 +433,7 @@ namespace MonoZombie
             {
                 case MenuState.MainMenu:
                     // Draw menu UI objects
-                    SpriteManager.DrawImage(_spriteBatch, titleTexture, ScreenDimensions * new Vector2(0.5f, 0.25f), scale: SpriteManager.UIScale, isCentered: true);
+                    SpriteManager.DrawImage(_spriteBatch, titleTexture, SCREEN_DIMENSIONS * new Vector2(0.5f, 0.25f), scale: SpriteManager.UIScale, isCentered: true);
                     menuPlayButton.Draw(_spriteBatch);
                     menuPlayEasyModeButton.Draw(_spriteBatch);
                     menuQuitButton.Draw(_spriteBatch);
@@ -524,50 +443,44 @@ namespace MonoZombie
                     switch (gameState)
                     {
                         case GameState.Playing:
-                            // Draw the map
+                            // Draw all game objects
                             map.Draw(_spriteBatch);
 
-                            // Draw the player
-                            player.Draw(_spriteBatch);
-
-                            //Turret test code, remove comment when implemented
-                            //turret.Draw(_spriteBatch, Color.White);
-
-                            foreach (Enemy zombie in ListOfZombies)
-                            {
-                                zombie.Draw(_spriteBatch);
+							for (int i = ListOfTurrets.Count - 1; i >= 0; i--) {
+                                ListOfTurrets[i].Draw(_spriteBatch);
                             }
 
-                            foreach (Turret turret in ListOfTurrets)
-                            {
-                                turret.Draw(_spriteBatch, Color.White);
+                            for (int i = ListOfBullets.Count - 1; i >= 0; i--) {
+                                ListOfBullets[i].Draw(_spriteBatch);
                             }
 
-
-                            // Draw the bullets
-                            foreach (Bullet bullet in ListOfBullets)
-                            {
-                                bullet.Draw(_spriteBatch);
+                            for (int i = ListOfZombies.Count - 1; i >= 0; i--) {
+                                ListOfZombies[i].Draw(_spriteBatch);
                             }
 
                             player.Draw(_spriteBatch);
-
 
                             // Draw UI elements
                             SpriteManager.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), scale: SpriteManager.UIScale);
                             SpriteManager.DrawText(_spriteBatch, new Vector2(30, 30), $"Currency: {currency}", Color.Black, fontScale: 0.5f);
                             SpriteManager.DrawText(_spriteBatch, new Vector2(30, 45), $"Round Number: {roundNumber}", Color.Black, fontScale: 0.5f);
                             SpriteManager.DrawText(_spriteBatch, new Vector2(30, 60), $"Player Health: {player.Health}", Color.Black, fontScale: 0.5f);
+                            
+                            // Draw FPS counter
+                            SpriteManager.DrawText(_spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 20), $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds)}", Color.Black, fontScale: 0.5f);
 
                             break;
                         case GameState.Pause:
                             DrawPauseMenu();
+
                             break;
                         case GameState.Shop:
                             DrawShop();
+
                             break;
                         case GameState.ShopInPlacment:
                             turretInPurchase.Draw(_spriteBatch);
+
                             break;
                     }
 
@@ -594,7 +507,7 @@ namespace MonoZombie
 		 * 
 		 * return bool				: Whether or not the key was pressed this frame
 		 */
-        private bool GetKeyDown(Keys key)
+        public bool GetKeyDown(Keys key)
         {
             return (currKeyboardState.IsKeyDown(key) && !prevKeyboardState.IsKeyDown(key));
         }
@@ -614,6 +527,27 @@ namespace MonoZombie
             return MathF.Sqrt(MathF.Pow(point1.X - point2.X, 2) + MathF.Pow(point1.Y - point2.Y, 2));
         }
 
+        public void StartNextRound ( ) {
+            // Increment the round number
+            roundNumber++;
+
+            // Generate zombie stats based on the round number
+            // * This means that as the rounds go on, the zombies get harder and harder
+            // * Each of these stats follower a quadratic equation that I came up with in 2 minutes so it can definitely be tweated
+            int zombieHealth = (int) MathF.Round(0.5f * MathF.Pow(roundNumber, 2) + ZOMBIE_BASE_HEALTH);
+            int zombieMoveSpeed = (int) MathF.Round(0.002f * MathF.Pow(roundNumber, 2) + ZOMBIE_BASE_MOVESPEED);
+            int zombieAttackSpeed = (int) MathF.Round(0.005f * MathF.Pow(roundNumber, 2) + ZOMBIE_BASE_ATTACKSPEED);
+            int zombieCount = (int) MathF.Round(0.3f * MathF.Pow(roundNumber, 2) + ZOMBIE_BASE_COUNT);
+
+            // Spawn in all of the zombies
+			for (int i = 0; i < zombieCount; i++) {
+                // Generate random spawn position
+                Vector2 spawnPosition = topSideOfMap;
+
+                ListOfZombies.Add(new Enemy(enemyTexture, topSideOfMap, zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
+			}
+        }
+
         private void DrawPauseMenu()
         {
             //			_spriteBatch.Draw(new Rectangle(0,0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight), Color.LightBlue);
@@ -630,7 +564,7 @@ namespace MonoZombie
 
             for (int i = 0; i < turretButtonList.Count; i++)
             {
-                turretButtonList[i].Draw(_spriteBatch, Color.White);
+                turretButtonList[i].Draw(_spriteBatch);
                 _spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].Y, turretButtonList[i].Y + 75), Color.White);
             }
         }
