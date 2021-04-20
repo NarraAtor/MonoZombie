@@ -328,9 +328,7 @@ namespace MonoZombie
                                 foreach (Enemy zombie in listOfZombies)
                                 {
                                     zombie.IsAlive = true;
-                                    Vector2 newZombiePosition = zombieSpawnPoints[rng.Next(0, zombieSpawnPoints.Length)];
-                                    zombie.X = (int) newZombiePosition.X;
-                                    zombie.Y = (int) newZombiePosition.Y;
+                                    zombie.
                                 }
 
                                 roundIsOngoing = true;
@@ -598,7 +596,9 @@ namespace MonoZombie
 
                     break;
                 case MenuState.GameOver:
-
+                    
+                    _spriteBatch.DrawString(font, "Game Over!", new Vector2(_graphics.PreferredBackBufferWidth / 2-50, _graphics.PreferredBackBufferHeight / 5 * 2), Color.DarkRed);
+                    _spriteBatch.DrawString(font, "Press 'Enter' to return to main menu!", new Vector2(_graphics.PreferredBackBufferWidth / 2 - 400, _graphics.PreferredBackBufferHeight / 5 * 4), Color.White);
                     break;
             }
 
