@@ -200,7 +200,6 @@ namespace MonoZombie {
 		public bool Destroy ( ) {
 			if (typeof(Bullet).IsInstanceOfType(this)) {
 				Main.ListOfBullets.Remove((Bullet) this);
-				Console.WriteLine($"{Position}");
 			} else if (typeof(Enemy).IsInstanceOfType(this)) {
 				Main.ListOfZombies.Remove((Enemy) this);
 			} else if (typeof(Turret).IsInstanceOfType(this)) {

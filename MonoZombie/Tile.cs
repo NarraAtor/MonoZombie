@@ -22,7 +22,12 @@ namespace MonoZombie {
 			get;
 		}
 
+		public TileType Type {
+			get;
+		}
+
 		public Tile (TileType tileType, Vector2 centerPosition, bool isWalkable = true) : base(GetTexture(tileType), centerPosition, canMove: false) {
+			Type = tileType;
 			IsWalkable = isWalkable;
 		}
 
@@ -39,38 +44,26 @@ namespace MonoZombie {
 			// For generating a random index to get a random texture for the tile
 			Random random = new Random( );
 			int rng = random.Next(10);
+
+			// * Some tiles that return "nullTexture" here are going to be bitmasked later after all of the map tiles have been created. Their
+			// texture will be updated correctly there.
+
 			// Based on what type the tile is, get a random texture from its corresponding array
 			switch (tileType) {
 				case TileType.Grass:
-					if(rng < 8)
-                    {
+					if (rng < 8) {
 						return Main.grassTextures[0];
-					}
-					else if(rng >= 8 && rng < 9)
-                    {
+					} else if (rng >= 8 && rng < 9) {
 						return Main.grassTextures[1];
-					}
-                    else
-                    {
+					} else {
 						return Main.grassTextures[2];
 					}
 
 				case TileType.Wall:
-					if (rng < 8)
-					{
-						return Main.wallTextures[0];
-					}
-					else if (rng >= 8 && rng < 9)
-					{
-						return Main.wallTextures[1];
-					}
-					else
-					{
-						return Main.wallTextures[2];
-					}
+					return Main.nullTexture;
 
 				case TileType.Gravel:
-					return Main.gravelTextures[0];
+					return Main.nullTexture;
 
 				case TileType.Lava:
 					return Main.lavaTextures[0];
@@ -81,6 +74,10 @@ namespace MonoZombie {
 				default:
 					return Main.grassTextures[0];
 			}
+		}
+
+		public void SetTexture (Texture2D texture) {
+			this.texture = texture;
 		}
 	}
 }
