@@ -103,6 +103,9 @@ namespace MonoZombie {
 		public const int ZOMBIE_BASE_ATTACKSPEED = 1; // The default attackspeed of the zombie
 		public const int ZOMBIE_BASE_COUNT = 10; // The starting number of zombies in round 1
 		public const float DAMAGE_INDIC_TIME = 0.25f; // The amount of seconds that entities flash when they are damaged
+		public const int BULLET_SPEED = 15;
+		public const int CANNON_BULLET_DAMAGE = 40;
+		public const int PLAYER_BULLET_DAMAGE = 10;
 		public static Vector2 SCREEN_DIMENSIONS = new Vector2(1280, 720);
 
 		private static Random rng;
@@ -647,6 +650,8 @@ namespace MonoZombie {
 
 			// Create (or re-create) the camera
 			camera = new Camera(player);
+
+			ListOfTurrets.Add(new Turret(TurretType.Cannon, turretCannonBaseTexture, turretCannonHeadTexture, player.Position));
 		}
 
 		private void DrawPauseMenu ( ) {

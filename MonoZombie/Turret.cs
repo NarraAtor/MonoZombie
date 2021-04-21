@@ -93,7 +93,13 @@ namespace MonoZombie {
 						break;
 					}
 
+
 			}
+
+			// Turret test values
+			range = 400;
+			attacksPerSecond = 1;
+			damage = 40;
 		}
 
 		/// <summary>
@@ -141,7 +147,7 @@ namespace MonoZombie {
 
 				// If the turret can shoot a bullet, shoot a bullet
 				if (timeSinceLastAttack >= 1 / attacksPerSecond) {
-					Main.ListOfBullets.Add(new Bullet(Main.bulletTexture, centerPosition, this, Angle, 15));
+					Main.ListOfBullets.Add(new Bullet(Main.bulletTexture, centerPosition, this, Angle, bulletDamage: Main.CANNON_BULLET_DAMAGE));
 
 					timeSinceLastAttack = 0;
 				}
@@ -149,11 +155,11 @@ namespace MonoZombie {
 		}
 
 		public new void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
-			SpriteManager.DrawImage(spriteBatch, turretBaseTexture, Rect, Color.White, angle: 0);
+			SpriteManager.DrawImage(spriteBatch, turretBaseTexture, Rect, Color.White);
 
 			//Change the angle the gun is drawn at since the asset is drawn a bit differently 
 			//(about 90 degrees off from where it's actually facing).
-			SpriteManager.DrawImage(spriteBatch, turretHeadTexture, Rect, Color.White, angle: Angle + (MathF.PI / 2));
+			SpriteManager.DrawImage(spriteBatch, turretHeadTexture, Rect, Color.White, angle: Angle);
 		}
 	}
 }
