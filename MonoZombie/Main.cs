@@ -328,7 +328,6 @@ namespace MonoZombie
                                 foreach (Enemy zombie in listOfZombies)
                                 {
                                     zombie.IsAlive = true;
-                                    zombie.
                                 }
 
                                 roundIsOngoing = true;
