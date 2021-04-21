@@ -101,7 +101,7 @@ namespace MonoZombie {
 		public const int ZOMBIE_BASE_HEALTH = 100; // The default health of the zombie
 		public const int ZOMBIE_BASE_MOVESPEED = 2; // The default movespeed of the zombie
 		public const int ZOMBIE_BASE_ATTACKSPEED = 1; // The default attackspeed of the zombie
-		public const int ZOMBIE_BASE_COUNT = 5; // The starting number of zombies in round 1
+		public const int ZOMBIE_BASE_COUNT = 10; // The starting number of zombies in round 1
 		public const float DAMAGE_INDIC_TIME = 0.25f; // The amount of seconds that entities flash when they are damaged
 		public static Vector2 SCREEN_DIMENSIONS = new Vector2(1280, 720);
 
@@ -358,6 +358,8 @@ namespace MonoZombie {
 							}
 
 							for (int i = ListOfZombies.Count - 1; i >= 0; i--) {
+								ListOfZombies[i].Move(player);
+
 								ListOfZombies[i].Update(gameTime, currMouseState, currKeyboardState);
 							}
 
@@ -609,8 +611,8 @@ namespace MonoZombie {
 			for (int i = 0; i < zombieCount; i++) {
 				// Generate random spawn position
 				Vector2 spawnPosition = Vector2.Zero;
-				int randX = rng.Next(1, map.Width);
-				int randY = rng.Next(1, map.Height);
+				int randX = rng.Next(1, map.Width - 1);
+				int randY = rng.Next(1, map.Height - 1);
 
 				switch (rng.Next(0, 4)) {
 					case 0:

@@ -41,6 +41,16 @@ namespace MonoZombie {
 			timeSinceLastDamage = 0;
 		}
 
+		public void Move (Player player) {
+			RotateTo(player.Position);
+
+			Vector2 movement = player.Position - Position;
+			movement.Normalize( );
+			movement = new Vector2(MathF.Round(moveSpeed * movement.X), MathF.Round(moveSpeed * movement.Y));
+
+			MoveBy(movement);
+		}
+
 		/// <summary>
 		/// Update, make sure the time works 
 		/// </summary>

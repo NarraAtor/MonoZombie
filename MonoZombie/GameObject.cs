@@ -182,8 +182,7 @@ namespace MonoZombie {
 
 		public void MoveBy (Vector2 movement) {
 			if (canMove) {
-				X += (int) movement.X;
-				Y += (int) movement.Y;
+				centerPosition += movement;
 
 				CamX += (int) movement.X;
 				CamY += (int) movement.Y;
