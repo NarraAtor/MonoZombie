@@ -102,6 +102,7 @@ namespace MonoZombie {
 		public const int ZOMBIE_BASE_MOVESPEED = 2; // The default movespeed of the zombie
 		public const int ZOMBIE_BASE_ATTACKSPEED = 1; // The default attackspeed of the zombie
 		public const int ZOMBIE_BASE_COUNT = 5; // The starting number of zombies in round 1
+		public const float DAMAGE_INDIC_TIME = 0.25f; // The amount of seconds that entities flash when they are damaged
 		public static Vector2 SCREEN_DIMENSIONS = new Vector2(1280, 720);
 
 		private static Random rng;
@@ -499,7 +500,7 @@ namespace MonoZombie {
 			switch (menuState) {
 				case MenuState.MainMenu:
 					// Draw menu UI objects
-					SpriteManager.DrawImage(_spriteBatch, titleTexture, SCREEN_DIMENSIONS * new Vector2(0.5f, 0.25f), scale: SpriteManager.UIScale, isCentered: true);
+					SpriteManager.DrawImage(_spriteBatch, titleTexture, SCREEN_DIMENSIONS * new Vector2(0.5f, 0.25f), Color.White, scale: SpriteManager.UIScale, isCentered: true);
 					menuPlayButton.Draw(_spriteBatch);
 					menuPlayEasyModeButton.Draw(_spriteBatch);
 					menuQuitButton.Draw(_spriteBatch);
@@ -509,24 +510,24 @@ namespace MonoZombie {
 					switch (gameState) {
 						case GameState.Playing:
 							// Draw all game objects
-							map.Draw(_spriteBatch);
+							map.Draw(gameTime, _spriteBatch);
 
 							for (int i = ListOfTurrets.Count - 1; i >= 0; i--) {
-								ListOfTurrets[i].Draw(_spriteBatch);
+								ListOfTurrets[i].Draw(gameTime, _spriteBatch);
 							}
 
 							for (int i = ListOfBullets.Count - 1; i >= 0; i--) {
-								ListOfBullets[i].Draw(_spriteBatch);
+								ListOfBullets[i].Draw(gameTime, _spriteBatch);
 							}
 
 							for (int i = ListOfZombies.Count - 1; i >= 0; i--) {
-								ListOfZombies[i].Draw(_spriteBatch);
+								ListOfZombies[i].Draw(gameTime, _spriteBatch);
 							}
 
-							player.Draw(_spriteBatch);
+							player.Draw(gameTime, _spriteBatch);
 
 							// Draw UI elements
-							SpriteManager.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), scale: SpriteManager.UIScale);
+							SpriteManager.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), Color.White, scale: SpriteManager.UIScale);
 							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 30), $"Currency: {currency}", Color.Black, fontScale: 0.5f);
 							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 45), $"Round Number: {roundNumber}", Color.Black, fontScale: 0.5f);
 							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 60), $"Player Health: {player.Health}", Color.Black, fontScale: 0.5f);
@@ -540,11 +541,11 @@ namespace MonoZombie {
 
 							break;
 						case GameState.Shop:
-							DrawShop( );
+							DrawShop(gameTime);
 
 							break;
 						case GameState.ShopInPlacment:
-							turretInPurchase.Draw(_spriteBatch);
+							turretInPurchase.Draw(gameTime, _spriteBatch);
 
 							break;
 					}
@@ -624,8 +625,6 @@ namespace MonoZombie {
 						break;
 				}
 
-				Console.WriteLine(spawnPosition);
-
 				ListOfZombies.Add(new Enemy(zombieTextures[0], spawnPosition, zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
 			}
 		}
@@ -655,11 +654,11 @@ namespace MonoZombie {
 
 		}
 
-		private void DrawShop ( ) {
+		private void DrawShop (GameTime gameTime) {
 			_spriteBatch.DrawString(font, "Shop", new Vector2(_graphics.PreferredBackBufferWidth / 2 - 40, 30), Color.White);
 
 			for (int i = 0; i < turretButtonList.Count; i++) {
-				turretButtonList[i].Draw(_spriteBatch);
+				turretButtonList[i].Draw(gameTime, _spriteBatch);
 				_spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].Y, turretButtonList[i].Y + 75), Color.White);
 			}
 		}

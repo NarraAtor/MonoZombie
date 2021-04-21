@@ -131,10 +131,10 @@ namespace MonoZombie {
 		 * 
 		 * return					:
 		 */
-		public void Draw (SpriteBatch spriteBatch) {
+		public void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
 			for (int x = 0; x < Width; x++) {
 				for (int y = 0; y < Height; y++) {
-					tiles[x, y].Draw(spriteBatch);
+					tiles[x, y].Draw(gameTime, spriteBatch);
 				}
 			}
 		}

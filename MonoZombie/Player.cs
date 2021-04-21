@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MonoZombie {
 	public class Player : GameObject {
+		protected float timeSinceLastDamage;
 		protected float timeSinceLastAttack;
 		protected float attacksPerSecond;
 
@@ -37,6 +38,8 @@ namespace MonoZombie {
 
 		public void TakeDamage (int damage) {
 			Health -= damage;
+
+			timeSinceLastDamage = 0;
 		}
 
 		/*
@@ -47,6 +50,7 @@ namespace MonoZombie {
 		public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
 			// Update the last time since this game object has attacked
 			timeSinceLastAttack += (float) gameTime.ElapsedGameTime.TotalSeconds;
+			timeSinceLastDamage += (float) gameTime.ElapsedGameTime.TotalSeconds;
 
 			// Move the player based on keyboard input
 			Move(keyboard);
@@ -63,6 +67,12 @@ namespace MonoZombie {
 				}
 			}
         }
+
+		public new void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
+			Color damageTint = (timeSinceLastDamage < Main.DAMAGE_INDIC_TIME) ? Color.Red : Color.White;
+
+			SpriteManager.DrawImage(spriteBatch, texture, Rect, damageTint, angle: Angle);
+		}
 
 		/*
          * Author : Frank Alfano, Jack Shyshko

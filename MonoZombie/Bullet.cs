@@ -18,8 +18,6 @@ namespace MonoZombie
     public class Bullet : GameObject {
         private Vector2 movement;
 
-        int damage;
-
         /// <summary>
         /// Instantiates a Bullet object
         /// </summary>

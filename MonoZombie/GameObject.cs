@@ -133,10 +133,10 @@ namespace MonoZombie {
 		 * 
 		 * return					:
 		 */
-		public virtual void Draw (SpriteBatch spriteBatch) {
+		public virtual void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
 			// Make sure the texture is not null before trying to draw it
 			if (texture != null) {
-				SpriteManager.DrawImage(spriteBatch, texture, Rect, angle: Angle);
+				SpriteManager.DrawImage(spriteBatch, texture, Rect, Color.White, angle: Angle);
 			}
 		}
 

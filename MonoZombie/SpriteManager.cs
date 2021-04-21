@@ -26,7 +26,7 @@ namespace MonoZombie {
 		 * 
 		 * return									: 
 		 */
-		public static void DrawImage (SpriteBatch spriteBatch, Texture2D texture, Vector2 position, float scale = 1, bool isCentered = false) {
+		public static void DrawImage (SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Color tint, float scale = 1, bool isCentered = false) {
 			// Get the dimensions of the image
 			Vector2 imageDimensions = texture.Bounds.Size.ToVector2( ) * scale;
 
@@ -38,7 +38,7 @@ namespace MonoZombie {
 			// Get the draw rectangle of the image
 			Rectangle drawRect = new Rectangle(position.ToPoint( ), imageDimensions.ToPoint( ));
 
-			spriteBatch.Draw(texture, drawRect, null, Color.White, 0, Vector2.Zero, SpriteEffects.None, 1f);
+			spriteBatch.Draw(texture, drawRect, null, tint, 0, Vector2.Zero, SpriteEffects.None, 1f);
 		}
 
 		/*
@@ -53,12 +53,12 @@ namespace MonoZombie {
 		 * 
 		 * return									: 
 		 */
-		public static void DrawImage (SpriteBatch spriteBatch, Texture2D texture, Rectangle rect, float angle = 0) {
+		public static void DrawImage (SpriteBatch spriteBatch, Texture2D texture, Rectangle rect, Color tint, float angle = 0) {
 			// The draw rectangle needs to be shifted because when you use SpriteBatch.draw(), it draws the texture at the top left corner
 			// of the rectangle instead of in the center. This line of code below just shifts the rectangle so it draws the texture in the middle.
 			Rectangle drawRect = new Rectangle(rect.X + (rect.Width / 2), rect.Y + (rect.Height / 2), rect.Width, rect.Height);
 
-			spriteBatch.Draw(texture, drawRect, null, Color.White, angle, texture.Bounds.Size.ToVector2( ) / 2f, SpriteEffects.None, 1f);
+			spriteBatch.Draw(texture, drawRect, null, tint, angle, texture.Bounds.Size.ToVector2( ) / 2f, SpriteEffects.None, 1f);
 		}
 
 		/*
