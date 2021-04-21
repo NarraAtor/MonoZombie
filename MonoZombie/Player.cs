@@ -57,7 +57,7 @@ namespace MonoZombie {
 			// If the player can attack and they are pressing the left mouse button, shoot a bullet
 			if (CanAttack) {
 				if (mouse.LeftButton == ButtonState.Pressed) {
-					Main.ListOfBullets.Add(new Bullet(Main.bulletTexture, Position, Angle, 15));
+					Main.ListOfBullets.Add(new Bullet(Main.bulletTexture, Position, this, Angle, 15));
 
 					timeSinceLastAttack = 0;
 				}

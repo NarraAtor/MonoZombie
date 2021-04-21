@@ -141,7 +141,7 @@ namespace MonoZombie {
 
 				// If the turret can shoot a bullet, shoot a bullet
 				if (timeSinceLastAttack >= 1 / attacksPerSecond) {
-					Main.ListOfBullets.Add(new Bullet(Main.bulletTexture, centerPosition, Angle, 15));
+					Main.ListOfBullets.Add(new Bullet(Main.bulletTexture, centerPosition, this, Angle, 15));
 
 					timeSinceLastAttack = 0;
 				}

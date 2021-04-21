@@ -73,7 +73,7 @@ namespace MonoZombie {
 			protected set;
 		}
 
-		public GameObject (Texture2D texture, Vector2 centerPosition, float moveSpeed = 0, bool canRotate = false, bool canMove = true) {
+		public GameObject (Texture2D texture, Vector2 centerPosition, GameObject parent = null, float moveSpeed = 0, bool canRotate = false, bool canMove = true) {
 			this.texture = texture;
 			this.centerPosition = centerPosition;
 			this.canRotate = canRotate;
@@ -81,8 +81,13 @@ namespace MonoZombie {
 			this.moveSpeed = moveSpeed;
 
 			// Calculate the initial camera position
-			CamX = X - (int) (Main.SCREEN_DIMENSIONS / 2).X;
-			CamY = Y - (int) (Main.SCREEN_DIMENSIONS / 2).Y;
+			if (parent != null) {
+				CamX = parent.CamX;
+				CamY = parent.CamY;
+			} else {
+				CamX = X - (int) (Main.SCREEN_DIMENSIONS / 2).X;
+				CamY = Y - (int) (Main.SCREEN_DIMENSIONS / 2).Y;
+			}
 		}
 
 		/*
@@ -103,7 +108,7 @@ namespace MonoZombie {
 		 */
 		public virtual void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
 		}
-		
+
 		/*
 		 * Author : Frank Alfano
 		 * 
@@ -160,16 +165,16 @@ namespace MonoZombie {
 					// The reason this is done twice is because Cos is always positive and Sin is both positive and negative.
 					// Sin is used to determine how much to adjust the Cos angle because Cos only goes from 0-3.14 (PI) when we need it
 					// to go all the way from 0-6.28 (2PI)
-					float sinAngle = (float) Math.Asin(posObjectAsOrigin.Y / distanceToPoint);
-					float cosAngle = (float) Math.Acos(posObjectAsOrigin.X / distanceToPoint);
+					float sinAngle = MathF.Asin(posObjectAsOrigin.Y / distanceToPoint);
+					float cosAngle = MathF.Acos(posObjectAsOrigin.X / distanceToPoint);
 
 					// The is used to determine whether the sin angle is positive or negative
-					int sinMod = (int) -(sinAngle / Math.Abs(sinAngle));
+					int sinMod = (int) -(sinAngle / MathF.Abs(sinAngle));
 
 					// If either of the angles are negative, do not calculate the angle because it will just be 0
 					if (sinAngle != 0 && cosAngle != 0) {
 						// Set the rotation based on the calculated angle
-						Angle = (float) Math.PI + (sinMod * cosAngle);
+						Angle = (MathF.PI / 2) + (sinMod * cosAngle);
 					}
 				}
 			}

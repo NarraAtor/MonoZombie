@@ -16,8 +16,7 @@ namespace MonoZombie
      */
 
     public class Bullet : GameObject {
-        float speedX;                         // how much the bullet moves in x axis;
-        float speedY;                         // how much the bullet moves in y axis;
+        private Vector2 movement;
 
         int damage;
 
@@ -31,19 +30,21 @@ namespace MonoZombie
         /// <param name="speedY"> How much the bullet will be moving in the vertical direction </param>
         /// <param name="angle"> The angle the player was facing when the bullet was shot </param>
         /// <param name="bulletSpeed"> How fast the bullet is going to be moving</param>
-        public Bullet (Texture2D texture, Vector2 position, float angle, int bulletSpeed) : base(texture, position, moveSpeed: bulletSpeed, canRotate: true) {
-            this.speedX = -(moveSpeed * (float) Math.Cos(angle));
-            this.speedY = moveSpeed * (float) Math.Sin(-angle);
-
-            Angle = angle + (MathF.PI / 2);
+        public Bullet (Texture2D texture, Vector2 position, GameObject parent, float angle, int bulletSpeed) : base(texture, position, parent: parent, moveSpeed: bulletSpeed, canRotate: true) {
+            movement = new Vector2(MathF.Sin(angle), -MathF.Cos(angle));
+            movement.Normalize( );
+            movement *= moveSpeed;
         }
 
         /*
          * * Overridden from the GameObject Class
          */
         public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
+            // Rotate the bullets to face towards the 
+            RotateTo(Position + movement);
+
             // Move the bullet in the direction it is travelling
-            MoveBy(new Vector2(speedX, speedY));
+            MoveBy(movement);
         }
 
         /*
