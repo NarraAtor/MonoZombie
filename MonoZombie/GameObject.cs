@@ -180,12 +180,12 @@ namespace MonoZombie {
 			}
 		}
 
-		public void MoveBy (Vector2 movement) {
+		public void MoveBy (Vector2 moveBy) {
 			if (canMove) {
-				centerPosition += movement;
+				centerPosition += moveBy;
 
-				CamX += (int) movement.X;
-				CamY += (int) movement.Y;
+				CamX += (int) moveBy.X;
+				CamY += (int) moveBy.Y;
 			}
 		}
 
@@ -234,10 +234,14 @@ namespace MonoZombie {
 			Vector2 moveThisBy = Vector2.Zero;
 			Vector2 moveOtherBy = Vector2.Zero;
 
-			if (intersectRect.Width <= intersectRect.Height) {
+			// Whether or not the move the objects in either the x and y direction. These variables depend on the width and height of the intersecting rectangle
+			bool doMoveX = (intersectRect.Width < intersectRect.Height);
+			bool doMoveY = (intersectRect.Width > intersectRect.Height);
+
+			if (doMoveX) {
 				// If the rectangle X coordinates are equal, then this game object needs to move to the right
 				// If the intersect rectangle X coordinate is greater than this game objects X position, then this game object needs to move to the left
-				int mod = (intersectRect.X == Rect.X) ? 1 : -1;
+				int mod = ((intersectRect.X == Rect.X) ? 1 : -1);
 
 				if (canMove && other.canMove) {
 					moveThisBy.X += mod * (intersectRect.Width / 2f);
@@ -247,10 +251,12 @@ namespace MonoZombie {
 				} else {
 					moveOtherBy.X -= mod * intersectRect.Width;
 				}
-			} else {
+			}
+
+			if (doMoveY) {
 				// If the rectangle Y coordinates are equal, then this game object needs to move down
 				// If the intersect rectangle Y coordinate is greater than this game object Y position, then this game object needs to move up
-				int mod = (intersectRect.Y == Rect.Y) ? 1 : -1;
+				int mod = ((intersectRect.Y == Rect.Y) ? 1 : -1);
 
 				if (canMove && other.canMove) {
 					moveThisBy.Y += mod * (intersectRect.Height / 2f);

@@ -134,7 +134,7 @@ namespace MonoZombie {
 		 * 
 		 * * Overriden from GameObject class
 		 */
-		public new void Update (GameTime gameTime, MouseState mouseState, KeyboardState keyboardState) {
+		public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
 			// Update the last time since this game object has attacked
 			timeSinceLastAttack += (float) gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -152,6 +152,8 @@ namespace MonoZombie {
 					timeSinceLastAttack = 0;
 				}
 			}
+
+			base.Update(gameTime, mouse, keyboard);
 		}
 
 		public new void Draw (GameTime gameTime, SpriteBatch spriteBatch) {

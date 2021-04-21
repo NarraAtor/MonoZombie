@@ -47,6 +47,8 @@ namespace MonoZombie
 
             // Move the bullet in the direction it is travelling
             MoveBy(movement);
+
+            base.Update(gameTime, mouse, keyboard);
         }
 
         /*

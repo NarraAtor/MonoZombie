@@ -78,6 +78,8 @@ namespace MonoZombie {
 
 				Destroy( );
 			}
+
+			base.Update(gameTime, mouse, keyboard);
 		}
 
 		public new bool CheckUpdateCollision (GameObject other) {

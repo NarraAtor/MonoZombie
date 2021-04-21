@@ -68,6 +68,8 @@ namespace MonoZombie {
 					timeSinceLastAttack = 0;
 				}
 			}
+
+			base.Update(gameTime, mouse, keyboard);
         }
 
 		public new void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
