@@ -16,7 +16,7 @@ namespace MonoZombie {
 		public UIElement (Texture2D texture, Vector2 position, bool isCentered = true) {
 			this.isCentered = isCentered;
 
-			rect = SpriteManager.GetBoundingRect(texture, position, scale: SpriteManager.UIScale, isCentered: this.isCentered);
+			rect = SpriteManager.GetBoundingRect(texture, position, scale: SpriteManager.UI_SCALE, isCentered: this.isCentered);
 		}
 
 		public abstract void Update (GameTime gameTime, MouseState mouse);

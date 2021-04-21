@@ -8,13 +8,67 @@ using System.Text;
 
 namespace MonoZombie {
 	public class Map {
+		private Dictionary<int, int> bitmaskValues = new Dictionary<int, int>( ) {
+			[2] = 1,
+			[8] = 2,
+			[10] = 3,
+			[11] = 4,
+			[16] = 5,
+			[18] = 6,
+			[22] = 7,
+			[24] = 8,
+			[26] = 9,
+			[27] = 10,
+			[30] = 11,
+			[31] = 12,
+			[64] = 13,
+			[66] = 14,
+			[72] = 15,
+			[74] = 16,
+			[75] = 17,
+			[80] = 18,
+			[82] = 19,
+			[86] = 20,
+			[88] = 21,
+			[90] = 22,
+			[91] = 23,
+			[94] = 24,
+			[95] = 25,
+			[104] = 26,
+			[106] = 27,
+			[107] = 28,
+			[120] = 29,
+			[122] = 30,
+			[123] = 31,
+			[126] = 32,
+			[127] = 33,
+			[208] = 34,
+			[210] = 35,
+			[214] = 36,
+			[216] = 37,
+			[218] = 38,
+			[219] = 39,
+			[222] = 40,
+			[223] = 41,
+			[248] = 42,
+			[250] = 43,
+			[251] = 44,
+			[254] = 45,
+			[255] = 46,
+			[0] = 47
+		};
+
 		private Tile[ , ] tiles;
 
 		// private Vector2[ ] zombieSpawns;
 
 		public Tile this[int x, int y] {
 			get {
-				return tiles[x, y];
+				if (x >= 0 && x < Width && y >= 0 && y < Height) {
+					return tiles[x, y];
+				}
+
+				return null;
 			}
 		}
 
@@ -77,58 +131,31 @@ namespace MonoZombie {
 		 * 
 		 * return					:
 		 */
-		public void Draw (SpriteBatch spriteBatch) {
+		public void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
 			for (int x = 0; x < Width; x++) {
 				for (int y = 0; y < Height; y++) {
-					tiles[x, y].Draw(spriteBatch);
+					tiles[x, y].Draw(gameTime, spriteBatch);
 				}
 			}
-		}
-
-		/*
-		 * Author : Frank Alfano
-		 * 
-		 * * See GameObject class method for explanation
-		 */
-		public bool CheckUpdateCollision (GameObject other) 
-		{
-			// Whether or not the "other" gameobject is colliding with any of the tiles on the map
-			bool foundCollision = false;
-
-			// Loop through all the collidable tiles on the map
-			for (int i = 0; i < CollidableMapTiles.Length; i++) 
-			{
-				GameObject tile = CollidableMapTiles[i];
-
-				if (tile.CheckUpdateCollision(other)) 
-				{
-					foundCollision = true;
-				}
-			}
-
-			return foundCollision;
 		}
 
 		// Author: Ken Adachi-Bartholomay
 		// Purpose: Checks for circle-circle collision between tiles and another object (primarily used for bullets)
 		// Params: other for the other gameObject to check collision with any tiles
 		// Restrictions: Shouldn't be used for anything other than bullets/other small objects
-		public bool CheckRadiusCollision (GameObject other)
-        {
+		public bool CheckRadiusCollision (GameObject other) {
 			// Whether or not the "other" gameobject is colliding with any of the tiles on the map
 			bool foundCollision = false;
 
 			// Loop through all the collidable tiles on the map
-			for (int i = 0; i < CollidableMapTiles.Length; i++)
-			{
+			for (int i = 0; i < CollidableMapTiles.Length; i++) {
 				GameObject tile = CollidableMapTiles[i];
 
 				double distanceSqrd = Math.Pow(other.Rect.Center.X - tile.Rect.Center.X, 2) + Math.Pow(other.Rect.Center.Y - tile.Rect.Center.Y, 2);
 				double totalRadiiSqrd = Math.Pow(((other.Rect.Width / 3) + (tile.Rect.Width / 3)), 2);
-				if (distanceSqrd <= totalRadiiSqrd)
-                {
+				if (distanceSqrd <= totalRadiiSqrd) {
 					foundCollision = true;
-                }
+				}
 			}
 
 			return foundCollision;
@@ -166,7 +193,7 @@ namespace MonoZombie {
 				// Based on the current indexes of the map tiles, get their positions on the screen
 				// First, get the dimensions of the actual tile sprite in pixels
 				Vector2 tileBaseSpriteDimensions = Main.grassTextures[0].Bounds.Size.ToVector2( );
-				Vector2 tileSpriteDimensions = tileBaseSpriteDimensions * SpriteManager.ObjectScale;
+				Vector2 tileSpriteDimensions = tileBaseSpriteDimensions * SpriteManager.OBJECT_SCALE;
 
 				// Calculate the x and y of the tile incorperating the fact that the sprites need to be scaled up for the game
 				// Also, shift the sprites a bit to get their center position rather than the top left position. This makes it a lot
@@ -178,7 +205,7 @@ namespace MonoZombie {
 				// This also means the player will spawn at the center of the screen
 				int mapPixelWidth = mapWidth * (int) tileSpriteDimensions.X;
 				int mapPixelHeight = mapHeight * (int) tileSpriteDimensions.Y;
-				Vector2 tilePosition = new Vector2((Main.ScreenDimensions.X / 2) - (mapPixelWidth / 2) + tileX, (Main.ScreenDimensions.Y / 2) - (mapPixelHeight / 2) + tileY);
+				Vector2 tilePosition = new Vector2((Main.SCREEN_DIMENSIONS.X / 2) - (mapPixelWidth / 2) + tileX, (Main.SCREEN_DIMENSIONS.Y / 2) - (mapPixelHeight / 2) + tileY);
 
 				// Get the type of the tile from the file
 				TileType tileType = (TileType) Enum.Parse(typeof(TileType), lines[i], true);
@@ -191,6 +218,9 @@ namespace MonoZombie {
 
 			// Get all of the tiles in the map that have colliders
 			CollidableMapTiles = GetColliders( );
+
+			// Update all textures that are reliant on bitmasking
+			UpdateBitmaskedTextures( );
 		}
 
 		/*
@@ -213,6 +243,96 @@ namespace MonoZombie {
 			}
 
 			return tileColliders.ToArray( );
+		}
+
+		private void UpdateBitmaskedTextures () {
+			for (int x = 0; x < Width; x++) {
+				for (int y = 0; y < Height; y++) {
+					// Get the current type of the current tile
+					TileType currType = tiles[x, y].Type;
+
+					// If the tile is not equal to a tile that need to be bitmasked, then just continue to the next tile
+					if (currType != TileType.Gravel && currType != TileType.Wall) {
+						continue;
+					}
+
+					// Get the values of the surrounding tiles
+					int[ ] surroundingValues = GetSurroundingTileSimilarities(x, y, currType);
+
+					// Calculate the bitmask values for this tile
+					int north = 2 * surroundingValues[1];
+					int east = 16 * surroundingValues[3];
+					int south = 64 * surroundingValues[5];
+					int west = 8 * surroundingValues[7];
+
+					int northWest = 0;
+					int northEast = 0;
+					int southEast = 0;
+					int southWest = 0;
+
+					if (north != 0 && west != 0) {
+						northWest = 1 * surroundingValues[0];
+					}
+
+					if (north != 0 && east != 0) {
+						northEast = 4 * surroundingValues[2];
+					}
+
+					if (east != 0 && south != 0) {
+						southEast = 128 * surroundingValues[4];
+					}
+
+					if (west != 0 && south != 0) {
+						southWest = 32 * surroundingValues[6];
+					}
+
+					// Get the total value of the surrounding bitmask values
+					int totalValue = northWest + north + northEast + east + southEast + south + southWest + west;
+					int textureIndex = -1;
+
+					// Convert the bitmask value to a value in the texture array
+					bitmaskValues.TryGetValue(totalValue, out textureIndex);
+
+					// Set the current tiles texture to the bitmask caluclated texture
+					switch (currType) {
+						case TileType.Wall:
+							tiles[x, y].SetTexture(Main.wallTextures[textureIndex]);
+							break;
+						case TileType.Gravel:
+							tiles[x, y].SetTexture(Main.gravelTextures[textureIndex]);
+							break;
+						default:
+							Console.WriteLine("Yikes this isnt right bro");
+							break;
+					}
+				}
+			}
+		}
+
+		/*
+		 * Author : Frank Alfano
+		 * 
+		 * Get all of the values of the surrounding tiles of a certain tile
+		 * 
+		 * int x				: The x position of the current tile
+		 * int y				: The y position of the current tile
+		 * TileType trueTile	: The value of the surrounding tiles to determine if it is similar or not
+		 * 
+		 */
+		private int[ ] GetSurroundingTileSimilarities (int x, int y, TileType trueType) {
+			int[ ] values = new int[8];
+
+			// * NOTE * The y is shifted in the "wrong" direction because screens are wacky and a lower y value means higher on the screen
+			values[0] = ((this[x - 1, y - 1] == null || trueType == this[x - 1, y - 1].Type) ? 1 : 0);
+			values[1] = ((this[x, y - 1] == null || trueType == this[x, y - 1].Type) ? 1 : 0);
+			values[2] = ((this[x + 1, y - 1] == null || trueType == this[x + 1, y - 1].Type) ? 1 : 0);
+			values[3] = ((this[x + 1, y] == null || trueType == this[x + 1, y].Type) ? 1 : 0);
+			values[4] = ((this[x + 1, y + 1] == null || trueType == this[x + 1, y + 1].Type) ? 1 : 0);
+			values[5] = ((this[x, y + 1] == null || trueType == this[x, y + 1].Type) ? 1 : 0);
+			values[6] = ((this[x - 1, y + 1] == null || trueType == this[x - 1, y + 1].Type) ? 1 : 0);
+			values[7] = ((this[x - 1, y] == null || trueType == this[x - 1, y].Type) ? 1 : 0);
+
+			return values;
 		}
 	}
 }

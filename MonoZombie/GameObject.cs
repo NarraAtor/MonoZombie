@@ -11,18 +11,17 @@ using System.Text;
 namespace MonoZombie {
 	public abstract class GameObject {
 		protected Texture2D texture;
+
 		protected Vector2 centerPosition;
+
 		protected bool canRotate;
 		protected bool canMove;
 
-		public int MoveSpeed {
-			get;
-			protected set;
-		}
+		protected float moveSpeed;
 
 		public Rectangle Rect {
 			get {
-				return SpriteManager.GetBoundingRect(texture, centerPosition, SpriteManager.ObjectScale);
+				return SpriteManager.GetBoundingRect(texture, centerPosition, SpriteManager.OBJECT_SCALE);
 			}
 		}
 
@@ -34,6 +33,12 @@ namespace MonoZombie {
 		public int CamY {
 			get;
 			private set;
+		}
+
+		public Vector2 Position {
+			get {
+				return centerPosition;
+			}
 		}
 
 		// The game object's pixel position X value on the screen
@@ -68,17 +73,21 @@ namespace MonoZombie {
 			protected set;
 		}
 
-		public GameObject (Texture2D texture, Vector2 centerPosition, int moveSpeed = 0, bool canRotate = false, bool canMove = true) {
+		public GameObject (Texture2D texture, Vector2 centerPosition, GameObject parent = null, float moveSpeed = 0, bool canRotate = false, bool canMove = true) {
 			this.texture = texture;
 			this.centerPosition = centerPosition;
 			this.canRotate = canRotate;
 			this.canMove = canMove;
-
-			MoveSpeed = moveSpeed;
+			this.moveSpeed = moveSpeed;
 
 			// Calculate the initial camera position
-			CamX = X - (int) (Main.ScreenDimensions / 2).X;
-			CamY = Y - (int) (Main.ScreenDimensions / 2).Y;
+			if (parent != null) {
+				CamX = parent.CamX;
+				CamY = parent.CamY;
+			} else {
+				CamX = X - (int) (Main.SCREEN_DIMENSIONS / 2).X;
+				CamY = Y - (int) (Main.SCREEN_DIMENSIONS / 2).Y;
+			}
 		}
 
 		/*
@@ -93,13 +102,22 @@ namespace MonoZombie {
 		 * GameTime gameTime		: Used to get the current time in the game
 		 * MouseState mouse			: The current state of the mouse
 		 * KeyboardState keyboard	: The current state of the keyboard
+		 * Camera camera			: The camera object in the Main class
 		 * 
 		 * return					:
 		 */
 		public virtual void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
-
 		}
 
+		/*
+		 * Author : Frank Alfano
+		 * 
+		 * Update this game objects position based on the camera
+		 * 
+		 * Camera camera			: The camera object
+		 * 
+		 * return					:
+		 */
 		public void UpdateCameraScreenPosition (Camera camera) {
 			// Update the position of the game object based on the target game object
 			centerPosition = camera.CalculateScreenPosition(this);
@@ -115,10 +133,10 @@ namespace MonoZombie {
 		 * 
 		 * return					:
 		 */
-		public virtual void Draw (SpriteBatch spriteBatch) {
+		public virtual void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
 			// Make sure the texture is not null before trying to draw it
 			if (texture != null) {
-				SpriteManager.DrawImage(spriteBatch, texture, Rect, angle: Angle);
+				SpriteManager.DrawImage(spriteBatch, texture, Rect, Color.White, angle: Angle);
 			}
 		}
 
@@ -141,35 +159,64 @@ namespace MonoZombie {
 				// This is to make sure we don't divide by 0 and crash the game
 				if (posObjectAsOrigin != Vector2.Zero) {
 					// Get this distance between the player and the other position
-					float distanceToPoint = Main.Distance(face, centerPosition);
+					float distanceToPoint = Vector2.Distance(face, centerPosition);
 
 					// Calculate the angle between the other point and the player
 					// The reason this is done twice is because Cos is always positive and Sin is both positive and negative.
 					// Sin is used to determine how much to adjust the Cos angle because Cos only goes from 0-3.14 (PI) when we need it
 					// to go all the way from 0-6.28 (2PI)
-					float sinAngle = (float) Math.Asin(posObjectAsOrigin.Y / distanceToPoint);
-					float cosAngle = (float) Math.Acos(posObjectAsOrigin.X / distanceToPoint);
+					float sinAngle = MathF.Asin(posObjectAsOrigin.Y / distanceToPoint);
+					float cosAngle = MathF.Acos(posObjectAsOrigin.X / distanceToPoint);
+					
+					// Make sure the angles are finite numbers to avoid errors
+					if (float.IsNaN(sinAngle) || float.IsInfinity(sinAngle)) {
+						return;
+					}
+					if (float.IsNaN(cosAngle) || float.IsInfinity(cosAngle)) {
+						return;
+					}
 
 					// The is used to determine whether the sin angle is positive or negative
-					int sinMod = (int) -(sinAngle / Math.Abs(sinAngle));
+					int sinMod = (int) -(sinAngle / MathF.Abs(sinAngle));
+
 
 					// If either of the angles are negative, do not calculate the angle because it will just be 0
 					if (sinAngle != 0 && cosAngle != 0) {
 						// Set the rotation based on the calculated angle
-						Angle = (float) Math.PI + (sinMod * cosAngle);
+						Angle = (MathF.PI / 2) + (sinMod * cosAngle);
 					}
 				}
 			}
 		}
 
-		public void MoveBy (Vector2 movement) {
+		public void MoveBy (Vector2 moveBy) {
 			if (canMove) {
-				X += (int) movement.X;
-				Y += (int) movement.Y;
+				centerPosition += moveBy;
 
-				CamX += (int) movement.X;
-				CamY += (int) movement.Y;
+				CamX += (int) moveBy.X;
+				CamY += (int) moveBy.Y;
 			}
+		}
+
+		/*
+		 * Author : Frank Alfano
+		 * 
+		 * Removes (or destroys) an object from its list in the Main class
+		 * 
+		 * return bool							: Whether or not the object was successfully destroyed
+		 */
+		public bool Destroy ( ) {
+			if (typeof(Bullet).IsInstanceOfType(this)) {
+				Main.ListOfBullets.Remove((Bullet) this);
+			} else if (typeof(Enemy).IsInstanceOfType(this)) {
+				Main.ListOfZombies.Remove((Enemy) this);
+			} else if (typeof(Turret).IsInstanceOfType(this)) {
+				Main.ListOfTurrets.Remove((Turret) this);
+			} else {
+				return false;
+			}
+
+			return true;
 		}
 
 		/*
@@ -196,10 +243,14 @@ namespace MonoZombie {
 			Vector2 moveThisBy = Vector2.Zero;
 			Vector2 moveOtherBy = Vector2.Zero;
 
-			if (intersectRect.Width <= intersectRect.Height) {
+			// Whether or not the move the objects in either the x and y direction. These variables depend on the width and height of the intersecting rectangle
+			bool doMoveX = (intersectRect.Width < intersectRect.Height);
+			bool doMoveY = (intersectRect.Width > intersectRect.Height);
+
+			if (doMoveX) {
 				// If the rectangle X coordinates are equal, then this game object needs to move to the right
 				// If the intersect rectangle X coordinate is greater than this game objects X position, then this game object needs to move to the left
-				int mod = (intersectRect.X == Rect.X) ? 1 : -1;
+				int mod = ((intersectRect.X == Rect.X) ? 1 : -1);
 
 				if (canMove && other.canMove) {
 					moveThisBy.X += mod * (intersectRect.Width / 2f);
@@ -209,10 +260,12 @@ namespace MonoZombie {
 				} else {
 					moveOtherBy.X -= mod * intersectRect.Width;
 				}
-			} else {
+			}
+
+			if (doMoveY) {
 				// If the rectangle Y coordinates are equal, then this game object needs to move down
 				// If the intersect rectangle Y coordinate is greater than this game object Y position, then this game object needs to move up
-				int mod = (intersectRect.Y == Rect.Y) ? 1 : -1;
+				int mod = ((intersectRect.Y == Rect.Y) ? 1 : -1);
 
 				if (canMove && other.canMove) {
 					moveThisBy.Y += mod * (intersectRect.Height / 2f);
@@ -229,6 +282,15 @@ namespace MonoZombie {
 			other.MoveBy(moveOtherBy);
 
 			return true;
+		}
+
+		/*
+		 * Author : Frank Alfano
+		 * 
+		 * Just checks to see if this game object is colliding with another one without update its position
+		 */
+		public bool CheckCollision (GameObject other) {
+			return (Rectangle.Intersect(other.Rect, Rect).Size != Point.Zero);
 		}
 	}
 }

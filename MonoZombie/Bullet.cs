@@ -15,16 +15,11 @@ namespace MonoZombie
      * in Main(). 
      */
 
-    public class Bullet : GameObject
-    {
-        
-        int bulletSpeed;                    // the default bullet speed, as if it were moving in one direction
-        double speedX;                         // how much the bullet moves in x axis;
-        double speedY;                         // how much the bullet moves in y axis;
+    public class Bullet : GameObject {
+        private Vector2 movement;
 
-        int damage;
+        private int bulletDamage;
 
-        public bool IsActive { get; set; }
         /// <summary>
         /// Instantiates a Bullet object
         /// </summary>
@@ -35,43 +30,54 @@ namespace MonoZombie
         /// <param name="speedY"> How much the bullet will be moving in the vertical direction </param>
         /// <param name="angle"> The angle the player was facing when the bullet was shot </param>
         /// <param name="bulletSpeed"> How fast the bullet is going to be moving</param>
-        public Bullet(Texture2D texture, Vector2 position, float angle, int bulletSpeed) 
-            : base(texture, position, canRotate: true)
-        {
-            this.bulletSpeed = bulletSpeed;
-            this.speedX = -(bulletSpeed * Math.Cos(angle));
-            this.speedY = bulletSpeed * Math.Sin(-angle);
+        public Bullet (Texture2D texture, Vector2 position, GameObject parent, float angle, int bulletSpeed = Main.BULLET_SPEED, int bulletDamage = Main.PLAYER_BULLET_DAMAGE) : base(texture, position, parent: parent, moveSpeed: bulletSpeed, canRotate: true) {
+            this.bulletDamage = bulletDamage;
 
-            Angle = angle + (MathF.PI / 2);
-
-            IsActive = true;
+            movement = new Vector2(MathF.Sin(angle), -MathF.Cos(angle));
+            movement.Normalize( );
+            movement *= moveSpeed;
         }
 
+        /*
+         * * Overridden from the GameObject Class
+         */
+        public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
+            // Rotate the bullets to face towards the 
+            RotateTo(Position + movement);
 
-        /// <summary>
-        /// Moves the bullet;
-        /// Call the Move method from Main()
-        /// this is for convenience purposes, so that we could remove it from the list from there
-        /// </summary>
-        public void Move()
-        {
-            //X += (int)speedX;
-            //Y += (int)speedY;
-            MoveBy(new Vector2((float)speedX, (float)speedY));
+            // Move the bullet in the direction it is travelling
+            MoveBy(movement);
+
+            base.Update(gameTime, mouse, keyboard);
         }
 
-        /// <summary>
-        /// Purpose: Draws the bullet
-        /// Restrictions:
-        /// </summary>
-        /// <param name="spriteBatch"></param>
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            SpriteManager.DrawImage(spriteBatch, texture, Rect, angle: Angle);
-        }
+        /*
+         * Author : Frank Alfano, Ken Adachi-Bartholomay
+         * 
+         * * Overridden from the GameObject Class
+         * 
+         * return bool                  : If the bullet has hit a zombie
+         */
+        public new bool CheckCollision (GameObject other) {
+            bool didCollide = base.CheckCollision(other);
 
-        /// Don't check for collision here
-        /// Because we will need to remove
-        /// Bullets from list in Game1
+            // If the bullet has collided with something, then destroy it
+            if (didCollide) {
+                // If the bullet collides with an enemy, we want to destroy the bullet and decrease the zombie health
+                if (typeof(Enemy).IsInstanceOfType(other)) {
+                    // 10 can be changed later, its just the number I found in the code in the Main class
+                    ((Enemy) other).TakeDamage(bulletDamage);
+
+                    Destroy( );
+                } else if (typeof(Tile).IsInstanceOfType(other)) {
+                    // If the bullet collides with a wall, we want to destroy the bullet without doing anything else
+                    if (!((Tile) other).IsWalkable) {
+                        Destroy( );
+                    }
+                }
+            }
+
+            return didCollide;
+        }
     }
 }

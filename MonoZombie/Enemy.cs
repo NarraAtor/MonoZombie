@@ -5,86 +5,108 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace MonoZombie
-{
-    public class Enemy : GameObject
-    {
-        private int health;
-        private int speed;
-        private int attSpeed;
-        private double timeAtLastFrame;
-        private double attTime;
-        private double timer;
-        private bool isAlive;
+namespace MonoZombie {
+	public class Enemy : GameObject {
+		protected float timeSinceLastDamage;
+		protected float timeSinceLastAttack;
+		protected float attacksPerSecond;
 
-        //testing property
-        public double Timer { get { return timer; } }
+		private Vector2 toMove;
 
-        public bool IsAlive { get { return isAlive; } set { isAlive = value; } }
-        public int Health { get { return health; } set { health = value; } }
+		public int Health {
+			get;
+			private set;
+		}
 
-        public Enemy(Texture2D texture, Vector2 position, int health, int speed, int attSpeed)
-            : base(texture, position, canRotate: true)
-        {
-            this.health = health;
-            this.speed = speed;
-            this.attSpeed = attSpeed;
-            isAlive = true;
-            timer = 0;
-        }
+		public bool IsDead {
+			get {
+				return (Health <= 0);
+			}
+		}
 
+		public bool CanAttack {
+			get {
+				return (timeSinceLastAttack >= 1 / attacksPerSecond);
+			}
+		}
 
-        /// <summary>
-        /// Attacks the player every few seconds
-        /// Uses timer to calculate whether it can attack or not
-        /// Variable attack speed to be implemented
-        /// </summary>
-        /// <param name="player"></param>
-        public void Attack(Player player)
-        {
-            //Eric: GameObject never assigns to radius so I simply replaced the if statment with a rectangle intersects bool
-            //if (Distance(new Point(X, Y), new Point(player.X, player.Y)) < radius)
-            if (Rect.Intersects(player.Rect))
-            {
-                if (timer > 1)
-                {
-                    player.TakeDamage(10);
-                    timer = 0;
-                }
-            }
-        }
+		public Enemy (Vector2 position, int health, int moveSpeed, float attacksPerSecond, GameObject parent = null) : base(GetTexture( ), position, parent: parent, moveSpeed: moveSpeed, canRotate: true) {
+			Health = health;
+			this.attacksPerSecond = attacksPerSecond;
 
-        public void TakeDamage(int damage)
-        {
-            health -= damage;
-        }
+			timeSinceLastDamage = Main.DAMAGE_INDIC_TIME + 1;
+		}
 
-        /// <summary>
-        /// Update, make sure the time works 
-        /// </summary>
-        /// <param name="time"></param>
-        public void Update(GameTime time, Player player)
-        {
-            if (isAlive)
-            {
-                canMove = true;
-                timer += time.ElapsedGameTime.TotalSeconds;
-                Attack(player);
-            }
-            else
-            {
-                canMove = false;
-            }
-        }
+		public void TakeDamage (int damage) {
+			Health -= damage;
 
-        /// <summary>
-        /// Purpose: Only draw the zombie if it is alive.
-        /// </summary>
-        /// <param name="spriteBatch">the zombie to draw to</param>
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            if (IsAlive)
-                base.Draw(spriteBatch);
-        }
-    }
+			timeSinceLastDamage = 0;
+		}
+
+		public void Move (Player player) {
+			// Rotate the zombie towards the player
+			RotateTo(player.Position);
+
+			// Calculate the direction the zombie needs to move as a normalized vector
+			Vector2 movement = (player.Position - Position);
+			movement.Normalize( );
+
+			// Add the previous values that were removed by rounding
+			movement += toMove;
+			movement *= moveSpeed;
+
+			// Calcuate the values removed by the rounding
+			toMove = new Vector2(movement.X - MathF.Truncate(movement.X), movement.Y - MathF.Truncate(movement.Y));
+
+			// Move the zombie
+			MoveBy(movement);
+		}
+
+		/// <summary>
+		/// Update, make sure the time works 
+		/// </summary>
+		/// <param name="time"></param>
+		public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
+			// Update the last time since this game object has attacked
+			timeSinceLastAttack += (float) gameTime.ElapsedGameTime.TotalSeconds;
+			timeSinceLastDamage += (float) gameTime.ElapsedGameTime.TotalSeconds;
+
+			// If the zombie is dead, then destroy it and add some currency to the player
+			if (IsDead) {
+				// CHANGE 10 TO LIKE A RANDOM NUMBER OR SOMETHING
+				Main.currency += 10;
+
+				Destroy( );
+			}
+
+			base.Update(gameTime, mouse, keyboard);
+		}
+
+		public new bool CheckUpdateCollision (GameObject other) {
+			bool didCollide = base.CheckUpdateCollision(other);
+
+			// If the zombie has collided with the player and can attack, attack the player
+			if (didCollide && typeof(Player).IsInstanceOfType(other)) {
+				if (CanAttack) {
+					((Player) other).TakeDamage(10);
+
+					timeSinceLastAttack = 0;
+				}
+			}
+
+			return didCollide;
+		}
+
+		public new void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
+			Color damageTint = (timeSinceLastDamage < Main.DAMAGE_INDIC_TIME) ? Color.Red : Color.White;
+
+			SpriteManager.DrawImage(spriteBatch, texture, Rect, damageTint, angle: Angle);
+		}
+
+		private static Texture2D GetTexture ( ) {
+			Random random = new Random( );
+
+			return Main.zombieTextures[random.Next(0, Main.zombieTextures.Length)];
+		}
+	}
 }

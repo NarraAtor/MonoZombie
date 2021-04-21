@@ -10,40 +10,73 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MonoZombie {
 	public class Player : GameObject {
-		private int health;
-		private double attackSpdTimer;
-		private double attacksPerSecond;
+		protected float timeSinceLastDamage;
+		protected float timeSinceLastAttack;
+		protected float attacksPerSecond;
 
 		public int Health {
+			get;
+			private set;
+		}
+
+		public bool IsDead {
 			get {
-				return health;
-			}
-			set {
-				health = value;
+				return (Health <= 0);
 			}
 		}
 
-		public Player (Texture2D texture, Vector2 position, int health, double attacksPerSecond, int playerSpeed) : base(texture, position, moveSpeed: playerSpeed, canRotate: true) {
-			this.health = health;
+		public bool CanAttack {
+			get {
+				return (timeSinceLastAttack >= 1 / attacksPerSecond);
+			}
+		}
+
+		public Player (Texture2D texture, Vector2 position, int health, float playerSpeed, float attacksPerSecond) : base(texture, position, moveSpeed: playerSpeed, canRotate: true) {
+			Health = health;
 			this.attacksPerSecond = attacksPerSecond;
+
+			timeSinceLastDamage = Main.DAMAGE_INDIC_TIME + 1;
+		}
+
+		public void TakeDamage (int damage) {
+			Health -= damage;
+
+			timeSinceLastDamage = 0;
 		}
 
 		/*
 		 * Author : Frank Alfano, Jack Shyshko
 		 * 
-		 * Overridden from the base GameObject class
+		 * * Overridden from the base GameObject class
 		 */
 		public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
+			// Update the last time since this game object has attacked
+			timeSinceLastAttack += (float) gameTime.ElapsedGameTime.TotalSeconds;
+			timeSinceLastDamage += (float) gameTime.ElapsedGameTime.TotalSeconds;
+
 			// Move the player based on keyboard input
 			Move(keyboard);
 
 			// Rotate the player to look at the mouse
 			RotateTo(mouse.Position.ToVector2( ));
 
-            attackSpdTimer += gameTime.ElapsedGameTime.TotalSeconds;
+			// If the player can attack and they are pressing the left mouse button, shoot a bullet
+			if (CanAttack) {
+				if (mouse.LeftButton == ButtonState.Pressed) {
+					Main.ListOfBullets.Add(new Bullet(Main.bulletTexture, Position, this, Angle));
 
+					timeSinceLastAttack = 0;
+				}
+			}
+
+			base.Update(gameTime, mouse, keyboard);
         }
 
+		public new void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
+			Color damageTint = (timeSinceLastDamage < Main.DAMAGE_INDIC_TIME) ? Color.Red : Color.White;
+
+			SpriteManager.DrawImage(spriteBatch, texture, Rect, damageTint, angle: Angle);
+		}
 
 		/*
          * Author : Frank Alfano, Jack Shyshko
@@ -68,44 +101,7 @@ namespace MonoZombie {
 			}
 
 			// Move the position of the player
-			MoveBy(normMovement * MoveSpeed);
-		}
-
-
-        /// <summary>
-        /// This is going to generate a bullet 
-        /// in the direction that the player is facing 
-        /// Use the player's angle to transform into
-        /// bullet speed in different axis
-        /// </summary>
-        /// <param name="bulletTexture"> Bullet texture parameter </param>
-        /// <returns> </returns>
-        public void Shoot(Texture2D bulletTexture, MouseState mouse, GameTime gameTime)
-        {
-            /*
-             * Possible implementations:
-             *  → Have a firerate timer
-             *  → Do it by click
-             * Timer implementation - in Main() or here?
-             * Probably here
-             * 
-             * Check mouse state in Main()
-             */
-
-            if(attackSpdTimer >= 1/attacksPerSecond)
-            {
-				Main.ListOfBullets.Add( new Bullet(bulletTexture, new Vector2(X + CamX, Y + CamY), Angle, 15));
-				attackSpdTimer = 0;
-            }
-
-        }
-
-		public void TakeDamage (int damage) { health -= damage; }
-
-		public bool IsDead ( ) {
-			if (health <= 0)
-				return true;
-			return false;
+			MoveBy(normMovement * moveSpeed);
 		}
 	}
 }
