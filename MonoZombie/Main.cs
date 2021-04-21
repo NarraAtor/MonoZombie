@@ -251,7 +251,7 @@ namespace MonoZombie {
 				nullTexture,
 				nullTexture,
 				nullTexture,
-				nullTexture,
+				Content.Load<Texture2D>("MapTiles/Gravel/GravelTile34"),
 				Content.Load<Texture2D>("MapTiles/Gravel/GravelTile35"),
 				nullTexture,
 				Content.Load<Texture2D>("MapTiles/Gravel/GravelTile37"),
@@ -259,11 +259,11 @@ namespace MonoZombie {
 				nullTexture,
 				nullTexture,
 				nullTexture,
-				nullTexture,
+				Content.Load<Texture2D>("MapTiles/Gravel/GravelTile42"),
 				Content.Load<Texture2D>("MapTiles/Gravel/GravelTile43"),
 				nullTexture,
-				nullTexture,
-				nullTexture,
+				Content.Load<Texture2D>("MapTiles/Gravel/GravelTile45"),
+				Content.Load<Texture2D>("MapTiles/Gravel/GravelTile46"),
 				Content.Load<Texture2D>("MapTiles/Gravel/GravelTile1"),
 				nullTexture,
 			};
@@ -552,6 +552,8 @@ namespace MonoZombie {
 
 					break;
 				case MenuState.GameOver:
+					_spriteBatch.DrawString(font, "Game Over!", new Vector2(_graphics.PreferredBackBufferWidth / 2 - 50, _graphics.PreferredBackBufferHeight / 5 * 2), Color.DarkRed);
+					_spriteBatch.DrawString(font, "Press 'Enter' to return to main menu!", new Vector2(_graphics.PreferredBackBufferWidth / 2 - 400, _graphics.PreferredBackBufferHeight / 5 * 4), Color.White);
 
 					break;
 			}

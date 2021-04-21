@@ -34,6 +34,8 @@ namespace MonoZombie {
 		public Player (Texture2D texture, Vector2 position, int health, float playerSpeed, float attacksPerSecond) : base(texture, position, moveSpeed: playerSpeed, canRotate: true) {
 			Health = health;
 			this.attacksPerSecond = attacksPerSecond;
+
+			timeSinceLastDamage = Main.DAMAGE_INDIC_TIME + 1;
 		}
 
 		public void TakeDamage (int damage) {
