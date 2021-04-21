@@ -104,11 +104,6 @@ namespace MonoZombie {
 		public const int ZOMBIE_BASE_COUNT = 5; // The starting number of zombies in round 1
 		public static Vector2 SCREEN_DIMENSIONS = new Vector2(1280, 720);
 
-		private static Vector2 leftSideOfMap;
-		private static Vector2 rightSideOfMap;
-		private static Vector2 topSideOfMap;
-		private static Vector2 bottomSideOfMap;
-		private static Vector2[ ] zombieSpawnPoints;
 		private static Random rng;
 
 		public static List<Bullet> ListOfBullets {
@@ -296,13 +291,6 @@ namespace MonoZombie {
 			_graphics.PreferredBackBufferWidth = (int) SCREEN_DIMENSIONS.X;
 			_graphics.PreferredBackBufferHeight = (int) SCREEN_DIMENSIONS.Y;
 			_graphics.ApplyChanges( );
-
-			// Map-reliant intialization
-			leftSideOfMap = new Vector2(map[0, (map.Height - 1) / 2].X, map[0, (map.Height - 1) / 2].Y);
-			rightSideOfMap = new Vector2(map[(map.Width - 1), (map.Height - 1) / 2].X, map[(map.Width - 1), (map.Height - 1) / 2].Y);
-			topSideOfMap = new Vector2(map[(map.Width - 1) / 2, 0].X, map[(map.Width - 1) / 2, 0].Y);
-			bottomSideOfMap = new Vector2(map[(map.Width - 1) / 2, (map.Height - 1)].X, map[(map.Width - 1) / 2, (map.Height - 1)].Y);
-			zombieSpawnPoints = new Vector2[ ] { leftSideOfMap, rightSideOfMap, topSideOfMap, bottomSideOfMap };
 
 			// Create UI Buttons
 			menuPlayButton = new UIButton("Play", SCREEN_DIMENSIONS / 2, ( ) => {
@@ -617,9 +605,28 @@ namespace MonoZombie {
 			// Spawn in all of the zombies
 			for (int i = 0; i < zombieCount; i++) {
 				// Generate random spawn position
-				Vector2 spawnPosition = topSideOfMap;
+				Vector2 spawnPosition = Vector2.Zero;
+				int randX = rng.Next(1, map.Width);
+				int randY = rng.Next(1, map.Height);
 
-				ListOfZombies.Add(new Enemy(zombieTextures[0], topSideOfMap, zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
+				switch (rng.Next(0, 4)) {
+					case 0:
+						spawnPosition = map[randX, 1].Position;
+						break;
+					case 1:
+						spawnPosition = map[map.Width - 2, randY].Position;
+						break;
+					case 2:
+						spawnPosition = map[randX, map.Height - 2].Position;
+						break;
+					case 3:
+						spawnPosition = map[1, randY].Position;
+						break;
+				}
+
+				Console.WriteLine(spawnPosition);
+
+				ListOfZombies.Add(new Enemy(zombieTextures[0], spawnPosition, zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
 			}
 		}
 
