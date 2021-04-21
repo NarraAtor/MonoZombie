@@ -147,7 +147,7 @@ namespace MonoZombie {
 			_spriteBatch = new SpriteBatch(GraphicsDevice);
 
 			// Load textures for game objects
-			nullTexture = Content.Load<Texture2D>("NullTile");
+			nullTexture = Content.Load<Texture2D>("MapTiles/NullTile");
 			turretCannonBaseTexture = Content.Load<Texture2D>("Turrets/TurretCannonBase");
 			turretCannonHeadTexture = Content.Load<Texture2D>("Turrets/TurretCannonHead");
 			playerTexture = Content.Load<Texture2D>("Player");
