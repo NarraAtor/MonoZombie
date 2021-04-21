@@ -11,6 +11,8 @@ namespace MonoZombie {
 		protected float timeSinceLastAttack;
 		protected float attacksPerSecond;
 
+		private Vector2 toMove;
+
 		public int Health {
 			get;
 			private set;
@@ -42,12 +44,21 @@ namespace MonoZombie {
 		}
 
 		public void Move (Player player) {
+			// Rotate the zombie towards the player
 			RotateTo(player.Position);
-
-			Vector2 movement = player.Position - Position;
+			
+			// Calculate the direction the zombie needs to move as a normalized vector
+			Vector2 movement = (player.Position - Position);
 			movement.Normalize( );
-			movement = new Vector2(MathF.Round(moveSpeed * movement.X), MathF.Round(moveSpeed * movement.Y));
 
+			// Add the previous values that were removed by rounding
+			movement += toMove;
+			movement *= moveSpeed;
+
+			// Calcuate the values removed by the rounding
+			toMove = new Vector2(movement.X - MathF.Truncate(movement.X), movement.Y - MathF.Truncate(movement.Y));
+
+			// Move the zombie
 			MoveBy(movement);
 		}
 

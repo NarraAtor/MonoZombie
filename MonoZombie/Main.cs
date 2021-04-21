@@ -639,6 +639,7 @@ namespace MonoZombie {
 		public void ResetGame ( ) {
 			// Reset the round number
 			roundNumber = 0;
+			currency = 0;
 
 			// Clear all of the lists of game objects
 			ListOfBullets.Clear( );
