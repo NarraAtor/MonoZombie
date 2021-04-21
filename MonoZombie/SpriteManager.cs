@@ -10,8 +10,8 @@ using System.Text;
 namespace MonoZombie {
 	public static class SpriteManager {
 		// How much to scale the UI and game objects up by in-game
-		public static float UIScale = 5;
-		public static float ObjectScale = 4f;
+		public const float UI_SCALE = 5;
+		public const float OBJECT_SCALE = 4f;
 
 		/*
 		 * Author : Frank Alfano
@@ -26,7 +26,7 @@ namespace MonoZombie {
 		 * 
 		 * return									: 
 		 */
-		public static void DrawImage (SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Color tint, float scale = 1, bool isCentered = false) {
+		public static void DrawImage (SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Color tint, float scale = OBJECT_SCALE, bool isCentered = false) {
 			// Get the dimensions of the image
 			Vector2 imageDimensions = texture.Bounds.Size.ToVector2( ) * scale;
 

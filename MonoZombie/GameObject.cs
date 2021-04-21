@@ -21,7 +21,7 @@ namespace MonoZombie {
 
 		public Rectangle Rect {
 			get {
-				return SpriteManager.GetBoundingRect(texture, centerPosition, SpriteManager.ObjectScale);
+				return SpriteManager.GetBoundingRect(texture, centerPosition, SpriteManager.OBJECT_SCALE);
 			}
 		}
 

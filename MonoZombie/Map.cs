@@ -193,7 +193,7 @@ namespace MonoZombie {
 				// Based on the current indexes of the map tiles, get their positions on the screen
 				// First, get the dimensions of the actual tile sprite in pixels
 				Vector2 tileBaseSpriteDimensions = Main.grassTextures[0].Bounds.Size.ToVector2( );
-				Vector2 tileSpriteDimensions = tileBaseSpriteDimensions * SpriteManager.ObjectScale;
+				Vector2 tileSpriteDimensions = tileBaseSpriteDimensions * SpriteManager.OBJECT_SCALE;
 
 				// Calculate the x and y of the tile incorperating the fact that the sprites need to be scaled up for the game
 				// Also, shift the sprites a bit to get their center position rather than the top left position. This makes it a lot

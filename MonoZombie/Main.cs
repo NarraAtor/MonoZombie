@@ -505,7 +505,7 @@ namespace MonoZombie {
 			switch (menuState) {
 				case MenuState.MainMenu:
 					// Draw menu UI objects
-					SpriteManager.DrawImage(_spriteBatch, titleTexture, SCREEN_DIMENSIONS * new Vector2(0.5f, 0.25f), Color.White, scale: SpriteManager.UIScale, isCentered: true);
+					SpriteManager.DrawImage(_spriteBatch, titleTexture, SCREEN_DIMENSIONS * new Vector2(0.5f, 0.25f), Color.White, scale: SpriteManager.UI_SCALE, isCentered: true);
 					menuPlayButton.Draw(_spriteBatch);
 					menuPlayEasyModeButton.Draw(_spriteBatch);
 					menuQuitButton.Draw(_spriteBatch);
@@ -532,7 +532,7 @@ namespace MonoZombie {
 							player.Draw(gameTime, _spriteBatch);
 
 							// Draw UI elements
-							SpriteManager.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), Color.White, scale: SpriteManager.UIScale);
+							SpriteManager.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), Color.White, scale: SpriteManager.UI_SCALE);
 							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 30), $"Currency: {currency}", Color.Black, fontScale: 0.5f);
 							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 45), $"Round Number: {roundNumber}", Color.Black, fontScale: 0.5f);
 							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 60), $"Player Health: {player.Health}", Color.Black, fontScale: 0.5f);
@@ -613,26 +613,26 @@ namespace MonoZombie {
 			// Spawn in all of the zombies
 			for (int i = 0; i < zombieCount; i++) {
 				// Generate random spawn position
-				Vector2 spawnPosition = Vector2.Zero;
 				int randX = rng.Next(1, map.Width - 1);
 				int randY = rng.Next(1, map.Height - 1);
+				Tile tile = null;
 
 				switch (rng.Next(0, 4)) {
 					case 0:
-						spawnPosition = map[randX, 1].Position;
+						tile = map[randX, 1];
 						break;
 					case 1:
-						spawnPosition = map[map.Width - 2, randY].Position;
+						tile = map[map.Width - 2, randY];
 						break;
 					case 2:
-						spawnPosition = map[randX, map.Height - 2].Position;
+						tile = map[randX, map.Height - 2];
 						break;
 					case 3:
-						spawnPosition = map[1, randY].Position;
+						tile = map[1, randY];
 						break;
 				}
 
-				ListOfZombies.Add(new Enemy(zombieTextures[0], spawnPosition, zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
+				ListOfZombies.Add(new Enemy(zombieTextures[0], tile.Position + new Vector2(player.CamX, player.CamY), zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
 			}
 		}
 
