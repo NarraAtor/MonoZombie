@@ -159,7 +159,7 @@ namespace MonoZombie {
 				// This is to make sure we don't divide by 0 and crash the game
 				if (posObjectAsOrigin != Vector2.Zero) {
 					// Get this distance between the player and the other position
-					float distanceToPoint = Main.Distance(face, centerPosition);
+					float distanceToPoint = Vector2.Distance(face, centerPosition);
 
 					// Calculate the angle between the other point and the player
 					// The reason this is done twice is because Cos is always positive and Sin is both positive and negative.
@@ -167,9 +167,18 @@ namespace MonoZombie {
 					// to go all the way from 0-6.28 (2PI)
 					float sinAngle = MathF.Asin(posObjectAsOrigin.Y / distanceToPoint);
 					float cosAngle = MathF.Acos(posObjectAsOrigin.X / distanceToPoint);
+					
+					// Make sure the angles are finite numbers to avoid errors
+					if (float.IsNaN(sinAngle) || float.IsInfinity(sinAngle)) {
+						return;
+					}
+					if (float.IsNaN(cosAngle) || float.IsInfinity(cosAngle)) {
+						return;
+					}
 
 					// The is used to determine whether the sin angle is positive or negative
 					int sinMod = (int) -(sinAngle / MathF.Abs(sinAngle));
+
 
 					// If either of the angles are negative, do not calculate the angle because it will just be 0
 					if (sinAngle != 0 && cosAngle != 0) {

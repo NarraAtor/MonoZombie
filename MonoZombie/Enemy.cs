@@ -30,7 +30,7 @@ namespace MonoZombie {
 			}
 		}
 
-		public Enemy (Texture2D texture, Vector2 position, int health, int moveSpeed, float attacksPerSecond) : base(texture, position, moveSpeed: moveSpeed, canRotate: true) {
+		public Enemy (Vector2 position, int health, int moveSpeed, float attacksPerSecond, GameObject parent = null) : base(GetTexture( ), position, parent: parent, moveSpeed: moveSpeed, canRotate: true) {
 			Health = health;
 			this.attacksPerSecond = attacksPerSecond;
 
@@ -46,7 +46,7 @@ namespace MonoZombie {
 		public void Move (Player player) {
 			// Rotate the zombie towards the player
 			RotateTo(player.Position);
-			
+
 			// Calculate the direction the zombie needs to move as a normalized vector
 			Vector2 movement = (player.Position - Position);
 			movement.Normalize( );
@@ -101,6 +101,12 @@ namespace MonoZombie {
 			Color damageTint = (timeSinceLastDamage < Main.DAMAGE_INDIC_TIME) ? Color.Red : Color.White;
 
 			SpriteManager.DrawImage(spriteBatch, texture, Rect, damageTint, angle: Angle);
+		}
+
+		private static Texture2D GetTexture ( ) {
+			Random random = new Random( );
+
+			return Main.zombieTextures[random.Next(0, Main.zombieTextures.Length)];
 		}
 	}
 }

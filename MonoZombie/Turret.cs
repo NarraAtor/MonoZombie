@@ -43,7 +43,7 @@ namespace MonoZombie {
 			}
 		}
 
-		public Turret (TurretType type, Texture2D turretBaseTexture, Texture2D turretHeadTexture, Vector2 position) : base(turretHeadTexture, position, canRotate: true) {
+		public Turret (TurretType type, Texture2D turretBaseTexture, Texture2D turretHeadTexture, Vector2 position, GameObject parent = null) : base(turretHeadTexture, position, parent: parent, canRotate: true) {
 			// Goes through each of the diffrent turret types and then sets stats accordingly 
 
 			this.turretBaseTexture = turretBaseTexture;
@@ -119,7 +119,7 @@ namespace MonoZombie {
 			// Loop through each of the enemies currently on the map to find the closest one
 			foreach (Enemy zombie in Main.ListOfZombies) {
 				// Get the distance from this turret to the current zombie
-				float distancetoZombie = Main.Distance(zombie.Position, Position);
+				float distancetoZombie = Vector2.Distance(zombie.Position, Position);
 
 				// Check to see if the current zombie is the closest one discovered
 				if (distancetoZombie < closestRange) {

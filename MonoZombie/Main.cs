@@ -396,7 +396,7 @@ namespace MonoZombie {
 								// * Since bullets and zombies can be destroyed within this loop, we cant do a foreach or there will be an error
 								for (int i = ListOfBullets.Count - 1; i >= 0; i--) {
 									// If the bullet gets too far from the player, destroy it so it doesn't cause lag
-									if (Distance(ListOfBullets[i].Position, player.Position) > 1000) {
+									if (Vector2.Distance(ListOfBullets[i].Position, player.Position) > 1000) {
 										ListOfBullets[i].Destroy( );
 										continue;
 									}
@@ -430,6 +430,10 @@ namespace MonoZombie {
 
 							for (int i = ListOfZombies.Count - 1; i >= 0; i--) {
 								ListOfZombies[i].UpdateCameraScreenPosition(camera);
+							}
+
+							if (GetKeyDown(Keys.O)) {
+								ListOfTurrets.Add(new Turret(TurretType.Cannon, turretCannonBaseTexture, turretCannonHeadTexture, player.Position, parent: player));
 							}
 
 							if (GetKeyDown(Keys.Escape)) {
@@ -584,20 +588,6 @@ namespace MonoZombie {
 			return (currKeyboardState.IsKeyDown(key) && !prevKeyboardState.IsKeyDown(key));
 		}
 
-		/*
-		 * Author : Frank Alfano
-		 * 
-		 * Get the distance (in pixels) between 2 points
-		 * 
-		 * Point point1				: The first point
-		 * Point point2				: The second point
-		 * 
-		 * return double			: The distance (in pixels) between the two points
-		 */
-		public static float Distance (Vector2 point1, Vector2 point2) {
-			return MathF.Sqrt(MathF.Pow(point1.X - point2.X, 2) + MathF.Pow(point1.Y - point2.Y, 2));
-		}
-
 		public void StartNextRound ( ) {
 			// Increment the round number
 			roundNumber++;
@@ -632,7 +622,7 @@ namespace MonoZombie {
 						break;
 				}
 
-				ListOfZombies.Add(new Enemy(zombieTextures[0], tile.Position + new Vector2(player.CamX, player.CamY), zombieHealth, zombieMoveSpeed, zombieAttackSpeed));
+				ListOfZombies.Add(new Enemy(tile.Position, zombieHealth, zombieMoveSpeed, zombieAttackSpeed, parent: tile));
 			}
 		}
 
@@ -651,8 +641,6 @@ namespace MonoZombie {
 
 			// Create (or re-create) the camera
 			camera = new Camera(player);
-
-			ListOfTurrets.Add(new Turret(TurretType.Cannon, turretCannonBaseTexture, turretCannonHeadTexture, player.Position));
 		}
 
 		private void DrawPauseMenu ( ) {
