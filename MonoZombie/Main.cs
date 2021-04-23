@@ -575,6 +575,11 @@ namespace MonoZombie {
 							// Draw FPS counter
 							SpriteManager.DrawText(_spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 20), $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds)}", Color.Black, fontScale: 0.5f);
 
+							// Draw turret charges
+							SpriteManager.DrawImage(_spriteBatch, turretCannonBaseTexture, new Vector2(400, 30), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE);
+							SpriteManager.DrawImage(_spriteBatch, turretCannonHeadTexture, new Vector2(400, 30), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(500, 30), $"- {archerTurretCharges}", Color.White, fontScale: 2f);
+
 							break;
 						case GameState.Pause:
 							DrawPauseMenu( );
