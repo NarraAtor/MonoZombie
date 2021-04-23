@@ -101,7 +101,7 @@ namespace MonoZombie {
 		public const int ZOMBIE_BASE_HEALTH = 100; // The default health of the zombie
 		public const int ZOMBIE_BASE_MOVESPEED = 2; // The default movespeed of the zombie
 		public const int ZOMBIE_BASE_ATTACKSPEED = 1; // The default attackspeed of the zombie
-		public const int ZOMBIE_BASE_COUNT = 10; // The starting number of zombies in round 1
+		public const int ZOMBIE_BASE_COUNT = 5; // The starting number of zombies in round 1
 		public const float DAMAGE_INDIC_TIME = 0.25f; // The amount of seconds that entities flash when they are damaged
 		public const int BULLET_SPEED = 15;
 		public const int CANNON_BULLET_DAMAGE = 40;
@@ -300,6 +300,7 @@ namespace MonoZombie {
 			menuPlayButton = new UIButton("Play", SCREEN_DIMENSIONS / 2, ( ) => {
 				menuState = MenuState.Game;
 				gameState = GameState.Playing;
+				easyModeTEST = false;
 
 				// Start the game
 				ResetGame( );
@@ -310,6 +311,10 @@ namespace MonoZombie {
 				menuState = MenuState.Game;
 				gameState = GameState.Playing;
 				easyModeTEST = true;
+
+				// Start the game
+				ResetGame();
+				StartNextRound();
 			});
 
 			menuQuitButton = new UIButton("Quit", SCREEN_DIMENSIONS / 2 + new Vector2(0f, 200f), ( ) => {
@@ -390,6 +395,15 @@ namespace MonoZombie {
 								foreach (Enemy zombie in ListOfZombies) {
 									zombie.CheckUpdateCollision(wallTile);
 									zombie.CheckUpdateCollision(player);
+
+									for (int i = ListOfZombies.Count - 1; i >= 0; i--)
+									{
+										// Makes sure the zombie doesn't check itself
+										if (zombie != ListOfZombies[i])
+										{
+											zombie.CheckUpdateCollision(ListOfZombies[i]);
+										}
+									}
 								}
 
 								// Update bullets colliding with walls and zombies
