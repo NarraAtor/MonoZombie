@@ -37,6 +37,12 @@ namespace MonoZombie {
 			private set;
 		}
 
+		public int RoundTimer
+		{
+			get;
+			set;
+		}
+
 		public bool CanAttack {
 			get {
 				return (timeSinceLastAttack >= 1 / attacksPerSecond);
@@ -48,7 +54,7 @@ namespace MonoZombie {
 
 			this.turretBaseTexture = turretBaseTexture;
 			this.turretHeadTexture = turretHeadTexture;
-
+			RoundTimer = 1;
 			switch (type) {
 
 				case TurretType.Cannon: {
