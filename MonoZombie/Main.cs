@@ -91,6 +91,8 @@ namespace MonoZombie {
 		public static int currency;
 		private int roundNumber;
 
+		public static int archerTurretCharges;
+
 		private List<Turret> turretButtonList;                      // the list that holds all of the turret images
 		private List<String> turretNames;                           // holds the names of the turret types, please update
 																	// when new turrets are added to the ButtonList
@@ -380,6 +382,7 @@ namespace MonoZombie {
 
 							// If there are no more zombies, then advance to the next round
 							if (ListOfZombies.Count == 0) {
+								gameState = GameState.Shop;
 								StartNextRound( );
 							}
 
@@ -637,6 +640,8 @@ namespace MonoZombie {
 				}
 
 				ListOfZombies.Add(new Enemy(tile.Position, zombieHealth, zombieMoveSpeed, zombieAttackSpeed, parent: tile));
+
+
 			}
 		}
 
