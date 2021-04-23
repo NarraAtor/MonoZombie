@@ -140,6 +140,8 @@ namespace MonoZombie {
 			turretButtonList = new List<Turret>( );
 			turretNames = new List<String>( );
 
+			archerTurretCharges = 0;
+
 			rng = new Random( );
 
 			base.Initialize( );
@@ -458,7 +460,11 @@ namespace MonoZombie {
 							}
 
 							if (GetKeyDown(Keys.O)) {
-								ListOfTurrets.Add(new Turret(TurretType.Cannon, turretCannonBaseTexture, turretCannonHeadTexture, player.Position, parent: player));
+								if(archerTurretCharges > 0)
+								{
+									ListOfTurrets.Add(new Turret(TurretType.Cannon, turretCannonBaseTexture, turretCannonHeadTexture, player.Position, parent: player));
+									--archerTurretCharges;
+								}
 							}
 
 							if (GetKeyDown(Keys.Escape)) {
