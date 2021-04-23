@@ -380,6 +380,15 @@ namespace MonoZombie {
 
 							// If there are no more zombies, then advance to the next round
 							if (ListOfZombies.Count == 0) {
+								//loop through each turret and check if they are out of time and update their duration
+								for (int i = ListOfTurrets.Count - 1; i >= 0; i--)
+								{
+									ListOfTurrets[i].RoundTimer--;
+									if(ListOfTurrets[i].RoundTimer==0)
+                                    {
+										ListOfTurrets.RemoveAt(i);
+                                    }
+                                }
 								StartNextRound( );
 							}
 
