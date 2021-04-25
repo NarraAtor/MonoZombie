@@ -324,6 +324,12 @@ namespace MonoZombie {
 				menuState = MenuState.MainMenu;
 			});
 
+			turretButtonList.Add(
+				new Turret(TurretType.Archer, turretCannonBaseTexture, turretCannonHeadTexture, new Vector2(SCREEN_DIMENSIONS.X/7*2, SCREEN_DIMENSIONS.Y/5*3 ))
+				);
+
+			turretNames.Add("Archer");
+
 			base.LoadContent( );
 		}
 
