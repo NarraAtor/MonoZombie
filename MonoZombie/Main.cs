@@ -91,6 +91,8 @@ namespace MonoZombie {
 		public static int currency;
 		private int roundNumber;
 
+		public static int archerTurretCharges;
+
 		private List<Turret> turretButtonList;                      // the list that holds all of the turret images
 		private List<String> turretNames;                           // holds the names of the turret types, please update
 																	// when new turrets are added to the ButtonList
@@ -101,7 +103,7 @@ namespace MonoZombie {
 		public const int ZOMBIE_BASE_HEALTH = 100; // The default health of the zombie
 		public const int ZOMBIE_BASE_MOVESPEED = 2; // The default movespeed of the zombie
 		public const int ZOMBIE_BASE_ATTACKSPEED = 1; // The default attackspeed of the zombie
-		public const int ZOMBIE_BASE_COUNT = 10; // The starting number of zombies in round 1
+		public const int ZOMBIE_BASE_COUNT = 5; // The starting number of zombies in round 1
 		public const float DAMAGE_INDIC_TIME = 0.25f; // The amount of seconds that entities flash when they are damaged
 		public const int BULLET_SPEED = 15;
 		public const int CANNON_BULLET_DAMAGE = 40;
@@ -137,6 +139,8 @@ namespace MonoZombie {
 
 			turretButtonList = new List<Turret>( );
 			turretNames = new List<String>( );
+
+			archerTurretCharges = 0;
 
 			rng = new Random( );
 
@@ -300,6 +304,7 @@ namespace MonoZombie {
 			menuPlayButton = new UIButton("Play", SCREEN_DIMENSIONS / 2, ( ) => {
 				menuState = MenuState.Game;
 				gameState = GameState.Playing;
+				easyModeTEST = false;
 
 				// Start the game
 				ResetGame( );
@@ -310,6 +315,10 @@ namespace MonoZombie {
 				menuState = MenuState.Game;
 				gameState = GameState.Playing;
 				easyModeTEST = true;
+
+				// Start the game
+				ResetGame();
+				StartNextRound();
 			});
 
 			menuQuitButton = new UIButton("Quit", SCREEN_DIMENSIONS / 2 + new Vector2(0f, 200f), ( ) => {
@@ -381,6 +390,15 @@ namespace MonoZombie {
 
 							// If there are no more zombies, then advance to the next round
 							if (ListOfZombies.Count == 0) {
+								//loop through each turret and check if they are out of time and update their duration
+								for (int i = ListOfTurrets.Count - 1; i >= 0; i--)
+								{
+									ListOfTurrets[i].RoundTimer--;
+									if(ListOfTurrets[i].RoundTimer==0)
+                                    {
+										ListOfTurrets.RemoveAt(i);
+                                    }
+                                }
 								StartNextRound( );
 							}
 
@@ -396,6 +414,15 @@ namespace MonoZombie {
 								foreach (Enemy zombie in ListOfZombies) {
 									zombie.CheckUpdateCollision(wallTile);
 									zombie.CheckUpdateCollision(player);
+
+									for (int i = ListOfZombies.Count - 1; i >= 0; i--)
+									{
+										// Makes sure the zombie doesn't check itself
+										if (zombie != ListOfZombies[i])
+										{
+											zombie.CheckUpdateCollision(ListOfZombies[i]);
+										}
+									}
 								}
 
 								// Update bullets colliding with walls and zombies
@@ -439,7 +466,11 @@ namespace MonoZombie {
 							}
 
 							if (GetKeyDown(Keys.O)) {
-								ListOfTurrets.Add(new Turret(TurretType.Cannon, turretCannonBaseTexture, turretCannonHeadTexture, player.Position, parent: player));
+								if(archerTurretCharges > 0)
+								{
+									ListOfTurrets.Add(new Turret(TurretType.Cannon, turretCannonBaseTexture, turretCannonHeadTexture, player.Position, parent: player));
+									--archerTurretCharges;
+								}
 							}
 
 							if (GetKeyDown(Keys.Escape)) {
@@ -550,6 +581,11 @@ namespace MonoZombie {
 							// Draw FPS counter
 							SpriteManager.DrawText(_spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 20), $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds)}", Color.Black, fontScale: 0.5f);
 
+							// Draw turret charges
+							SpriteManager.DrawImage(_spriteBatch, turretCannonBaseTexture, new Vector2(400, 30), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE);
+							SpriteManager.DrawImage(_spriteBatch, turretCannonHeadTexture, new Vector2(400, 30), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(500, 30), $"- {archerTurretCharges}", Color.White, fontScale: 2f);
+
 							break;
 						case GameState.Pause:
 							DrawPauseMenu( );
@@ -629,6 +665,8 @@ namespace MonoZombie {
 				}
 
 				ListOfZombies.Add(new Enemy(tile.Position, zombieHealth, zombieMoveSpeed, zombieAttackSpeed, parent: tile));
+
+
 			}
 		}
 
