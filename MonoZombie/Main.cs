@@ -408,8 +408,14 @@ namespace MonoZombie {
 								foreach (Enemy zombie in ListOfZombies) {
 									zombie.CheckUpdateCollision(wallTile);
 									zombie.CheckUpdateCollision(player);
-
-									for (int i = ListOfZombies.Count - 1; i >= 0; i--)
+									/*
+									for (int i = ListOfTurrets.Count - 1; i >= 0; i--)
+									{
+										zombie.CheckUpdateCollision(ListOfTurrets[i]);
+										player.CheckUpdateCollision(ListOfTurrets[i]);
+									}
+									*/
+										for (int i = ListOfZombies.Count - 1; i >= 0; i--)
 									{
 										// Makes sure the zombie doesn't check itself
 										if (zombie != ListOfZombies[i])
