@@ -24,6 +24,12 @@ namespace MonoZombie {
 				return SpriteManager.GetBoundingRect(texture, centerPosition, SpriteManager.OBJECT_SCALE);
 			}
 		}
+		
+		public bool IsOnScreen {
+			get {
+				return (Rect.Right >= 0 && Rect.Left <= Main.SCREEN_DIMENSIONS.X && Rect.Bottom >= 0 && Rect.Top <= Main.SCREEN_DIMENSIONS.Y);
+			}
+		}
 
 		public int CamX {
 			get;
@@ -136,7 +142,9 @@ namespace MonoZombie {
 		public virtual void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
 			// Make sure the texture is not null before trying to draw it
 			if (texture != null) {
-				SpriteManager.DrawImage(spriteBatch, texture, Rect, Color.White, angle: Angle);
+				if (IsOnScreen) {
+					SpriteManager.DrawImage(spriteBatch, texture, Rect, Color.White, angle: Angle);
+				}
 			}
 		}
 
@@ -151,7 +159,7 @@ namespace MonoZombie {
 		 */
 		public void RotateTo (Vector2 face) {
 			// Make sure the object can rotate before doing the calculations to rotate it
-			if (canRotate) {
+			if (canRotate && IsOnScreen) {
 				// Get the position of the other object with the game object as the origin instead of the top left corner of the screen
 				Vector2 posObjectAsOrigin = new Vector2(face.X - X, Y - face.Y);
 

@@ -163,11 +163,10 @@ namespace MonoZombie {
 		}
 
 		public new void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
-			SpriteManager.DrawImage(spriteBatch, turretBaseTexture, Rect, Color.White);
-
-			//Change the angle the gun is drawn at since the asset is drawn a bit differently 
-			//(about 90 degrees off from where it's actually facing).
-			SpriteManager.DrawImage(spriteBatch, turretHeadTexture, Rect, Color.White, angle: Angle);
+			if (IsOnScreen) {
+				SpriteManager.DrawImage(spriteBatch, turretBaseTexture, Rect, Color.White);
+				SpriteManager.DrawImage(spriteBatch, turretHeadTexture, Rect, Color.White, angle: Angle);
+			}
 		}
 	}
 }

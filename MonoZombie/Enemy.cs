@@ -98,9 +98,11 @@ namespace MonoZombie {
 		}
 
 		public new void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
-			Color damageTint = (timeSinceLastDamage < Main.DAMAGE_INDIC_TIME) ? Color.Red : Color.White;
+			if (IsOnScreen) {
+				Color damageTint = (timeSinceLastDamage < Main.DAMAGE_INDIC_TIME) ? Color.Red : Color.White;
 
-			SpriteManager.DrawImage(spriteBatch, texture, Rect, damageTint, angle: Angle);
+				SpriteManager.DrawImage(spriteBatch, texture, Rect, damageTint, angle: Angle);
+			}
 		}
 
 		private static Texture2D GetTexture ( ) {
