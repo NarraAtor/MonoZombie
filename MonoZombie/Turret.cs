@@ -21,91 +21,75 @@ namespace MonoZombie {
 	/// Purpose: Manages turrets and their function.
 	/// Restrictions:
 	/// </summary>
-	public class Turret : GameObject {
-		protected float timeSinceLastAttack;
-		protected float attacksPerSecond;
-
+	public class Turret : Entity {
 		private Texture2D turretBaseTexture; // The base image of the turret
 		private Texture2D turretHeadTexture; // The rotating head of the turret
 
-		private int range;
-		private int damage;
-		private Enemy target; // the target to shoot at
+		private int turretRange;
+		private int turretDamage;
+		private Zombie target; // the target to shoot at
 
 		public int Price {
 			get;
 			private set;
 		}
 
-		public int RoundTimer
-		{
+		public int RoundTimer {
 			get;
 			set;
 		}
 
-		public bool CanAttack {
-			get {
-				return (timeSinceLastAttack >= 1 / attacksPerSecond);
-			}
-		}
-
-		public Turret (TurretType type, Texture2D turretBaseTexture, Texture2D turretHeadTexture, Vector2 position, GameObject parent = null) : base(turretHeadTexture, position, parent: parent, canRotate: true) {
+		public Turret (TurretType turretType, Texture2D turretBaseTexture, Texture2D turretHeadTexture, Vector2 centerPosition, GameObject parent = null)
+			: base(turretHeadTexture, centerPosition, parent: parent, canRotate: true) {
 			// Goes through each of the diffrent turret types and then sets stats accordingly 
-
 			this.turretBaseTexture = turretBaseTexture;
 			this.turretHeadTexture = turretHeadTexture;
 			RoundTimer = 1;
-			switch (type) {
 
-				case TurretType.Cannon: {
-						range = 50;
-						damage = 100;
-						Price = 200;
-						break;
-					}
-				case TurretType.Archer: {
-						range = 50;
-						damage = 100;
-						Price = 300;
-						attacksPerSecond = 5;
-						break;
-					}
+			switch (turretType) {
+				case TurretType.Cannon:
+					turretRange = 50;
+					turretDamage = 100;
+					Price = 200;
 
-				case TurretType.Buff: {
-						range = 50;
-						damage = 100;
-						Price = 400;
-						break;
-					}
+					break;
+				case TurretType.Archer:
+					turretRange = 50;
+					turretDamage = 100;
+					Price = 300;
 
-				case TurretType.DeBuff: {
-						range = 50;
-						damage = 100;
-						Price = 500;
-						break;
-					}
+					break;
 
-				case TurretType.Magic: {
-						range = 50;
-						damage = 100;
-						Price = 500;
-						break;
-					}
+				case TurretType.Buff:
+					turretRange = 50;
+					turretDamage = 100;
+					Price = 400;
 
-				case TurretType.Trap: {
-						range = 50;
-						damage = 100;
-						Price = 500;
-						break;
-					}
+					break;
+				case TurretType.DeBuff:
+					turretRange = 50;
+					turretDamage = 100;
+					Price = 500;
 
+					break;
+				case TurretType.Magic:
+					turretRange = 50;
+					turretDamage = 100;
+					Price = 500;
 
+					break;
+				case TurretType.Trap:
+					turretRange = 50;
+					turretDamage = 100;
+					Price = 500;
+
+					break;
 			}
 
 			// Turret test values
-			range = 400;
-			attacksPerSecond = 1;
-			damage = 40;
+			AttacksPerSecond = 1;
+			turretRange = 400;
+			turretDamage = 40;
 		}
 
 		/// <summary>
@@ -120,10 +104,10 @@ namespace MonoZombie {
 			target = null;
 
 			// The closest zombie in range of the turret
-			float closestRange = range;
+			float closestRange = turretRange;
 
 			// Loop through each of the enemies currently on the map to find the closest one
-			foreach (Enemy zombie in Main.ListOfZombies) {
+			foreach (Zombie zombie in Main.ListOfZombies) {
 				// Get the distance from this turret to the current zombie
 				float distancetoZombie = Vector2.Distance(zombie.Position, Position);
 
@@ -141,8 +125,7 @@ namespace MonoZombie {
 		 * * Overriden from GameObject class
 		 */
 		public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
-			// Update the last time since this game object has attacked
-			timeSinceLastAttack += (float) gameTime.ElapsedGameTime.TotalSeconds;
+			base.Update(gameTime, mouse, keyboard);
 
 			// Detect nearby targets
 			DetectTarget( );
@@ -151,15 +134,10 @@ namespace MonoZombie {
 			if (target != null) {
 				RotateTo(target.Position);
 
-				// If the turret can shoot a bullet, shoot a bullet
-				if (timeSinceLastAttack >= 1 / attacksPerSecond) {
-					Main.ListOfBullets.Add(new Bullet(Main.bulletTexture, centerPosition, this, Angle, bulletDamage: Main.CANNON_BULLET_DAMAGE));
-
-					timeSinceLastAttack = 0;
+				if (CanAttack) {
+					ShootBullet(turretDamage);
 				}
 			}
-
-			base.Update(gameTime, mouse, keyboard);
 		}
 
 		public new void Draw (GameTime gameTime, SpriteBatch spriteBatch) {

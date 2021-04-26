@@ -115,9 +115,9 @@ namespace MonoZombie {
 			get;
 		} = new List<Bullet>( );
 
-		public static List<Enemy> ListOfZombies {
+		public static List<Zombie> ListOfZombies {
 			get;
-		} = new List<Enemy>( );
+		} = new List<Zombie>( );
 
 		public static List<Turret> ListOfTurrets {
 			get;
@@ -394,7 +394,7 @@ namespace MonoZombie {
 								player.CheckUpdateCollision(wallTile);
 
 								// Update zombies colliding with walls, other zombies, and the player
-								foreach (Enemy zombie in ListOfZombies) {
+								foreach (Zombie zombie in ListOfZombies) {
 									zombie.CheckUpdateCollision(wallTile);
 									zombie.CheckUpdateCollision(player);
 
@@ -634,9 +634,7 @@ namespace MonoZombie {
 						break;
 				}
 
-				ListOfZombies.Add(new Enemy(tile.Position, zombieHealth, zombieMoveSpeed, zombieAttackSpeed, parent: tile));
-
-
+				ListOfZombies.Add(new Zombie(tile.Position, zombieHealth, zombieMoveSpeed, zombieAttackSpeed, tile));
 			}
 		}
 
@@ -671,7 +669,7 @@ namespace MonoZombie {
 
 			for (int i = 0; i < turretButtonList.Count; i++) {
 				turretButtonList[i].Draw(gameTime, _spriteBatch);
-				_spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].Y, turretButtonList[i].Y + 75), Color.White);
+				_spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].Position.Y, turretButtonList[i].Position.Y + 75), Color.White);
 			}
 		}
 	}

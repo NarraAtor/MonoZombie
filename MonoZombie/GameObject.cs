@@ -12,16 +12,13 @@ namespace MonoZombie {
 	public abstract class GameObject {
 		protected Texture2D texture;
 
-		protected Vector2 centerPosition;
-
 		protected bool canRotate;
 		protected bool canMove;
-
 		protected float moveSpeed;
 
 		public Rectangle Rect {
 			get {
-				return SpriteManager.GetBoundingRect(texture, centerPosition, SpriteManager.OBJECT_SCALE);
+				return SpriteManager.GetBoundingRect(texture, Position, SpriteManager.OBJECT_SCALE);
 			}
 		}
 		
@@ -31,49 +28,16 @@ namespace MonoZombie {
 			}
 		}
 
-		public int CamX {
-			get;
-			private set;
-		}
-
-		public int CamY {
-			get;
-			private set;
-		}
-
 		public Vector2 Position {
-			get {
-				return centerPosition;
-			}
+			get;
+			private set;
 		}
 
-		// The game object's pixel position X value on the screen
-		public int X {
-			get {
-				return (int) centerPosition.X;
-			}
-
-			set {
-				if (canMove) {
-					centerPosition.X = value;
-				}
-			}
+		public Vector2 CameraPosition {
+			get;
+			private set;
 		}
 
-		// The game object's pixel position Y value on the screen
-		public int Y {
-			get {
-				return (int) centerPosition.Y;
-			}
-
-			set {
-				if (canMove) {
-					centerPosition.Y = value;
-				}
-			}
-		}
-
-		// The angle that the game object is rotated to in radians
 		public float Angle {
 			get;
 			protected set;
@@ -81,18 +45,17 @@ namespace MonoZombie {
 
 		public GameObject (Texture2D texture, Vector2 centerPosition, GameObject parent = null, float moveSpeed = 0, bool canRotate = false, bool canMove = true) {
 			this.texture = texture;
-			this.centerPosition = centerPosition;
+			Position = centerPosition;
+
 			this.canRotate = canRotate;
 			this.canMove = canMove;
 			this.moveSpeed = moveSpeed;
 
 			// Calculate the initial camera position
 			if (parent != null) {
-				CamX = parent.CamX;
-				CamY = parent.CamY;
+				CameraPosition = parent.CameraPosition;
 			} else {
-				CamX = X - (int) (Main.SCREEN_DIMENSIONS / 2).X;
-				CamY = Y - (int) (Main.SCREEN_DIMENSIONS / 2).Y;
+				CameraPosition = centerPosition - Main.SCREEN_DIMENSIONS / 2;
 			}
 		}
 
@@ -118,20 +81,6 @@ namespace MonoZombie {
 		/*
 		 * Author : Frank Alfano
 		 * 
-		 * Update this game objects position based on the camera
-		 * 
-		 * Camera camera			: The camera object
-		 * 
-		 * return					:
-		 */
-		public void UpdateCameraScreenPosition (Camera camera) {
-			// Update the position of the game object based on the target game object
-			centerPosition = camera.CalculateScreenPosition(this);
-		}
-
-		/*
-		 * Author : Frank Alfano
-		 * 
 		 * An overridable method that is used to draw the game object
 		 * * This method needs to be called within a SpriteBatch Begin() and End() draw methods
 		 * 
@@ -140,12 +89,23 @@ namespace MonoZombie {
 		 * return					:
 		 */
 		public virtual void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
-			// Make sure the texture is not null before trying to draw it
-			if (texture != null) {
-				if (IsOnScreen) {
-					SpriteManager.DrawImage(spriteBatch, texture, Rect, Color.White, angle: Angle);
-				}
+			if (IsOnScreen) {
+				SpriteManager.DrawImage(spriteBatch, texture, Rect, Color.White, angle: Angle);
 			}
+		}
+
+		/*
+		 * Author : Frank Alfano
+		 * 
+		 * Update this game objects position based on the camera
+		 * 
+		 * Camera camera			: The camera object
+		 * 
+		 * return					:
+		 */
+		public void UpdateCameraScreenPosition (Camera camera) {
+			// Update the position of the game object based on the target game object
+			Position = camera.CalculateScreenPosition(this);
 		}
 
 		/* 
@@ -165,7 +125,7 @@ namespace MonoZombie {
 				Vector2 C = Position;
 
 				float dirC2A = MathF.Atan2(A.Y - C.Y, A.X - C.X);
-				float dirC2B = MathF.Atan2(B.Y - C.Y, B.X - C.X);
+				float dirC2B = MathF.Atan2(B.Y - C.Y, face.X - C.X);
 				float angleABC = dirC2B - dirC2A;
 
 				Angle = angleABC + MathF.PI;
@@ -174,10 +134,8 @@ namespace MonoZombie {
 
 		public void MoveBy (Vector2 moveBy) {
 			if (canMove) {
-				centerPosition += moveBy;
-
-				CamX += (int) (moveBy.X);
-				CamY += (int) (moveBy.Y);
+				Position += moveBy;
+				CameraPosition += moveBy;
 			}
 		}
 
@@ -191,8 +149,11 @@ namespace MonoZombie {
 		public bool Destroy ( ) {
 			if (typeof(Bullet).IsInstanceOfType(this)) {
 				Main.ListOfBullets.Remove((Bullet) this);
-			} else if (typeof(Enemy).IsInstanceOfType(this)) {
-				Main.ListOfZombies.Remove((Enemy) this);
+			} else if (typeof(Zombie).IsInstanceOfType(this)) {
+				Main.ListOfZombies.Remove((Zombie) this);
+
+				// CHANGE 10 TO LIKE A RANDOM NUMBER OR SOMETHING
+				Main.currency += 10;
 			} else if (typeof(Turret).IsInstanceOfType(this)) {
 				Main.ListOfTurrets.Remove((Turret) this);
 			} else {

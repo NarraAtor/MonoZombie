@@ -9,39 +9,10 @@ using Microsoft.Xna.Framework.Input;
 // Purpose : Manages player values and mechanics like shooting
 
 namespace MonoZombie {
-	public class Player : GameObject {
-		protected float timeSinceLastDamage;
-		protected float timeSinceLastAttack;
-		protected float attacksPerSecond;
+	public class Player : Entity {
 
-		public int Health {
-			get;
-			private set;
-		}
-
-		public bool IsDead {
-			get {
-				return (Health <= 0);
-			}
-		}
-
-		public bool CanAttack {
-			get {
-				return (timeSinceLastAttack >= 1 / attacksPerSecond);
-			}
-		}
-
-		public Player (Texture2D texture, Vector2 position, int health, float playerSpeed, float attacksPerSecond) : base(texture, position, moveSpeed: playerSpeed, canRotate: true) {
-			Health = health;
-			this.attacksPerSecond = attacksPerSecond;
-
-			timeSinceLastDamage = Main.DAMAGE_INDIC_TIME + 1;
-		}
-
-		public void TakeDamage (int damage) {
-			Health -= damage;
-
-			timeSinceLastDamage = 0;
+		public Player (Texture2D texture, Vector2 position, int health, float playerSpeed, float attacksPerSecond)
+			: base(texture, position, health, attacksPerSecond, moveSpeed: playerSpeed, canRotate: true) {
 		}
 
 		/*
@@ -50,9 +21,7 @@ namespace MonoZombie {
 		 * * Overridden from the base GameObject class
 		 */
 		public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
-			// Update the last time since this game object has attacked
-			timeSinceLastAttack += (float) gameTime.ElapsedGameTime.TotalSeconds;
-			timeSinceLastDamage += (float) gameTime.ElapsedGameTime.TotalSeconds;
+			base.Update(gameTime, mouse, keyboard);
 
 			// Move the player
 			Move(keyboard);
@@ -60,25 +29,13 @@ namespace MonoZombie {
 			// Rotate the player to look at the mouse
 			RotateTo(mouse.Position.ToVector2( ));
 
-			// If the player can attack and they are pressing the left mouse button, shoot a bullet
+			// If the entity can attack and they are pressing the left mouse button, shoot a bullet
 			if (CanAttack) {
 				if (mouse.LeftButton == ButtonState.Pressed) {
-					Main.ListOfBullets.Add(new Bullet(Main.bulletTexture, Position, this, Angle));
-
-					timeSinceLastAttack = 0;
+					ShootBullet(Main.PLAYER_BULLET_DAMAGE);
 				}
 			}
-
-			base.Update(gameTime, mouse, keyboard);
         }
-
-		public new void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
-			if (IsOnScreen) {
-				Color damageTint = (timeSinceLastDamage < Main.DAMAGE_INDIC_TIME) ? Color.Red : Color.White;
-
-				SpriteManager.DrawImage(spriteBatch, texture, Rect, damageTint, angle: Angle);
-			}
-		}
 
 		/*
          * Author : Frank Alfano, Jack Shyshko

@@ -30,7 +30,8 @@ namespace MonoZombie
         /// <param name="speedY"> How much the bullet will be moving in the vertical direction </param>
         /// <param name="angle"> The angle the player was facing when the bullet was shot </param>
         /// <param name="bulletSpeed"> How fast the bullet is going to be moving</param>
-        public Bullet (Texture2D texture, Vector2 position, GameObject parent, float angle, int bulletSpeed = Main.BULLET_SPEED, int bulletDamage = Main.PLAYER_BULLET_DAMAGE) : base(texture, position, parent: parent, moveSpeed: bulletSpeed, canRotate: true) {
+        public Bullet (Texture2D texture, Vector2 position, GameObject parent, float angle, int bulletSpeed = Main.BULLET_SPEED, int bulletDamage = Main.PLAYER_BULLET_DAMAGE)
+            : base(texture, position, parent: parent, moveSpeed: bulletSpeed, canRotate: true) {
             this.bulletDamage = bulletDamage;
 
             movement = new Vector2(MathF.Sin(angle), -MathF.Cos(angle));
@@ -41,18 +42,12 @@ namespace MonoZombie
         /*
          * * Overridden from the GameObject Class
          */
-        public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
-            Move( );
-
-            // Rotate the bullets to face towards the 
-            RotateTo(Position + movement);
-
-            base.Update(gameTime, mouse, keyboard);
-        }
-
-        public void Move () {
+        public override void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
             // Move the bullet in the direction it is travelling
             MoveBy(movement);
+
+            // Rotate the bullets to face towards the direction it is moving
+            RotateTo(Position + movement);
         }
 
         /*
@@ -68,9 +63,9 @@ namespace MonoZombie
             // If the bullet has collided with something, then destroy it
             if (didCollide) {
                 // If the bullet collides with an enemy, we want to destroy the bullet and decrease the zombie health
-                if (typeof(Enemy).IsInstanceOfType(other)) {
+                if (typeof(Zombie).IsInstanceOfType(other)) {
                     // 10 can be changed later, its just the number I found in the code in the Main class
-                    ((Enemy) other).TakeDamage(bulletDamage);
+                    ((Zombie) other).TakeDamage(bulletDamage);
 
                     Destroy( );
                 } else if (typeof(Tile).IsInstanceOfType(other)) {
