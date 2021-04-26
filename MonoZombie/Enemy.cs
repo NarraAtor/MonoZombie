@@ -43,7 +43,7 @@ namespace MonoZombie {
 			timeSinceLastDamage = 0;
 		}
 
-		public void Move (Player player) {
+		public void MoveTo (Player player) {
 			// Rotate the zombie towards the player
 			RotateTo(player.Position);
 

@@ -160,40 +160,15 @@ namespace MonoZombie {
 		public void RotateTo (Vector2 face) {
 			// Make sure the object can rotate before doing the calculations to rotate it
 			if (canRotate && IsOnScreen) {
-				// Get the position of the other object with the game object as the origin instead of the top left corner of the screen
-				Vector2 posObjectAsOrigin = new Vector2(face.X - X, Y - face.Y);
+				Vector2 A = Position + new Vector2(0, Vector2.Distance(Position, face));
+				Vector2 B = face;
+				Vector2 C = Position;
 
-				// If the other point is not directly on top of the player, continue with the calculations
-				// This is to make sure we don't divide by 0 and crash the game
-				if (posObjectAsOrigin != Vector2.Zero) {
-					// Get this distance between the player and the other position
-					float distanceToPoint = Vector2.Distance(face, centerPosition);
+				float dirC2A = MathF.Atan2(A.Y - C.Y, A.X - C.X);
+				float dirC2B = MathF.Atan2(B.Y - C.Y, B.X - C.X);
+				float angleABC = dirC2B - dirC2A;
 
-					// Calculate the angle between the other point and the player
-					// The reason this is done twice is because Cos is always positive and Sin is both positive and negative.
-					// Sin is used to determine how much to adjust the Cos angle because Cos only goes from 0-3.14 (PI) when we need it
-					// to go all the way from 0-6.28 (2PI)
-					float sinAngle = MathF.Asin(posObjectAsOrigin.Y / distanceToPoint);
-					float cosAngle = MathF.Acos(posObjectAsOrigin.X / distanceToPoint);
-					
-					// Make sure the angles are finite numbers to avoid errors
-					if (float.IsNaN(sinAngle) || float.IsInfinity(sinAngle)) {
-						return;
-					}
-					if (float.IsNaN(cosAngle) || float.IsInfinity(cosAngle)) {
-						return;
-					}
-
-					// The is used to determine whether the sin angle is positive or negative
-					int sinMod = (int) -(sinAngle / MathF.Abs(sinAngle));
-
-
-					// If either of the angles are negative, do not calculate the angle because it will just be 0
-					if (sinAngle != 0 && cosAngle != 0) {
-						// Set the rotation based on the calculated angle
-						Angle = (MathF.PI / 2) + (sinMod * cosAngle);
-					}
-				}
+				Angle = angleABC + MathF.PI;
 			}
 		}
 
@@ -201,8 +176,8 @@ namespace MonoZombie {
 			if (canMove) {
 				centerPosition += moveBy;
 
-				CamX += (int) moveBy.X;
-				CamY += (int) moveBy.Y;
+				CamX += (int) (moveBy.X);
+				CamY += (int) (moveBy.Y);
 			}
 		}
 

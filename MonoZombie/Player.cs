@@ -54,7 +54,7 @@ namespace MonoZombie {
 			timeSinceLastAttack += (float) gameTime.ElapsedGameTime.TotalSeconds;
 			timeSinceLastDamage += (float) gameTime.ElapsedGameTime.TotalSeconds;
 
-			// Move the player based on keyboard input
+			// Move the player
 			Move(keyboard);
 
 			// Rotate the player to look at the mouse

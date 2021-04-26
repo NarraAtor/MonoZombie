@@ -42,13 +42,17 @@ namespace MonoZombie
          * * Overridden from the GameObject Class
          */
         public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
+            Move( );
+
             // Rotate the bullets to face towards the 
             RotateTo(Position + movement);
 
+            base.Update(gameTime, mouse, keyboard);
+        }
+
+        public void Move () {
             // Move the bullet in the direction it is travelling
             MoveBy(movement);
-
-            base.Update(gameTime, mouse, keyboard);
         }
 
         /*

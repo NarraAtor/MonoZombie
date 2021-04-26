@@ -40,7 +40,6 @@ namespace MonoZombie {
 		private MouseState prevMouseState;
 
 		//Test variables
-		private string currentStateTEST;
 		private bool easyModeTEST;
 
 		// Camera
@@ -107,10 +106,10 @@ namespace MonoZombie {
 		public const float DAMAGE_INDIC_TIME = 0.25f; // The amount of seconds that entities flash when they are damaged
 		public const int BULLET_SPEED = 15;
 		public const int CANNON_BULLET_DAMAGE = 40;
-		public const int PLAYER_BULLET_DAMAGE = 10;
+		public const int PLAYER_BULLET_DAMAGE = 100;
 		public static Vector2 SCREEN_DIMENSIONS = new Vector2(1280, 720);
 
-		private static Random rng;
+		private static Random random;
 
 		public static List<Bullet> ListOfBullets {
 			get;
@@ -126,12 +125,13 @@ namespace MonoZombie {
 
 		public Main ( ) {
 			_graphics = new GraphicsDeviceManager(this);
+
 			Content.RootDirectory = "Content";
+
 			IsMouseVisible = true;
 		}
 
 		protected override void Initialize ( ) {
-			// TODO: Add your initialization logic here
 			menuState = MenuState.MainMenu;
 			gameState = GameState.Playing;
 
@@ -142,7 +142,7 @@ namespace MonoZombie {
 
 			archerTurretCharges = 0;
 
-			rng = new Random( );
+			random = new Random( );
 
 			base.Initialize( );
 		}
@@ -317,8 +317,8 @@ namespace MonoZombie {
 				easyModeTEST = true;
 
 				// Start the game
-				ResetGame();
-				StartNextRound();
+				ResetGame( );
+				StartNextRound( );
 			});
 
 			menuQuitButton = new UIButton("Quit", SCREEN_DIMENSIONS / 2 + new Vector2(0f, 200f), ( ) => {
@@ -337,14 +337,11 @@ namespace MonoZombie {
 		}
 
 		protected override void Update (GameTime gameTime) {
-			// Get the current keyboard state
 			currKeyboardState = Keyboard.GetState( );
 			currMouseState = Mouse.GetState( );
 
 			switch (menuState) {
 				case MenuState.MainMenu:
-					currentStateTEST = "MainMenu";
-
 					// Update the menu UI elements
 					menuPlayButton.Update(gameTime, currMouseState);
 					menuPlayEasyModeButton.Update(gameTime, currMouseState);
@@ -352,12 +349,8 @@ namespace MonoZombie {
 
 					break;
 				case MenuState.Game:
-					currentStateTEST = "Game -";
-
 					switch (gameState) {
 						case GameState.Playing:
-							currentStateTEST = "Game - Playing";
-
 							// Update all game objects
 							player.Update(gameTime, currMouseState, currKeyboardState);
 
@@ -370,13 +363,11 @@ namespace MonoZombie {
 							}
 
 							for (int i = ListOfZombies.Count - 1; i >= 0; i--) {
-								ListOfZombies[i].Move(player);
-
+								ListOfZombies[i].MoveTo(player);
 								ListOfZombies[i].Update(gameTime, currMouseState, currKeyboardState);
 							}
 
 							// Do game logic calculations
-
 							// Check if the player is dead
 							if (player.IsDead && !easyModeTEST) {
 								menuState = MenuState.GameOver;
@@ -385,14 +376,12 @@ namespace MonoZombie {
 							// If there are no more zombies, then advance to the next round
 							if (ListOfZombies.Count == 0) {
 								//loop through each turret and check if they are out of time and update their duration
-								for (int i = ListOfTurrets.Count - 1; i >= 0; i--)
-								{
+								for (int i = ListOfTurrets.Count - 1; i >= 0; i--) {
 									ListOfTurrets[i].RoundTimer--;
-									if(ListOfTurrets[i].RoundTimer==0)
-                                    {
+									if (ListOfTurrets[i].RoundTimer == 0) {
 										ListOfTurrets.RemoveAt(i);
-                                    }
-                                }
+									}
+								}
 								StartNextRound( );
 							}
 
@@ -409,11 +398,9 @@ namespace MonoZombie {
 									zombie.CheckUpdateCollision(wallTile);
 									zombie.CheckUpdateCollision(player);
 
-									for (int i = ListOfZombies.Count - 1; i >= 0; i--)
-									{
+									for (int i = ListOfZombies.Count - 1; i >= 0; i--) {
 										// Makes sure the zombie doesn't check itself
-										if (zombie != ListOfZombies[i])
-										{
+										if (zombie != ListOfZombies[i]) {
 											zombie.CheckUpdateCollision(ListOfZombies[i]);
 										}
 									}
@@ -460,8 +447,7 @@ namespace MonoZombie {
 							}
 
 							if (GetKeyDown(Keys.O)) {
-								if(archerTurretCharges > 0)
-								{
+								if (archerTurretCharges > 0) {
 									ListOfTurrets.Add(new Turret(TurretType.Cannon, turretCannonBaseTexture, turretCannonHeadTexture, player.Position, parent: player));
 									--archerTurretCharges;
 								}
@@ -477,8 +463,6 @@ namespace MonoZombie {
 
 							break;
 						case GameState.Pause:
-							currentStateTEST = "Game - Pause";
-
 							if (GetKeyDown(Keys.Escape)) {
 								gameState = GameState.Playing;
 							}
@@ -488,8 +472,6 @@ namespace MonoZombie {
 
 							break;
 						case GameState.Shop:
-							currentStateTEST = "Game - Shop";
-
 							if (GetKeyDown(Keys.Tab)) {
 								gameState = GameState.Playing;
 							}
@@ -513,8 +495,6 @@ namespace MonoZombie {
 					break;
 
 				case MenuState.GameOver:
-					currentStateTEST = "GameOver";
-
 					if (GetKeyDown(Keys.Enter)) {
 						menuState = MenuState.MainMenu;
 					}
@@ -525,8 +505,6 @@ namespace MonoZombie {
 			// Update the past keyboard state to the current one as Update() has ended this frame
 			prevKeyboardState = currKeyboardState;
 			prevMouseState = currMouseState;
-
-			base.Update(gameTime);
 		}
 
 		protected override void Draw (GameTime gameTime) {
@@ -573,8 +551,8 @@ namespace MonoZombie {
 							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 60), $"Player Health: {player.Health}", Color.Black, fontScale: 0.5f);
 
 							// Draw FPS counter
-							SpriteManager.DrawText(_spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 20), $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds)}", Color.White, fontScale: 0.5f);
-							SpriteManager.DrawText(_spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 40), $"FT: {gameTime.ElapsedGameTime.TotalSeconds}", Color.White, fontScale: 0.5f);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 20), $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds, 3)}", Color.White, fontScale: 0.5f);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 40), $"UT: {Math.Round(gameTime.ElapsedGameTime.TotalSeconds, 3)}", Color.White, fontScale: 0.5f);
 
 							// Draw turret charges
 							SpriteManager.DrawImage(_spriteBatch, turretCannonBaseTexture, new Vector2(400, 30), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE);
@@ -603,9 +581,6 @@ namespace MonoZombie {
 
 					break;
 			}
-
-			// Being used to test if states are switching properly
-			_spriteBatch.DrawString(font, currentStateTEST, new Vector2(15, 900), Color.White);
 
 			_spriteBatch.End( );
 
@@ -640,11 +615,11 @@ namespace MonoZombie {
 			// Spawn in all of the zombies
 			for (int i = 0; i < zombieCount; i++) {
 				// Generate random spawn position
-				int randX = rng.Next(1, map.Width - 1);
-				int randY = rng.Next(1, map.Height - 1);
+				int randX = random.Next(1, map.Width - 1);
+				int randY = random.Next(1, map.Height - 1);
 				Tile tile = null;
 
-				switch (rng.Next(0, 4)) {
+				switch (random.Next(0, 4)) {
 					case 0:
 						tile = map[randX, 1];
 						break;
