@@ -98,6 +98,8 @@ namespace MonoZombie {
 																	// when new turrets are added to the ButtonList
 		private Turret turretInPurchase;                            // the turret that the player is currently purchasing from the shop.
 		private List<Turret> turretList;                            // turrets that exist in the game;
+		private List<int> turretsPurchased;							// the list of what turrets have been purchased 
+																	// should be directly linked with the turretButtonList
 
 		// Constants
 		public const int ZOMBIE_BASE_HEALTH = 100; // The default health of the zombie
@@ -139,6 +141,7 @@ namespace MonoZombie {
 
 			turretButtonList = new List<Turret>( );
 			turretNames = new List<String>( );
+			turretsPurchased = new List<int>();
 
 
 			archerTurretCharges = 3;
@@ -334,6 +337,12 @@ namespace MonoZombie {
 				menuState = MenuState.MainMenu;
 			});
 
+			turretButtonList.Add(
+				new Turret(TurretType.Archer, turretCannonBaseTexture, turretCannonHeadTexture, new Vector2(SCREEN_DIMENSIONS.X/7*2, SCREEN_DIMENSIONS.Y/5*3 ))
+				);
+			turretNames.Add("Archer");
+			//turretsPurchased.Add(1);
+
 			base.LoadContent( );
 		}
 
@@ -431,7 +440,7 @@ namespace MonoZombie {
 								for (int i = ListOfBullets.Count - 1; i >= 0; i--) {
 									// If the bullet gets too far from the player, destroy it so it doesn't cause lag
 									if (Vector2.Distance(ListOfBullets[i].Position, player.Position) > 1000) {
-										ListOfBullets[i].Destroy( );
+										ListOfBullets[i].Destroy();
 										continue;
 									}
 
@@ -505,16 +514,14 @@ namespace MonoZombie {
 								if (currMouseState.X > turretButtonList[i].Rect.Left && currMouseState.X < turretButtonList[i].Rect.Right
 										&& currMouseState.Y > turretButtonList[i].Rect.Bottom) {
 									if (currMouseState.LeftButton == ButtonState.Pressed) {
-										turretInPurchase = turretButtonList[i];
-										gameState = GameState.ShopInPlacment;
-										break;
+										if (currency >= 50) {
+											//turretsPurchased[i]++;
+											archerTurretCharges++;
+											currency -= 50;
+											break;
+										}
 									}
 								}
-							break;
-						case GameState.ShopInPlacment:
-							if (prevMouseState.LeftButton == ButtonState.Released && currMouseState.LeftButton == ButtonState.Pressed) {
-								turretList.Add(turretInPurchase);
-							}
 							break;
 					}
 					break;
