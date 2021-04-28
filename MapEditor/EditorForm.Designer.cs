@@ -164,7 +164,7 @@ namespace MapEditor
             // 
             this.groupBoxMap.Location = new System.Drawing.Point(119, 19);
             this.groupBoxMap.Name = "groupBoxMap";
-            this.groupBoxMap.Size = new System.Drawing.Size(430, 430);
+            this.groupBoxMap.Size = new System.Drawing.Size(600, 600);
             this.groupBoxMap.TabIndex = 4;
             this.groupBoxMap.TabStop = false;
             this.groupBoxMap.Text = "Map";
@@ -173,7 +173,7 @@ namespace MapEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(564, 461);
+            this.ClientSize = new System.Drawing.Size(726, 624);
             this.Controls.Add(this.groupBoxMap);
             this.Controls.Add(this.buttonLoadFile);
             this.Controls.Add(this.buttonSaveFile);
