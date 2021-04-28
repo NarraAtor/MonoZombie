@@ -98,6 +98,7 @@ namespace MonoZombie {
 																	// when new turrets are added to the ButtonList
 		private Turret turretInPurchase;                            // the turret that the player is currently purchasing from the shop.
 		private List<Turret> turretList;                            // turrets that exist in the game;
+		private List<int> turretsPurchased;							
 
 		// Constants
 		public const int ZOMBIE_BASE_HEALTH = 100; // The default health of the zombie
