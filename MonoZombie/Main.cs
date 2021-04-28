@@ -141,7 +141,7 @@ namespace MonoZombie {
 			turretNames = new List<String>( );
 
 
-			archerTurretCharges = 0;
+			archerTurretCharges = 3;
 
 			rng = new Random( );
 
