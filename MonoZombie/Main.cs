@@ -341,7 +341,7 @@ namespace MonoZombie {
 				new Turret(TurretType.Archer, turretCannonBaseTexture, turretCannonHeadTexture, new Vector2(SCREEN_DIMENSIONS.X/7*2, SCREEN_DIMENSIONS.Y/5*3 ))
 				);
 			turretNames.Add("Archer");
-			//turretsPurchased.Add(1);
+			turretsPurchased.Add(1);
 
 			base.LoadContent( );
 		}
@@ -476,10 +476,10 @@ namespace MonoZombie {
 							}
 
 							if (GetKeyDown(Keys.O)) {
-								if(archerTurretCharges > 0)
+								if(turretsPurchased[0] > 0)
 								{
 									ListOfTurrets.Add(new Turret(TurretType.Cannon, turretCannonBaseTexture, turretCannonHeadTexture, player.Position, parent: player));
-									--archerTurretCharges;
+									--turretsPurchased[0];
 								}
 							}
 
@@ -510,17 +510,22 @@ namespace MonoZombie {
 								gameState = GameState.Playing;
 							}
 
-							for (int i = 0; i < turretButtonList.Count; i++)
+							for (int i = 0; i < turretButtonList.Count; i++) {
 								if (currMouseState.X > turretButtonList[i].Rect.Left && currMouseState.X < turretButtonList[i].Rect.Right
-										&& currMouseState.Y > turretButtonList[i].Rect.Bottom) {
-									if (currMouseState.LeftButton == ButtonState.Pressed) {
-										if (currency >= 50) {
+										&& currMouseState.Y <= turretButtonList[i].Rect.Bottom && currMouseState.Y >= turretButtonList[i].Rect.Top)
+								{
+									Console.WriteLine(turretButtonList[i].Rect.Top + " " + turretButtonList[i].Rect.Bottom);
+									if (currMouseState.LeftButton == ButtonState.Pressed)
+									{
+										if (currency >= 30)
+										{
 											//turretsPurchased[i]++;
-											archerTurretCharges++;
-											currency -= 50;
+											turretsPurchased[i]++;
+											currency -= 30;
 											break;
 										}
 									}
+								}
 								}
 							break;
 					}
@@ -709,7 +714,8 @@ namespace MonoZombie {
 
 			for (int i = 0; i < turretButtonList.Count; i++) {
 				turretButtonList[i].Draw(gameTime, _spriteBatch);
-				_spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].Y, turretButtonList[i].Y + 75), Color.White);
+				_spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].X-75, turretButtonList[i].Y + 75), Color.White);
+				_spriteBatch.DrawString(font, "X"+turretsPurchased[i].ToString(), new Vector2(turretButtonList[i].X + 100, turretButtonList[i].Y + 75), Color.Gold);
 			}
 		}
 	}
