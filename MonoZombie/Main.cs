@@ -60,6 +60,9 @@ namespace MonoZombie {
 		// Map
 		private Map map;
 
+		// Map Graph
+		private MapGraph graph;
+
 		// Map Tile Texture Arrays
 		// * These are arrays because when a tile is created, it picks a random texture from these
 		// arrays to add variation to the map
@@ -303,6 +306,9 @@ namespace MonoZombie {
 			_graphics.PreferredBackBufferWidth = (int) SCREEN_DIMENSIONS.X;
 			_graphics.PreferredBackBufferHeight = (int) SCREEN_DIMENSIONS.Y;
 			_graphics.ApplyChanges( );
+
+			//Test map graph creation
+			graph = new MapGraph(map.)
 
 			// Create UI Buttons
 			menuPlayButton = new UIButton("Play", SCREEN_DIMENSIONS / 2, ( ) => {
