@@ -338,10 +338,22 @@ namespace MonoZombie {
 			});
 
 			turretButtonList.Add(
-				new Turret(TurretType.Archer, turretCannonBaseTexture, turretCannonHeadTexture, new Vector2(SCREEN_DIMENSIONS.X/7*2, SCREEN_DIMENSIONS.Y/5*3 ))
+				new Turret(TurretType.Archer, turretCannonBaseTexture, turretCannonHeadTexture, new Vector2(SCREEN_DIMENSIONS.X/7*2, SCREEN_DIMENSIONS.Y/5*2 ))
 				);
 			turretNames.Add("Archer");
 			turretsPurchased.Add(1);
+
+			turretButtonList.Add(
+				new Turret(TurretType.Buff, turretCannonBaseTexture, turretCannonHeadTexture, new Vector2(SCREEN_DIMENSIONS.X/7*4, SCREEN_DIMENSIONS.Y/5*2))
+				);
+			turretsPurchased.Add(0);
+			turretNames.Add("Buff");
+
+			turretButtonList.Add(
+				new Turret(TurretType.Trap, turretCannonBaseTexture, turretCannonHeadTexture, new Vector2(SCREEN_DIMENSIONS.X / 7 * 6, SCREEN_DIMENSIONS.Y / 5 * 2))
+				);
+			turretsPurchased.Add(0);
+			turretNames.Add("Trap");
 
 			base.LoadContent( );
 		}
@@ -597,11 +609,11 @@ namespace MonoZombie {
 							// Draw turret charges
 							SpriteManager.DrawImage(_spriteBatch, turretCannonBaseTexture, new Vector2(400, 30), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE);
 							SpriteManager.DrawImage(_spriteBatch, turretCannonHeadTexture, new Vector2(400, 30), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE);
-							SpriteManager.DrawText(_spriteBatch, new Vector2(500, 30), $"- {archerTurretCharges}", Color.White, fontScale: 2f);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(500, 30), $"- {turretsPurchased[0]}", Color.White, fontScale: 2f);
 
 							break;
 						case GameState.Pause:
-							DrawPauseMenu( );
+							DrawPauseMenu();
 
 							break;
 						case GameState.Shop:
