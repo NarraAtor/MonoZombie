@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace MonoZombie
 {
@@ -26,10 +29,28 @@ namespace MonoZombie
             }
             
             //test if this worked
+            //foreach(MapSegment vertex in MapSegmentList)
+            //{
+            //    Debug.WriteLine($"{vertex.TileAtVertex.X} {vertex.TileAtVertex.Y}");
+            //}
+        }
+
+        /// <summary>
+        /// Purpose: Finds the vertex of the tile the player is in or mostly in.
+        /// Restrictions:
+        /// </summary>
+        /// <returns> Returns the vertex the player is in or mostly in.</returns>
+        public MapSegment GetPlayerVertex()
+        {
+            //loop through the list of verticies and use Rectangle.Intersects with the tiles they contain.
+            //Find the tile with the biggest intersection.
+            //Return the vertex that contains that tile.
+            Rectangle biggestRectangle = new Rectangle(0, 0, 0, 0);
             foreach(MapSegment vertex in MapSegmentList)
             {
-                Debug.WriteLine($"{vertex.TileAtVertex.X} {vertex.TileAtVertex.Y}");
+                //if(biggestRectangle < Main.P)
             }
+            return null;
         }
     }
 }

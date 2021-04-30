@@ -88,7 +88,7 @@ namespace MonoZombie {
 		public static Texture2D tabTexture;
 
 		// Game Objects
-		private Player player;
+		private static Player player;
 
 		// Game Logic Variables
 		public static int currency;
@@ -116,6 +116,8 @@ namespace MonoZombie {
 		public static Vector2 SCREEN_DIMENSIONS = new Vector2(1280, 720);
 
 		private static Random rng;
+
+		public static Player Player { get { return player; } }
 
 		public static List<Bullet> ListOfBullets {
 			get;
@@ -308,7 +310,7 @@ namespace MonoZombie {
 			_graphics.ApplyChanges( );
 
 			//Test map graph creation
-			graph = new MapGraph(map.)
+			graph = new MapGraph(map.Tiles);
 
 			// Create UI Buttons
 			menuPlayButton = new UIButton("Play", SCREEN_DIMENSIONS / 2, ( ) => {
