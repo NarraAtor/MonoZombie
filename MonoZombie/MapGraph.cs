@@ -46,11 +46,19 @@ namespace MonoZombie
             //Find the tile with the biggest intersection.
             //Return the vertex that contains that tile.
             Rectangle biggestRectangle = new Rectangle(0, 0, 0, 0);
+            MapSegment playerCurrentMapSegment = null;
             foreach(MapSegment vertex in MapSegmentList)
             {
-                //if(biggestRectangle < Main.P)
+                int currentRectangleArea = Rectangle.Intersect(Main.Player.Rect, vertex.TileAtVertex.Rect).Width * (Rectangle.Intersect(Main.Player.Rect, vertex.TileAtVertex.Rect).Height);
+                //If the area of of the biggestRectangle is smaller than the intersection between the player and the current tile...
+                if ((biggestRectangle.Width * biggestRectangle.Height) < currentRectangleArea)
+                {
+                    biggestRectangle = Rectangle.Intersect(Main.Player.Rect, vertex.TileAtVertex.Rect);
+                    playerCurrentMapSegment = vertex;
+                }
+
             }
-            return null;
+            return playerCurrentMapSegment;
         }
     }
 }

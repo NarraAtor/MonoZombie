@@ -376,6 +376,8 @@ namespace MonoZombie {
 						case GameState.Playing:
 							currentStateTEST = "Game - Playing";
 
+							//Update the graph
+							Console.WriteLine($"{graph.GetPlayerVertex().TileAtVertex.X} {graph.GetPlayerVertex().TileAtVertex.Y}");
 							// Update all game objects
 							player.Update(gameTime, currMouseState, currKeyboardState);
 
