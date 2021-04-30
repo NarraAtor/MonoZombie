@@ -81,6 +81,7 @@ namespace MonoZombie {
 
 		public static Texture2D turretCannonBaseTexture;
 		public static Texture2D turretCannonHeadTexture;
+		public static Texture2D mineHeadTexture;
 
 		// UI Textures
 		public static Texture2D titleTexture;
@@ -163,6 +164,7 @@ namespace MonoZombie {
 			nullTexture = Content.Load<Texture2D>("MapTiles/NullTile");
 			turretCannonBaseTexture = Content.Load<Texture2D>("Turrets/TurretCannonBase");
 			turretCannonHeadTexture = Content.Load<Texture2D>("Turrets/TurretCannonHead");
+			mineHeadTexture = Content.Load<Texture2D>("Turrets/MineHead");
 			playerTexture = Content.Load<Texture2D>("Player");
 			bulletTexture = Content.Load<Texture2D>("Bullet");
 

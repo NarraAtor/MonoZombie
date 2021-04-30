@@ -92,30 +92,6 @@
 /processorParam:TextureFormat=Color
 /build:MapTiles/Gravel/GravelTile1.png
 
-#begin MapTiles/Gravel/GravelTile1.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:MapTiles/Gravel/GravelTile1.png
-
-#begin MapTiles/Gravel/GravelTile13.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:MapTiles/Gravel/GravelTile13.png
-
 #begin MapTiles/Gravel/GravelTile13.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -139,30 +115,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:MapTiles/Gravel/GravelTile27.png
-
-#begin MapTiles/Gravel/GravelTile27.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:MapTiles/Gravel/GravelTile27.png
-
-#begin MapTiles/Gravel/GravelTile29.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:MapTiles/Gravel/GravelTile29.png
 
 #begin MapTiles/Gravel/GravelTile29.png
 /importer:TextureImporter
@@ -200,30 +152,6 @@
 /processorParam:TextureFormat=Color
 /build:MapTiles/Gravel/GravelTile35.png
 
-#begin MapTiles/Gravel/GravelTile35.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:MapTiles/Gravel/GravelTile35.png
-
-#begin MapTiles/Gravel/GravelTile37.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:MapTiles/Gravel/GravelTile37.png
-
 #begin MapTiles/Gravel/GravelTile37.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -247,18 +175,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:MapTiles/Gravel/GravelTile42.png
-
-#begin MapTiles/Gravel/GravelTile43.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:MapTiles/Gravel/GravelTile43.png
 
 #begin MapTiles/Gravel/GravelTile43.png
 /importer:TextureImporter
@@ -307,30 +223,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:MapTiles/Gravel/GravelTile5.png
-
-#begin MapTiles/Gravel/GravelTile5.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:MapTiles/Gravel/GravelTile5.png
-
-#begin MapTiles/Gravel/GravelTile8.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:MapTiles/Gravel/GravelTile8.png
 
 #begin MapTiles/Gravel/GravelTile8.png
 /importer:TextureImporter
@@ -571,6 +463,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:title.png
+
+#begin Turrets/MineHead.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Turrets/MineHead.png
 
 #begin Turrets/TurretCannonBase.png
 /importer:TextureImporter
