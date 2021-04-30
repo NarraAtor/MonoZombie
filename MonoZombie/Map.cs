@@ -62,6 +62,7 @@ namespace MonoZombie {
 
 		// private Vector2[ ] zombieSpawns;
 
+		public Tile[ , ] Tiles { get { return tiles; } }
 		public Tile this[int x, int y] {
 			get {
 				if (x >= 0 && x < Width && y >= 0 && y < Height) {
