@@ -24,6 +24,7 @@ namespace MonoZombie
             {
                 for(int y = 0; y < tileMatrix.GetLength(1); y++)
                 {
+                    if(tileMatrix[x, y].IsWalkable)
                     MapSegmentList.Add(new MapSegment(tileMatrix[x, y]));
                 }
             }
@@ -59,6 +60,37 @@ namespace MonoZombie
 
             }
             return playerCurrentMapSegment;
+        }
+
+        /// <summary>
+        /// Purpose: Finds the vertex that the selected zombie is in.
+        /// Restrictions:
+        /// Issue: the values returned from this method change when the player moves even if zombies are stuck against a wall.
+        ///        This issue is most likely caused from the camera function we have. 
+        ///        I'm not sure if this actually is a problem considering the fact that the tiles may be moving too.
+        /// </summary>
+        /// <param name="zombie">the zombie being implemented in this function</param>
+        /// <returns>the vertex the zombie is in</returns>
+        public MapSegment GetZombieVertex(Enemy zombie)
+        {
+            //loop through the list of verticies and use Rectangle.Intersects with the tiles they contain.
+            //Find the tile with the biggest intersection.
+            //Return the vertex that contains that tile.
+            Rectangle biggestRectangle = new Rectangle(0, 0, 0, 0);
+            MapSegment zombieCurrentMapSegment = null;
+            foreach (MapSegment vertex in MapSegmentList)
+            {
+                //Rectangle zombieCameraBasedRectangle = new Rectangle(zombie.CamX, zombie.CamY, zombie.Rect.Width, zombie.Rect.Height);
+                int currentRectangleArea = Rectangle.Intersect(zombie.Rect, vertex.TileAtVertex.Rect).Width * Rectangle.Intersect(zombie.Rect, vertex.TileAtVertex.Rect).Height;
+                //If the area of of the biggestRectangle is smaller than the intersection between the player and the current tile...
+                if ((biggestRectangle.Width * biggestRectangle.Height) < currentRectangleArea)
+                {
+                    biggestRectangle = Rectangle.Intersect(zombie.Rect, vertex.TileAtVertex.Rect);
+                    zombieCurrentMapSegment = vertex;
+                }
+
+            }
+            return zombieCurrentMapSegment;
         }
     }
 }
