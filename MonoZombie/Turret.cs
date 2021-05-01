@@ -31,6 +31,7 @@ namespace MonoZombie {
 		private int range;
 		private int damage;
 		private Enemy target; // the target to shoot at
+		private TurretType type;
 
 		public int Price {
 			get;
@@ -55,10 +56,12 @@ namespace MonoZombie {
 			this.turretBaseTexture = turretBaseTexture;
 			this.turretHeadTexture = turretHeadTexture;
 			RoundTimer = 1;
+
+			this.type = type;
 			switch (type) {
 
 				case TurretType.Cannon: {
-						range = 50;
+						range = 100;
 						damage = 100;
 						Price = 200;
 						break;
@@ -72,7 +75,7 @@ namespace MonoZombie {
 					}
 
 				case TurretType.Buff: {
-						range = 50;
+						range = 100;
 						damage = 100;
 						Price = 400;
 						break;
@@ -140,27 +143,55 @@ namespace MonoZombie {
 		 * 
 		 * * Overriden from GameObject class
 		 */
-		public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
+		public new void Update(GameTime gameTime, MouseState mouse, KeyboardState keyboard)
+		{
 			// Update the last time since this game object has attacked
-			timeSinceLastAttack += (float) gameTime.ElapsedGameTime.TotalSeconds;
+			timeSinceLastAttack += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
 			// Detect nearby targets
-			DetectTarget( );
+			DetectTarget();
 
-			// If the current target is not equal to null, then rotate the turret to look towards it
-			if (target != null) {
-				RotateTo(target.Position);
+			if (type == TurretType.Archer)
+			{
+				// If the current target is not equal to null, then rotate the turret to look towards it
+				if (target != null)
+				{
+					RotateTo(target.Position);
 
-				// If the turret can shoot a bullet, shoot a bullet
-				if (timeSinceLastAttack >= 1 / attacksPerSecond) {
-					Main.ListOfBullets.Add(new Bullet(Main.bulletTexture, centerPosition, this, Angle, bulletDamage: Main.CANNON_BULLET_DAMAGE));
+					// If the turret can shoot a bullet, shoot a bullet
+					if (timeSinceLastAttack >= 1 / attacksPerSecond)
+					{
+						Main.ListOfBullets.Add(new Bullet(Main.bulletTexture, centerPosition, this, Angle, bulletDamage: Main.ARCHER_BULLET_DAMAGE));
 
-					timeSinceLastAttack = 0;
+						timeSinceLastAttack = 0;
+					}
 				}
 			}
+			else if (type == TurretType.Buff)
+			{
+				//				Main.playerAttacksPerSecond									Edit this during work time
+			}
+			else if (type == TurretType.Cannon)
+			{
+				if (target != null)
+				{
+					RotateTo(target.Position);
 
-			base.Update(gameTime, mouse, keyboard);
+					// If the turret can shoot a bullet, shoot a bullet
+
+					// See what I did here? Hehe. The faster the other archer turret shoots , the slower this one does
+					if (timeSinceLastAttack >= 1 * attacksPerSecond)
+					{
+						Main.ListOfBullets.Add(new Bullet(Main.bulletTexture, centerPosition, this, Angle, bulletDamage: Main.CANNON_BULLET_DAMAGE));
+
+						timeSinceLastAttack = 0;
+					}
+				}
+
+				base.Update(gameTime, mouse, keyboard);
+			}
 		}
+
 
 		public new void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
 			SpriteManager.DrawImage(spriteBatch, turretBaseTexture, Rect, Color.White);
