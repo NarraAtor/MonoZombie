@@ -62,6 +62,12 @@ namespace MonoZombie {
 			MoveBy(movement);
 		}
 
+
+		///private void A_Star(MapSegment start, MapSegment goal, h heuristic)
+		///{
+		///
+		///}
+
 		/// <summary>
 		/// Update, make sure the time works 
 		/// </summary>
