@@ -63,13 +63,13 @@ namespace MonoZombie {
 		// Map Tile Texture Arrays
 		// * These are arrays because when a tile is created, it picks a random texture from these
 		// arrays to add variation to the map
-		public static Texture2D[ ] grassTextures;
-		public static Texture2D[ ] wallTextures;
-		public static Texture2D[ ] gravelTextures;
-		public static Texture2D[ ] lavaTextures;
-		public static Texture2D[ ] speedTextures;
+		public static Texture2D[] grassTextures;
+		public static Texture2D[] wallTextures;
+		public static Texture2D[] gravelTextures;
+		public static Texture2D[] lavaTextures;
+		public static Texture2D[] speedTextures;
 
-		public static Texture2D[ ] zombieTextures;
+		public static Texture2D[] zombieTextures;
 
 		// Game Object Textures
 		public static Texture2D nullTexture;
@@ -85,7 +85,7 @@ namespace MonoZombie {
 		public static Texture2D tabTexture;
 
 		// Game Objects
-		private Player player;
+		private static Player player;
 
 		// Game Logic Variables
 		public static int currency;
@@ -97,7 +97,7 @@ namespace MonoZombie {
 																	// when new turrets are added to the ButtonList
 		private Turret turretInPurchase;                            // the turret that the player is currently purchasing from the shop.
 		private List<Turret> turretList;                            // turrets that exist in the game;
-		private List<int> turretsPurchased;							// the list of what turrets have been purchased 
+		private List<int> turretsPurchased;                         // the list of what turrets have been purchased 
 																	// should be directly linked with the turretButtonList
 
 		// Constants
@@ -115,19 +115,21 @@ namespace MonoZombie {
 		private static Random rng;
 		public const int playerAttacksPerSecond = 3;
 
-//		public int PlayerAttacksPerSecond {  get { return playerAttacksPerSecond; } set { playerAttacksPerSecond = value; } }
+		//		public int PlayerAttacksPerSecond {  get { return playerAttacksPerSecond; } set { playerAttacksPerSecond = value; } }
 
 		public static List<Bullet> ListOfBullets {
 			get;
-		} = new List<Bullet>( );
+		} = new List<Bullet>();
 
 		public static List<Enemy> ListOfZombies {
 			get;
-		} = new List<Enemy>( );
+		} = new List<Enemy>();
 
 		public static List<Turret> ListOfTurrets {
 			get;
-		} = new List<Turret>( );
+		} = new List<Turret>();
+
+		public static Player Player {get {return player;} }
 
 		public Main ( ) {
 			_graphics = new GraphicsDeviceManager(this);
