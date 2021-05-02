@@ -308,7 +308,7 @@ namespace MonoZombie {
 			_graphics.ApplyChanges( );
 
 			//Test map graph creation
-			graph = new MapGraph(map.)
+			//graph = new MapGraph(map.)
 
 			// Create UI Buttons
 			menuPlayButton = new UIButton("Play", SCREEN_DIMENSIONS / 2, ( ) => {
