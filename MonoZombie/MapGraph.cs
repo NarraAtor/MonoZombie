@@ -15,19 +15,29 @@ namespace MonoZombie
     /// </summary>
     class MapGraph
     {
-        public List<MapSegment> MapSegmentList { get; set; }
+        public List<MapSegment> MapSegmentList { get; private set; }
+        private List<List<MapSegment>> adjacencyList;
         public MapGraph(Tile[,] tileMatrix)
         {
             //Create the list of MapSegments
             MapSegmentList = new List<MapSegment>();
+            adjacencyList = new List<List<MapSegment>>(tileMatrix.GetLength(0));
             for(int x = 0; x < tileMatrix.GetLength(0); x++)
             {
                 for(int y = 0; y < tileMatrix.GetLength(1); y++)
                 {
                     if(tileMatrix[x, y].IsWalkable)
                     MapSegmentList.Add(new MapSegment(tileMatrix[x, y]));
+
+                    //makes adjacency list
+                    if (x != 0 || x != tileMatrix.GetLength(0))
+                    {
+                        
+                    }
                 }
             }
+
+            //TODO: Make adjacency matrix and list.
             
             //test if this worked
             //foreach(MapSegment vertex in MapSegmentList)
