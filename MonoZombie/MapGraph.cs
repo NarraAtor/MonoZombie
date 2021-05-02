@@ -39,26 +39,54 @@ namespace MonoZombie
             {
                 for(int y = 0; y < tileMatrix.GetLength(1); y++)
                 {
-                    MapSegment currentVertex = FindMapSegmentFromPosition(x, y);
-                    //makes adjacency list
-                    if (x != 0 || x != tileMatrix.GetLength(0))
+                    if(!TileMatrix[x ,y].IsWalkable)
                     {
-                        //makes adjacency list
-                        if (y != 0 || y != tileMatrix.GetLength(1))
+                        continue;
+                    }
+                    MapSegment currentVertex = FindMapSegmentFromPosition(x, y);
+                    //if this MapSegment is not on the edges of the graph
+                    //TODO: check for MapSegments that were next to walls
+                    if (x != 0 && x != tileMatrix.GetLength(0) - 1)
+                    {
+                        if (y != 0 && y != tileMatrix.GetLength(1) - 1)
                         {
-
+                            //Get the verticies in the cardinal directions around this vertex
+                            List<MapSegment> currentVertexAdjacencies = new List<MapSegment>();
+                            currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x , y - 1));
+                            currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x, y + 1));
+                            currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x + 1, y));
+                            currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x - 1, y));
+                            adjacencyDictionary.Add(currentVertex, currentVertexAdjacencies);
                         }
                     }
-                    
                 }
             }
             //TODO: Make adjacency matrix and list.
-            
+
             //test if this worked
             //foreach(MapSegment vertex in MapSegmentList)
             //{
             //    Debug.WriteLine($"{vertex.TileAtVertex.X} {vertex.TileAtVertex.Y}");
             //}
+
+            //Test if the adjacencyDictionary is working correctly
+            for (int x = 0; x < TileMatrix.GetLength(0); x++)
+            {
+                for (int y = 0; y < TileMatrix.GetLength(1); y++)
+                {
+                    if (!TileMatrix[x, y].IsWalkable)
+                    {
+                        continue;
+                    }
+                    Console.WriteLine($"MapSegment at {FindMapSegmentFromPosition(x, y).TileAtVertex.X},{FindMapSegmentFromPosition(x, y).TileAtVertex.Y}  ");
+
+                    foreach(MapSegment vertex in adjacencyDictionary[FindMapSegmentFromPosition(x, y)])
+                    {
+                       // Console.Write($"{vertex.TileAtVertex.X}, {vertex.TileAtVertex.Y} |");
+                    }
+                    //Console.WriteLine($"{adjacencyDictionary[FindMapSegmentFromPosition(x, y)]}");
+                }
+            }
         }
 
         /// <summary>

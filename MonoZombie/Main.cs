@@ -131,6 +131,8 @@ namespace MonoZombie {
 
 		public static Player Player {get {return player;} }
 
+		MapGraph graph;
+
 		public Main ( ) {
 			_graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
@@ -305,6 +307,8 @@ namespace MonoZombie {
 			_graphics.PreferredBackBufferWidth = (int) SCREEN_DIMENSIONS.X;
 			_graphics.PreferredBackBufferHeight = (int) SCREEN_DIMENSIONS.Y;
 			_graphics.ApplyChanges( );
+
+			graph = new MapGraph(map.Tiles);
 
 			// Create UI Buttons
 			menuPlayButton = new UIButton("Play", SCREEN_DIMENSIONS / 2, ( ) => {
