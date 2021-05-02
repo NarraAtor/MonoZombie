@@ -16,34 +16,77 @@ namespace MonoZombie
     class MapGraph
     {
         public List<MapSegment> MapSegmentList { get; private set; }
-        private List<List<MapSegment>> adjacencyList;
+        public Tile[,] TileMatrix { get; private set; }
+        private Dictionary<MapSegment, List<MapSegment>> adjacencyDictionary;
         public MapGraph(Tile[,] tileMatrix)
         {
+
             //Create the list of MapSegments
             MapSegmentList = new List<MapSegment>();
-            adjacencyList = new List<List<MapSegment>>(tileMatrix.GetLength(0));
+            adjacencyDictionary = new Dictionary<MapSegment, List<MapSegment>>(tileMatrix.GetLength(0));
+            TileMatrix = tileMatrix;
             for(int x = 0; x < tileMatrix.GetLength(0); x++)
             {
                 for(int y = 0; y < tileMatrix.GetLength(1); y++)
                 {
                     if(tileMatrix[x, y].IsWalkable)
                     MapSegmentList.Add(new MapSegment(tileMatrix[x, y]));
-
-                    //makes adjacency list
-                    if (x != 0 || x != tileMatrix.GetLength(0))
-                    {
-                        
-                    }
                 }
             }
 
+            //handle adjacency
+            for(int x = 0; x < tileMatrix.GetLength(0); x++)
+            {
+                for(int y = 0; y < tileMatrix.GetLength(1); y++)
+                {
+                    if(!TileMatrix[x ,y].IsWalkable)
+                    {
+                        continue;
+                    }
+                    MapSegment currentVertex = FindMapSegmentFromPosition(x, y);
+                    //if this MapSegment is not on the edges of the graph
+                    //TODO: check for MapSegments that were next to walls
+                    if (x != 0 && x != tileMatrix.GetLength(0) - 1)
+                    {
+                        if (y != 0 && y != tileMatrix.GetLength(1) - 1)
+                        {
+                            //Get the verticies in the cardinal directions around this vertex
+                            List<MapSegment> currentVertexAdjacencies = new List<MapSegment>();
+                            currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x , y - 1));
+                            currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x, y + 1));
+                            currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x + 1, y));
+                            currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x - 1, y));
+                            adjacencyDictionary.Add(currentVertex, currentVertexAdjacencies);
+                        }
+                    }
+                }
+            }
             //TODO: Make adjacency matrix and list.
-            
+
             //test if this worked
             //foreach(MapSegment vertex in MapSegmentList)
             //{
             //    Debug.WriteLine($"{vertex.TileAtVertex.X} {vertex.TileAtVertex.Y}");
             //}
+
+            //Test if the adjacencyDictionary is working correctly
+            for (int x = 0; x < TileMatrix.GetLength(0); x++)
+            {
+                for (int y = 0; y < TileMatrix.GetLength(1); y++)
+                {
+                    if (!TileMatrix[x, y].IsWalkable)
+                    {
+                        continue;
+                    }
+                    Console.WriteLine($"MapSegment at {FindMapSegmentFromPosition(x, y).TileAtVertex.X},{FindMapSegmentFromPosition(x, y).TileAtVertex.Y}  ");
+
+                    foreach(MapSegment vertex in adjacencyDictionary[FindMapSegmentFromPosition(x, y)])
+                    {
+                       // Console.Write($"{vertex.TileAtVertex.X}, {vertex.TileAtVertex.Y} |");
+                    }
+                    //Console.WriteLine($"{adjacencyDictionary[FindMapSegmentFromPosition(x, y)]}");
+                }
+            }
         }
 
         /// <summary>
@@ -101,6 +144,26 @@ namespace MonoZombie
 
             }
             return zombieCurrentMapSegment;
+        }
+
+        /// <summary>
+        /// Purpose: Helper method that returns a MapSegment based on a tile value.
+        /// </summary>
+        /// <param name="x">x value of tile</param>
+        /// <param name="y">y value of tile</param>
+        /// <returns>the map segment with tile at location x,y </returns>
+        private MapSegment FindMapSegmentFromPosition(int x, int y)
+        {
+            MapSegment mapSegment = null;
+            foreach (MapSegment vertex in MapSegmentList)
+            {
+                if (vertex.TileAtVertex.Position == TileMatrix[x, y].Position)
+                {
+                    mapSegment = vertex;
+                }
+            }
+
+            return mapSegment;
         }
     }
 }
