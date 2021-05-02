@@ -60,19 +60,16 @@ namespace MonoZombie {
 		// Map
 		private Map map;
 
-		// Map Graph
-		private MapGraph graph;
-
 		// Map Tile Texture Arrays
 		// * These are arrays because when a tile is created, it picks a random texture from these
 		// arrays to add variation to the map
-		public static Texture2D[ ] grassTextures;
-		public static Texture2D[ ] wallTextures;
-		public static Texture2D[ ] gravelTextures;
-		public static Texture2D[ ] lavaTextures;
-		public static Texture2D[ ] speedTextures;
+		public static Texture2D[] grassTextures;
+		public static Texture2D[] wallTextures;
+		public static Texture2D[] gravelTextures;
+		public static Texture2D[] lavaTextures;
+		public static Texture2D[] speedTextures;
 
-		public static Texture2D[ ] zombieTextures;
+		public static Texture2D[] zombieTextures;
 
 		// Game Object Textures
 		public static Texture2D nullTexture;
@@ -88,20 +85,19 @@ namespace MonoZombie {
 		public static Texture2D tabTexture;
 
 		// Game Objects
-		private Player player;
+		private static Player player;
 
 		// Game Logic Variables
 		public static int currency;
 		private int roundNumber;
 
-		public static int archerTurretCharges;
-
+		// Turret
 		private List<Turret> turretButtonList;                      // the list that holds all of the turret images
 		private List<String> turretNames;                           // holds the names of the turret types, please update
 																	// when new turrets are added to the ButtonList
 		private Turret turretInPurchase;                            // the turret that the player is currently purchasing from the shop.
 		private List<Turret> turretList;                            // turrets that exist in the game;
-		private List<int> turretsPurchased;							// the list of what turrets have been purchased 
+		private List<int> turretsPurchased;                         // the list of what turrets have been purchased 
 																	// should be directly linked with the turretButtonList
 
 		// Constants
@@ -111,23 +107,29 @@ namespace MonoZombie {
 		public const int ZOMBIE_BASE_COUNT = 5; // The starting number of zombies in round 1
 		public const float DAMAGE_INDIC_TIME = 0.25f; // The amount of seconds that entities flash when they are damaged
 		public const int BULLET_SPEED = 15;
-		public const int CANNON_BULLET_DAMAGE = 40;
+		public const int CANNON_BULLET_DAMAGE = 202;
+		public const int ARCHER_BULLET_DAMAGE = 40;
 		public const int PLAYER_BULLET_DAMAGE = 10;
 		public static Vector2 SCREEN_DIMENSIONS = new Vector2(1280, 720);
 
 		private static Random rng;
+		public const int playerAttacksPerSecond = 3;
+
+		//		public int PlayerAttacksPerSecond {  get { return playerAttacksPerSecond; } set { playerAttacksPerSecond = value; } }
 
 		public static List<Bullet> ListOfBullets {
 			get;
-		} = new List<Bullet>( );
+		} = new List<Bullet>();
 
 		public static List<Enemy> ListOfZombies {
 			get;
-		} = new List<Enemy>( );
+		} = new List<Enemy>();
 
 		public static List<Turret> ListOfTurrets {
 			get;
-		} = new List<Turret>( );
+		} = new List<Turret>();
+
+		public static Player Player {get {return player;} }
 
 		public Main ( ) {
 			_graphics = new GraphicsDeviceManager(this);
@@ -145,9 +147,6 @@ namespace MonoZombie {
 			turretButtonList = new List<Turret>( );
 			turretNames = new List<String>( );
 			turretsPurchased = new List<int>();
-
-
-			archerTurretCharges = 3;
 
 			rng = new Random( );
 
@@ -307,9 +306,6 @@ namespace MonoZombie {
 			_graphics.PreferredBackBufferHeight = (int) SCREEN_DIMENSIONS.Y;
 			_graphics.ApplyChanges( );
 
-			//Test map graph creation
-			//graph = new MapGraph(map.)
-
 			// Create UI Buttons
 			menuPlayButton = new UIButton("Play", SCREEN_DIMENSIONS / 2, ( ) => {
 				menuState = MenuState.Game;
@@ -343,11 +339,26 @@ namespace MonoZombie {
 				menuState = MenuState.MainMenu;
 			});
 
+
+			// Initializing different turret types for the shop
+
 			turretButtonList.Add(
-				new Turret(TurretType.Archer, turretCannonBaseTexture, turretCannonHeadTexture, new Vector2(SCREEN_DIMENSIONS.X/7*2, SCREEN_DIMENSIONS.Y/5*3 ))
+				new Turret(TurretType.Archer, turretCannonBaseTexture, turretCannonHeadTexture, new Vector2(SCREEN_DIMENSIONS.X/7*2, SCREEN_DIMENSIONS.Y/5*2 ))
 				);
 			turretNames.Add("Archer");
 			turretsPurchased.Add(1);
+
+			turretButtonList.Add(
+				new Turret(TurretType.Buff, turretCannonBaseTexture, turretCannonHeadTexture, new Vector2(SCREEN_DIMENSIONS.X/7*4, SCREEN_DIMENSIONS.Y/5*2))
+				);
+			turretsPurchased.Add(0);
+			turretNames.Add("Buff");
+
+			turretButtonList.Add(
+				new Turret(TurretType.Buff, turretCannonBaseTexture, turretCannonHeadTexture, new Vector2(SCREEN_DIMENSIONS.X / 7 * 6, SCREEN_DIMENSIONS.Y / 5 * 2))
+				);
+			turretsPurchased.Add(0);
+			turretNames.Add("Buff");
 
 			base.LoadContent( );
 		}
@@ -481,13 +492,21 @@ namespace MonoZombie {
 								ListOfZombies[i].UpdateCameraScreenPosition(camera);
 							}
 
-							if (GetKeyDown(Keys.O)) {
+							if (GetKeyDown(Keys.T)) {
 								if(turretsPurchased[0] > 0)
 								{
-									ListOfTurrets.Add(new Turret(TurretType.Cannon, turretCannonBaseTexture, turretCannonHeadTexture, player.Position, parent: player));
+									ListOfTurrets.Add(new Turret(TurretType.Archer, turretCannonBaseTexture, turretCannonHeadTexture, player.Position, parent: player));
 									--turretsPurchased[0];
 								}
 							}
+							if (GetKeyDown(Keys.O))
+                            {
+								if (turretsPurchased[2] > 0)
+                                {
+									ListOfTurrets.Add(new Turret(TurretType.Cannon, turretCannonBaseTexture, turretCannonHeadTexture, player.Position, parent: player));
+									--turretsPurchased[2];
+                                }
+                            }
 
 							if (GetKeyDown(Keys.Escape)) {
 								gameState = GameState.Pause;
@@ -603,11 +622,14 @@ namespace MonoZombie {
 							// Draw turret charges
 							SpriteManager.DrawImage(_spriteBatch, turretCannonBaseTexture, new Vector2(400, 30), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE);
 							SpriteManager.DrawImage(_spriteBatch, turretCannonHeadTexture, new Vector2(400, 30), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE);
-							SpriteManager.DrawText(_spriteBatch, new Vector2(500, 30), $"- {archerTurretCharges}", Color.White, fontScale: 2f);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(400, 100), $"- {turretsPurchased[0]}", Color.White, fontScale: 2f);
+							SpriteManager.DrawImage(_spriteBatch, turretCannonBaseTexture, new Vector2(520, 30), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE);
+							SpriteManager.DrawImage(_spriteBatch, turretCannonHeadTexture, new Vector2(520, 30), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(520, 100), $"- {turretsPurchased[2]}", Color.White, fontScale: 2f);
 
 							break;
 						case GameState.Pause:
-							DrawPauseMenu( );
+							DrawPauseMenu();
 
 							break;
 						case GameState.Shop:
@@ -704,7 +726,7 @@ namespace MonoZombie {
 			ListOfTurrets.Clear( );
 
 			// Create (or re-create) the player
-			player = new Player(playerTexture, SCREEN_DIMENSIONS / 2, 100, 5, 3);
+			player = new Player(playerTexture, SCREEN_DIMENSIONS / 2, 100, 5, playerAttacksPerSecond);
 
 			// Create (or re-create) the camera
 			camera = new Camera(player);
