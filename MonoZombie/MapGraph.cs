@@ -20,6 +20,7 @@ namespace MonoZombie
         private Dictionary<MapSegment, List<MapSegment>> adjacencyDictionary;
         public MapGraph(Tile[,] tileMatrix)
         {
+
             //Create the list of MapSegments
             MapSegmentList = new List<MapSegment>();
             adjacencyDictionary = new Dictionary<MapSegment, List<MapSegment>>(tileMatrix.GetLength(0));
