@@ -38,6 +38,8 @@ namespace MonoZombie {
 			private set;
 		}
 
+		public int Range { get { return range; } }
+
 		public int RoundTimer
 		{
 			get;
@@ -49,6 +51,8 @@ namespace MonoZombie {
 				return (timeSinceLastAttack >= 1 / attacksPerSecond);
 			}
 		}
+
+		public TurretType Type { get { return type; } }
 
 		public Turret (TurretType type, Texture2D turretBaseTexture, Texture2D turretHeadTexture, Vector2 position, GameObject parent = null) : base(turretHeadTexture, position, parent: parent, canRotate: true) {
 			// Goes through each of the diffrent turret types and then sets stats accordingly 
@@ -167,10 +171,6 @@ namespace MonoZombie {
 					}
 				}
 			}
-/*			else if (type == TurretType.Buff)
-			{
-				//				Main.playerAttacksPerSecond									Edit this during work time
-			}*/
 			else if (type == TurretType.Cannon)
 			{
 				if (target != null)

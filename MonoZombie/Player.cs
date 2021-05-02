@@ -25,6 +25,8 @@ namespace MonoZombie {
 			}
 		}
 
+		public float AttacksPerSecond { get { return attacksPerSecond; } set { attacksPerSecond = value;  } }
+
 		public bool CanAttack {
 			get {
 				return (timeSinceLastAttack >= 1 / attacksPerSecond);

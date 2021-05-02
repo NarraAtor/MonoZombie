@@ -117,9 +117,7 @@ namespace MonoZombie {
 		public static Vector2 SCREEN_DIMENSIONS = new Vector2(1280, 720);
 
 		private static Random rng;
-		public const int playerAttacksPerSecond = 3;
-
-		//		public int PlayerAttacksPerSecond {  get { return playerAttacksPerSecond; } set { playerAttacksPerSecond = value; } }
+		public int playerAttacksPerSecond = 3;
 
 		public static Player Player { get { return player; } }
 
@@ -135,7 +133,7 @@ namespace MonoZombie {
 			get;
 		} = new List<Turret>();
 
-		public static Player Player {get {return player;} }
+		public static Player GetPlayer {get {return player;} }
 
 		public Main ( ) {
 			_graphics = new GraphicsDeviceManager(this);
@@ -360,14 +358,14 @@ namespace MonoZombie {
 			turretButtonList.Add(
 				new Turret(TurretType.Buff, turretCannonBaseTexture, turretCannonHeadTexture, new Vector2(SCREEN_DIMENSIONS.X/7*4, SCREEN_DIMENSIONS.Y/5*2))
 				);
-			turretsPurchased.Add(0);
+			turretsPurchased.Add(1);
 			turretNames.Add("Buff");
 
 			turretButtonList.Add(
 				new Turret(TurretType.Buff, turretCannonBaseTexture, turretCannonHeadTexture, new Vector2(SCREEN_DIMENSIONS.X / 7 * 6, SCREEN_DIMENSIONS.Y / 5 * 2))
 				);
 			turretsPurchased.Add(0);
-			turretNames.Add("Buff");
+			turretNames.Add("Canon");
 
 			base.LoadContent( );
 		}
@@ -407,7 +405,19 @@ namespace MonoZombie {
 							player.Update(gameTime, currMouseState, currKeyboardState);
 
 							for (int i = ListOfTurrets.Count - 1; i >= 0; i--) {
-								ListOfTurrets[i].Update(gameTime, currMouseState, currKeyboardState);
+								if (ListOfTurrets[i].Type != TurretType.Buff)
+								{									
+									ListOfTurrets[i].Update(gameTime, currMouseState, currKeyboardState);
+								}
+								else
+								{
+									if (Vector2.Distance(ListOfTurrets[i].Position, player.Position) < ListOfTurrets[i].Range)
+                                    {
+										player.AttacksPerSecond = 6;
+                                    }
+									else
+										player.AttacksPerSecond = 3;
+								}
 							}
 
 							for (int i = ListOfBullets.Count - 1; i >= 0; i--) {
@@ -438,6 +448,7 @@ namespace MonoZombie {
 										ListOfTurrets.RemoveAt(i);
                                     }
                                 }
+								player.AttacksPerSecond = 3;
 								StartNextRound( );
 							}
 
@@ -517,7 +528,14 @@ namespace MonoZombie {
 									--turretsPurchased[0];
 								}
 							}
-							if (GetKeyDown(Keys.O))
+							if (GetKeyDown(Keys.Y))
+                            {
+								if (turretsPurchased[1] > 0)
+                                {
+									ListOfTurrets.Add(new Turret(TurretType.Buff, turretCannonBaseTexture, turretCannonHeadTexture, player.Position, parent: player));
+                                }
+                            }
+							if (GetKeyDown(Keys.U))
                             {
 								if (turretsPurchased[2] > 0)
                                 {
@@ -638,12 +656,18 @@ namespace MonoZombie {
 							SpriteManager.DrawText(_spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 20), $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds)}", Color.Black, fontScale: 0.5f);
 
 							// Draw turret charges
+		// Archer
 							SpriteManager.DrawImage(_spriteBatch, turretCannonBaseTexture, new Vector2(400, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
 							SpriteManager.DrawImage(_spriteBatch, turretCannonHeadTexture, new Vector2(400, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
-							SpriteManager.DrawText(_spriteBatch, new Vector2(400, 100), $"- {turretsPurchased[0]}", Color.White, fontScale: 1f);
-							SpriteManager.DrawImage(_spriteBatch, turretCannonBaseTexture, new Vector2(520, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
-							SpriteManager.DrawImage(_spriteBatch, turretCannonHeadTexture, new Vector2(520, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
-							SpriteManager.DrawText(_spriteBatch, new Vector2(520, 100), $"- {turretsPurchased[2]}", Color.White, fontScale: 1f);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(405, 100), turretsPurchased[0].ToString(), Color.White, fontScale: 1f);
+		// Buff
+							SpriteManager.DrawImage(_spriteBatch, turretCannonBaseTexture, new Vector2(475, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawImage(_spriteBatch, turretCannonHeadTexture, new Vector2(475, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(480, 100), turretsPurchased[1].ToString(), Color.White, fontScale: 1f);
+		// Canon
+							SpriteManager.DrawImage(_spriteBatch, turretCannonBaseTexture, new Vector2(550, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawImage(_spriteBatch, turretCannonHeadTexture, new Vector2(550, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(555, 100), turretsPurchased[2].ToString(), Color.White, fontScale: 1f);
 
 							break;
 						case GameState.Pause:
