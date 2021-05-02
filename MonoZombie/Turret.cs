@@ -167,10 +167,10 @@ namespace MonoZombie {
 					}
 				}
 			}
-			else if (type == TurretType.Buff)
+/*			else if (type == TurretType.Buff)
 			{
 				//				Main.playerAttacksPerSecond									Edit this during work time
-			}
+			}*/
 			else if (type == TurretType.Cannon)
 			{
 				if (target != null)

@@ -60,6 +60,9 @@ namespace MonoZombie {
 		// Map
 		private Map map;
 
+		// Map Graph
+		private MapGraph graph;
+
 		// Map Tile Texture Arrays
 		// * These are arrays because when a tile is created, it picks a random texture from these
 		// arrays to add variation to the map
@@ -78,6 +81,7 @@ namespace MonoZombie {
 
 		public static Texture2D turretCannonBaseTexture;
 		public static Texture2D turretCannonHeadTexture;
+		public static Texture2D mineHeadTexture;
 
 		// UI Textures
 		public static Texture2D titleTexture;
@@ -85,7 +89,7 @@ namespace MonoZombie {
 		public static Texture2D tabTexture;
 
 		// Game Objects
-		private Player player;
+		private static Player player;
 
 		// Game Logic Variables
 		public static int currency;
@@ -117,6 +121,8 @@ namespace MonoZombie {
 
 //		public int PlayerAttacksPerSecond {  get { return playerAttacksPerSecond; } set { playerAttacksPerSecond = value; } }
 
+		public static Player Player { get { return player; } }
+
 		public static List<Bullet> ListOfBullets {
 			get;
 		} = new List<Bullet>( );
@@ -145,7 +151,6 @@ namespace MonoZombie {
 			turretButtonList = new List<Turret>( );
 			turretNames = new List<String>( );
 			turretsPurchased = new List<int>();
-
 			rng = new Random( );
 
 			base.Initialize( );
@@ -158,6 +163,7 @@ namespace MonoZombie {
 			nullTexture = Content.Load<Texture2D>("MapTiles/NullTile");
 			turretCannonBaseTexture = Content.Load<Texture2D>("Turrets/TurretCannonBase");
 			turretCannonHeadTexture = Content.Load<Texture2D>("Turrets/TurretCannonHead");
+			mineHeadTexture = Content.Load<Texture2D>("Turrets/MineHead");
 			playerTexture = Content.Load<Texture2D>("Player");
 			bulletTexture = Content.Load<Texture2D>("Bullet");
 
@@ -304,6 +310,9 @@ namespace MonoZombie {
 			_graphics.PreferredBackBufferHeight = (int) SCREEN_DIMENSIONS.Y;
 			_graphics.ApplyChanges( );
 
+			//Test map graph creation
+			graph = new MapGraph(map.Tiles);
+
 			// Create UI Buttons
 			menuPlayButton = new UIButton("Play", SCREEN_DIMENSIONS / 2, ( ) => {
 				menuState = MenuState.Game;
@@ -382,7 +391,16 @@ namespace MonoZombie {
 					switch (gameState) {
 						case GameState.Playing:
 							currentStateTEST = "Game - Playing";
+							Console.WriteLine();
 
+							//Update the graph's shortest path
+							//TODO: call shortest path algorithm
+							//Console.WriteLine($"{graph.GetPlayerVertex().TileAtVertex.X} {graph.GetPlayerVertex().TileAtVertex.Y}");
+							foreach (Enemy zombie in ListOfZombies)
+							{
+								Console.WriteLine($"{graph.GetZombieVertex(zombie).TileAtVertex.X} {graph.GetZombieVertex(zombie).TileAtVertex.Y}");
+							}
+							Console.WriteLine();
 							// Update all game objects
 							player.Update(gameTime, currMouseState, currKeyboardState);
 
