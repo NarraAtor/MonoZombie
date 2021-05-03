@@ -46,10 +46,10 @@ namespace MonoZombie
                     MapSegment currentVertex = FindMapSegmentFromPosition(x, y);
                     //if this MapSegment is not on the edges of the graph
                     //ignores walls, resulting in null values in the dictionary
-                    if (x != 0 && x != tileMatrix.GetLength(0) - 1)
-                    {
-                        if (y != 0 && y != tileMatrix.GetLength(1) - 1)
-                        {
+                    //if (x != 0 && x != tileMatrix.GetLength(0) - 1)
+                    //{
+                    //    if (y != 0 && y != tileMatrix.GetLength(1) - 1)
+                    //    {
                             //Get the verticies in the cardinal directions around this vertex
                             List<MapSegment> currentVertexAdjacencies = new List<MapSegment>();
                             currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x , y - 1));
@@ -57,12 +57,22 @@ namespace MonoZombie
                             currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x + 1, y));
                             currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x - 1, y));
                             adjacencyDictionary.Add(currentVertex, currentVertexAdjacencies);
-                        }
-                    }
+                   //     }
+                   // }
 
                     //adjustments to how we add connections if the current vertex is an edge.
+                    //doesn't include corners
                     //left edge
-                    //else if(x == 0  && y)
+                    //else if(x == 0  && (y != 0 || y != tileMatrix.GetLength(1) - 1))
+                    //{
+                    //    //Get the verticies in the cardinal directions around this vertex
+                    //    List<MapSegment> currentVertexAdjacencies = new List<MapSegment>();
+                    //    currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x, y - 1));
+                    //    currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x, y + 1));
+                    //    currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x + 1, y));
+                    //    currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x - 1, y));
+                    //    adjacencyDictionary.Add(currentVertex, currentVertexAdjacencies);
+                    //}
                 }
             }
             //TODO: Make adjacency matrix and list.
