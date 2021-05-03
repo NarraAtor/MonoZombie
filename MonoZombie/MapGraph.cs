@@ -89,16 +89,16 @@ namespace MonoZombie
                     }
 
                     MapSegment currentSegment = FindMapSegmentFromPosition(x, y);
-                    Console.WriteLine($"MapSegment at {currentSegment.TileAtVertex.X},{currentSegment.TileAtVertex.Y}  ");
-
-                    foreach(MapSegment vertex in adjacencyDictionary[currentSegment])
-                    {
-                        if(!(vertex is null))
-                        {
-                            Console.Write($"{vertex.TileAtVertex.X}, {vertex.TileAtVertex.Y} |");
-                        }
-                    }
-                    Console.WriteLine($"{adjacencyDictionary[currentSegment]}");
+                    //Console.WriteLine($"MapSegment at {currentSegment.TileAtVertex.X},{currentSegment.TileAtVertex.Y}  ");
+                    //
+                    //foreach(MapSegment vertex in adjacencyDictionary[currentSegment])
+                    //{
+                    //    if(!(vertex is null))
+                    //    {
+                    //        Console.Write($"{vertex.TileAtVertex.X}, {vertex.TileAtVertex.Y} |");
+                    //    }
+                    //}
+                    //Console.WriteLine($"{adjacencyDictionary[currentSegment]}");
                 }
             }
 
@@ -107,7 +107,7 @@ namespace MonoZombie
             adjacencyMatrix = new int[MapSegmentList.Count, MapSegmentList.Count];
             for(int i = 0; i < MapSegmentList.Count; i++)
             {
-                for(int j = 0; j < MapSegmentList.Count; i++)
+                for(int j = 0; j < MapSegmentList.Count; j++)
                 {
                     adjacencyMatrix[i, j] = 0;
                 }
@@ -124,6 +124,15 @@ namespace MonoZombie
                 }
             }
 
+            //Prints the adjacency matrix to the console. Only check the first few entries if debugging.
+            //for (int i = 0; i < MapSegmentList.Count; i++)
+            //{
+            //    Console.WriteLine();
+            //    for (int j = 0; j < MapSegmentList.Count; j++)
+            //    {
+            //        Console.Write($"{adjacencyMatrix[i, j]} ");
+            //    }
+            //}
         }
 
         /// <summary>
