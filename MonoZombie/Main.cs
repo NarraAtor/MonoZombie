@@ -79,9 +79,11 @@ namespace MonoZombie {
 		public static Texture2D playerTexture;
 		public static Texture2D bulletTexture;
 
-		public static Texture2D turretCannonBaseTexture;
-		public static Texture2D turretCannonHeadTexture;
+		public static Texture2D turretArcherBaseTexture;
+		public static Texture2D turretArcherHeadTexture;
 		public static Texture2D mineHeadTexture;
+		public static Texture2D buffTexture;
+		public static Texture2D cannonTexture;
 
 		// UI Textures
 		public static Texture2D titleTexture;
@@ -161,9 +163,11 @@ namespace MonoZombie {
 
 			// Load textures for game objects
 			nullTexture = Content.Load<Texture2D>("MapTiles/NullTile");
-			turretCannonBaseTexture = Content.Load<Texture2D>("Turrets/TurretCannonBase");
-			turretCannonHeadTexture = Content.Load<Texture2D>("Turrets/TurretCannonHead");
+			turretArcherBaseTexture = Content.Load<Texture2D>("Turrets/TurretCannonBase");
+			turretArcherHeadTexture = Content.Load<Texture2D>("Turrets/TurretCannonHead");
 			mineHeadTexture = Content.Load<Texture2D>("Turrets/MineHead");
+			buffTexture = Content.Load<Texture2D>("Turrets/Buff");
+			cannonTexture = Content.Load<Texture2D>("Turrets/Canon");
 			playerTexture = Content.Load<Texture2D>("Player");
 			bulletTexture = Content.Load<Texture2D>("Bullet");
 
@@ -350,19 +354,19 @@ namespace MonoZombie {
 			// Initializing different turret types for the shop
 
 			turretButtonList.Add(
-				new Turret(TurretType.Archer, turretCannonBaseTexture, turretCannonHeadTexture, new Vector2(SCREEN_DIMENSIONS.X/7*2, SCREEN_DIMENSIONS.Y/5*2 ))
+				new Turret(TurretType.Archer, turretArcherBaseTexture, turretArcherHeadTexture, new Vector2(SCREEN_DIMENSIONS.X/7*2, SCREEN_DIMENSIONS.Y/5*2 ))
 				);
 			turretNames.Add("Archer");
 			turretsPurchased.Add(1);
 
 			turretButtonList.Add(
-				new Turret(TurretType.Buff, turretCannonBaseTexture, turretCannonHeadTexture, new Vector2(SCREEN_DIMENSIONS.X/7*4, SCREEN_DIMENSIONS.Y/5*2))
+				new Turret(TurretType.Buff, turretArcherBaseTexture, buffTexture, new Vector2(SCREEN_DIMENSIONS.X/7*4, SCREEN_DIMENSIONS.Y/5*2))
 				);
 			turretsPurchased.Add(1);
 			turretNames.Add("Buff");
 
 			turretButtonList.Add(
-				new Turret(TurretType.Buff, turretCannonBaseTexture, turretCannonHeadTexture, new Vector2(SCREEN_DIMENSIONS.X / 7 * 6, SCREEN_DIMENSIONS.Y / 5 * 2))
+				new Turret(TurretType.Buff, turretArcherBaseTexture, cannonTexture, new Vector2(SCREEN_DIMENSIONS.X / 7 * 6, SCREEN_DIMENSIONS.Y / 5 * 2))
 				);
 			turretsPurchased.Add(0);
 			turretNames.Add("Canon");
@@ -524,7 +528,7 @@ namespace MonoZombie {
 							if (GetKeyDown(Keys.T)) {
 								if(turretsPurchased[0] > 0)
 								{
-									ListOfTurrets.Add(new Turret(TurretType.Archer, turretCannonBaseTexture, turretCannonHeadTexture, player.Position, parent: player));
+									ListOfTurrets.Add(new Turret(TurretType.Archer, turretArcherBaseTexture, turretArcherHeadTexture, player.Position, parent: player));
 									--turretsPurchased[0];
 								}
 							}
@@ -532,14 +536,14 @@ namespace MonoZombie {
                             {
 								if (turretsPurchased[1] > 0)
                                 {
-									ListOfTurrets.Add(new Turret(TurretType.Buff, turretCannonBaseTexture, turretCannonHeadTexture, player.Position, parent: player));
+									ListOfTurrets.Add(new Turret(TurretType.Buff, turretArcherBaseTexture, buffTexture, player.Position, parent: player));
                                 }
                             }
 							if (GetKeyDown(Keys.U))
                             {
 								if (turretsPurchased[2] > 0)
                                 {
-									ListOfTurrets.Add(new Turret(TurretType.Cannon, turretCannonBaseTexture, turretCannonHeadTexture, player.Position, parent: player));
+									ListOfTurrets.Add(new Turret(TurretType.Cannon, turretArcherBaseTexture, turretArcherHeadTexture, player.Position, parent: player));
 									--turretsPurchased[2];
                                 }
                             }
@@ -657,16 +661,16 @@ namespace MonoZombie {
 
 							// Draw turret charges
 		// Archer
-							SpriteManager.DrawImage(_spriteBatch, turretCannonBaseTexture, new Vector2(400, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
-							SpriteManager.DrawImage(_spriteBatch, turretCannonHeadTexture, new Vector2(400, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawImage(_spriteBatch, turretArcherBaseTexture, new Vector2(400, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawImage(_spriteBatch, turretArcherHeadTexture, new Vector2(400, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
 							SpriteManager.DrawText(_spriteBatch, new Vector2(405, 100), turretsPurchased[0].ToString(), Color.White, fontScale: 1f);
 		// Buff
-							SpriteManager.DrawImage(_spriteBatch, turretCannonBaseTexture, new Vector2(475, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
-							SpriteManager.DrawImage(_spriteBatch, turretCannonHeadTexture, new Vector2(475, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawImage(_spriteBatch, turretArcherBaseTexture, new Vector2(475, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawImage(_spriteBatch, buffTexture, new Vector2(475, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
 							SpriteManager.DrawText(_spriteBatch, new Vector2(480, 100), turretsPurchased[1].ToString(), Color.White, fontScale: 1f);
 		// Canon
-							SpriteManager.DrawImage(_spriteBatch, turretCannonBaseTexture, new Vector2(550, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
-							SpriteManager.DrawImage(_spriteBatch, turretCannonHeadTexture, new Vector2(550, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawImage(_spriteBatch, turretArcherBaseTexture, new Vector2(550, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawImage(_spriteBatch, cannonTexture, new Vector2(550, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
 							SpriteManager.DrawText(_spriteBatch, new Vector2(555, 100), turretsPurchased[2].ToString(), Color.White, fontScale: 1f);
 
 							break;
