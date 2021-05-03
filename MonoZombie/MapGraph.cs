@@ -45,7 +45,7 @@ namespace MonoZombie
                     }
                     MapSegment currentVertex = FindMapSegmentFromPosition(x, y);
                     //if this MapSegment is not on the edges of the graph
-                    //TODO: check for MapSegments that were next to walls
+                    //ignores walls, resulting in null values in the dictionary
                     if (x != 0 && x != tileMatrix.GetLength(0) - 1)
                     {
                         if (y != 0 && y != tileMatrix.GetLength(1) - 1)
@@ -59,6 +59,10 @@ namespace MonoZombie
                             adjacencyDictionary.Add(currentVertex, currentVertexAdjacencies);
                         }
                     }
+
+                    //adjustments to how we add connections if the current vertex is an edge.
+                    //left edge
+                    //else if(x == 0  && y)
                 }
             }
             //TODO: Make adjacency matrix and list.
@@ -66,7 +70,7 @@ namespace MonoZombie
             //test if this worked
             //foreach(MapSegment vertex in MapSegmentList)
             //{
-            //    Debug.WriteLine($"{vertex.TileAtVertex.X} {vertex.TileAtVertex.Y}");
+            //    Debug.WriteLine($"{vertex.TileAtVertex.X} {vertex.TileAtVertex.Y}");s
             //}
 
             //Test if the adjacencyDictionary is working correctly
@@ -78,13 +82,16 @@ namespace MonoZombie
                     {
                         continue;
                     }
-                    Console.WriteLine($"MapSegment at {FindMapSegmentFromPosition(x, y).TileAtVertex.X},{FindMapSegmentFromPosition(x, y).TileAtVertex.Y}  ");
 
-                    foreach(MapSegment vertex in adjacencyDictionary[FindMapSegmentFromPosition(x, y)])
+                    MapSegment currentSegment = FindMapSegmentFromPosition(x, y);
+                    Console.WriteLine($"MapSegment at {currentSegment.TileAtVertex.X},{currentSegment.TileAtVertex.Y}  ");
+
+                    foreach(MapSegment vertex in adjacencyDictionary[currentSegment])
                     {
-                       // Console.Write($"{vertex.TileAtVertex.X}, {vertex.TileAtVertex.Y} |");
+                        if(!(vertex is null))
+                        Console.Write($"{vertex.TileAtVertex.X}, {vertex.TileAtVertex.Y} |");
                     }
-                    //Console.WriteLine($"{adjacencyDictionary[FindMapSegmentFromPosition(x, y)]}");
+                    Console.WriteLine($"{adjacencyDictionary[currentSegment]}");
                 }
             }
         }
