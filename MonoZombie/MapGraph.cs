@@ -18,12 +18,14 @@ namespace MonoZombie
         public List<MapSegment> MapSegmentList { get; private set; }
         public Tile[,] TileMatrix { get; private set; }
         private Dictionary<MapSegment, List<MapSegment>> adjacencyDictionary;
+        private int[,] adjacencyMatrix;
         public MapGraph(Tile[,] tileMatrix)
         {
 
             //Create the list of MapSegments
             MapSegmentList = new List<MapSegment>();
-            adjacencyDictionary = new Dictionary<MapSegment, List<MapSegment>>(tileMatrix.GetLength(0));
+            //tileMatrix.GetLength(0) * tileMatrix.GetLength(1) = number of unique tiles in tileMatrix
+            adjacencyDictionary = new Dictionary<MapSegment, List<MapSegment>>(tileMatrix.GetLength(0) * tileMatrix.GetLength(1));
             TileMatrix = tileMatrix;
             for(int x = 0; x < tileMatrix.GetLength(0); x++)
             {
@@ -49,7 +51,7 @@ namespace MonoZombie
                     //if (x != 0 && x != tileMatrix.GetLength(0) - 1)
                     //{
                     //    if (y != 0 && y != tileMatrix.GetLength(1) - 1)
-                    //    {
+                        {
                             //Get the verticies in the cardinal directions around this vertex
                             List<MapSegment> currentVertexAdjacencies = new List<MapSegment>();
                             currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x , y - 1));
@@ -57,7 +59,7 @@ namespace MonoZombie
                             currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x + 1, y));
                             currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x - 1, y));
                             adjacencyDictionary.Add(currentVertex, currentVertexAdjacencies);
-                   //     }
+                        }
                    // }
 
                     //adjustments to how we add connections if the current vertex is an edge.
@@ -75,13 +77,6 @@ namespace MonoZombie
                     //}
                 }
             }
-            //TODO: Make adjacency matrix and list.
-
-            //test if this worked
-            //foreach(MapSegment vertex in MapSegmentList)
-            //{
-            //    Debug.WriteLine($"{vertex.TileAtVertex.X} {vertex.TileAtVertex.Y}");s
-            //}
 
             //Test if the adjacencyDictionary is working correctly
             for (int x = 0; x < TileMatrix.GetLength(0); x++)
@@ -99,11 +94,36 @@ namespace MonoZombie
                     foreach(MapSegment vertex in adjacencyDictionary[currentSegment])
                     {
                         if(!(vertex is null))
-                        Console.Write($"{vertex.TileAtVertex.X}, {vertex.TileAtVertex.Y} |");
+                        {
+                            Console.Write($"{vertex.TileAtVertex.X}, {vertex.TileAtVertex.Y} |");
+                        }
                     }
                     Console.WriteLine($"{adjacencyDictionary[currentSegment]}");
                 }
             }
+
+            //TODO: Make adjacency matrix.
+            //Set all indicies of the matrix to 0 (connectionless).
+            adjacencyMatrix = new int[MapSegmentList.Count, MapSegmentList.Count];
+            for(int i = 0; i < MapSegmentList.Count; i++)
+            {
+                for(int j = 0; j < MapSegmentList.Count; i++)
+                {
+                    adjacencyMatrix[i, j] = 0;
+                }
+            }
+
+            foreach(MapSegment key in adjacencyDictionary.Keys)
+            {
+                foreach(MapSegment connection in adjacencyDictionary[key])
+                {
+                    if (!(connection is null))
+                    {
+                        adjacencyMatrix[MapSegmentList.IndexOf(key), MapSegmentList.IndexOf(connection)] = 1;
+                    }
+                }
+            }
+
         }
 
         /// <summary>
