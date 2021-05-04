@@ -568,6 +568,30 @@ namespace MonoZombie {
 
 							map.UpdateCameraScreenPosition(camera);
 
+							if (GetKeyDown(Keys.T))
+							{
+								if (turretsPurchased[0] > 0)
+								{
+									ListOfTurrets.Add(new Turret(TurretType.Archer, turretCannonBaseTexture, turretCannonHeadTexture, player.Position, parent: player));
+									--turretsPurchased[0];
+								}
+							}
+							if (GetKeyDown(Keys.Y))
+							{
+								if (turretsPurchased[1] > 0)
+								{
+									ListOfTurrets.Add(new Turret(TurretType.Buff, turretCannonBaseTexture, turretCannonHeadTexture, player.Position, parent: player));
+								}
+							}
+							if (GetKeyDown(Keys.U))
+							{
+								if (turretsPurchased[2] > 0)
+								{
+									ListOfTurrets.Add(new Turret(TurretType.Cannon, turretCannonBaseTexture, turretCannonHeadTexture, player.Position, parent: player));
+									--turretsPurchased[2];
+								}
+							}
+
 							if (GetKeyDown(Keys.Tab))
 							{
 								gameState = GameState.Shop;
@@ -576,6 +600,7 @@ namespace MonoZombie {
 							if(GetKeyDown(Keys.Space))
 							{
 								StartNextRound();
+								gameState = GameState.Playing;
 							}
 							break;
 						case GameState.Pause:
@@ -694,6 +719,40 @@ namespace MonoZombie {
 							SpriteManager.DrawImage(_spriteBatch, turretCannonHeadTexture, new Vector2(550, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
 							SpriteManager.DrawText(_spriteBatch, new Vector2(555, 100), turretsPurchased[2].ToString(), Color.White, fontScale: 1f);
 
+							break;
+						case GameState.InBetweenRounds:
+							// Draw all game objects
+							map.Draw(gameTime, _spriteBatch);
+
+							for (int i = ListOfTurrets.Count - 1; i >= 0; i--)
+							{
+								ListOfTurrets[i].Draw(gameTime, _spriteBatch);
+							}
+
+							player.Draw(gameTime, _spriteBatch);
+
+							// Draw UI elements
+							SpriteManager.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), Color.White, scale: SpriteManager.UI_SCALE);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 30), $"Currency: {currency}", Color.Black, fontScale: 0.5f);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 45), $"Round Number: {roundNumber}", Color.Black, fontScale: 0.5f);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 60), $"Player Health: {player.Health}", Color.Black, fontScale: 0.5f);
+
+							// Draw FPS counter
+							SpriteManager.DrawText(_spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 20), $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds)}", Color.Black, fontScale: 0.5f);
+
+							// Draw turret charges
+		// Archer
+							SpriteManager.DrawImage(_spriteBatch, turretCannonBaseTexture, new Vector2(400, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawImage(_spriteBatch, turretCannonHeadTexture, new Vector2(400, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(405, 100), turretsPurchased[0].ToString(), Color.White, fontScale: 1f);
+		// Buff
+							SpriteManager.DrawImage(_spriteBatch, turretCannonBaseTexture, new Vector2(475, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawImage(_spriteBatch, turretCannonHeadTexture, new Vector2(475, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(480, 100), turretsPurchased[1].ToString(), Color.White, fontScale: 1f);
+		// Canon
+							SpriteManager.DrawImage(_spriteBatch, turretCannonBaseTexture, new Vector2(550, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawImage(_spriteBatch, turretCannonHeadTexture, new Vector2(550, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(555, 100), turretsPurchased[2].ToString(), Color.White, fontScale: 1f);
 							break;
 						case GameState.Pause:
 							DrawPauseMenu();
