@@ -214,5 +214,34 @@ namespace MonoZombie
 
             return mapSegment;
         }
+
+        /// <summary>
+        /// Purpose: Helper method that returns the neighbors of the selected MapSegment. For A*.
+        /// </summary>
+        /// <param name="source">the MapSegment who's neighbors we're finding.</param>
+        /// <returns></returns>
+        private List<MapSegment> GetNeighbors(MapSegment source)
+        {
+            List<MapSegment> neighbors = new List<MapSegment>();
+
+            //Check in a 3x3 grid around the MapSegment.
+            //Ignore the source
+            for(int x = -1; x <= 1; x++ )
+            {
+                for(int y = -1; y <= 1; y++)
+                {
+                    if(x == 0 && y == 0)
+                    {
+                        continue;
+                    }
+
+                    if(!(FindMapSegmentFromPosition(source.TileAtVertex.X - x, source.TileAtVertex.Y - y) is null))
+                    {
+                        neighbors.Add(FindMapSegmentFromPosition(source.TileAtVertex.X - x, source.TileAtVertex.Y - y));
+                    }
+                }
+            }
+            return neighbors;
+        }
     }
 }
