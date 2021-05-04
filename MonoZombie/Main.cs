@@ -451,7 +451,7 @@ namespace MonoZombie {
                                     }
                                 }
 								player.AttacksPerSecond = 3;
-								StartNextRound( );
+								gameState = GameState.InBetweenRounds;
 							}
 
 							// Check collisions
@@ -550,14 +550,33 @@ namespace MonoZombie {
 								gameState = GameState.Pause;
 							}
 
-							if (GetKeyDown(Keys.Tab)) {
-								gameState = GameState.Shop;
-							}
+							
 
 							break;
 
 						case GameState.InBetweenRounds:
 
+							player.Update(gameTime, currMouseState, currKeyboardState);
+
+							for (int i = ListOfTurrets.Count - 1; i >= 0; i--)
+							{
+								ListOfTurrets[i].UpdateCameraScreenPosition(camera);
+							}
+
+							// Update camera screen positions of all game objects
+							player.UpdateCameraScreenPosition(camera);
+
+							map.UpdateCameraScreenPosition(camera);
+
+							if (GetKeyDown(Keys.Tab))
+							{
+								gameState = GameState.Shop;
+							}
+
+							if(GetKeyDown(Keys.Space))
+							{
+								StartNextRound();
+							}
 							break;
 						case GameState.Pause:
 							currentStateTEST = "Game - Pause";
@@ -574,7 +593,7 @@ namespace MonoZombie {
 							currentStateTEST = "Game - Shop";
 
 							if (GetKeyDown(Keys.Tab)) {
-								gameState = GameState.Playing;
+								gameState = GameState.InBetweenRounds;
 							}
 
 							for (int i = 0; i < turretButtonList.Count; i++) {

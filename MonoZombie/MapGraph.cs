@@ -13,7 +13,7 @@ namespace MonoZombie
     /// Purpose: Holds all of the map segements as a graph. Intended to help with pathfinding.
     /// Restrictions:
     /// </summary>
-    class MapGraph
+    public class MapGraph
     {
         public List<MapSegment> MapSegmentList { get; private set; }
         public Tile[,] TileMatrix { get; private set; }

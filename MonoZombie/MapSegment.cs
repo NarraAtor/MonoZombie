@@ -13,7 +13,7 @@ namespace MonoZombie
     /// Purpose: A vertex of the MapGraph. Intended to be used in pathfinding.
     /// Restrictions:
     /// </summary>
-    class MapSegment
+    public class MapSegment
     {
         public Tile TileAtVertex { get; set; }
         public bool Permanent { get; set; }
