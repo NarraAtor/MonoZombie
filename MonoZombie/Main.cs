@@ -17,7 +17,8 @@ namespace MonoZombie {
 		Playing,
 		Pause,
 		Shop,
-		ShopInPlacment
+		ShopInPlacment,
+		InBetweenRounds
 	}
 
 	/// <summary>
@@ -554,6 +555,10 @@ namespace MonoZombie {
 							}
 
 							break;
+
+						case GameState.InBetweenRounds:
+
+							break;
 						case GameState.Pause:
 							currentStateTEST = "Game - Pause";
 
@@ -673,15 +678,12 @@ namespace MonoZombie {
 							break;
 						case GameState.Pause:
 							DrawPauseMenu();
-
 							break;
 						case GameState.Shop:
 							DrawShop(gameTime);
-
 							break;
 						case GameState.ShopInPlacment:
 							turretInPurchase.Draw(gameTime, _spriteBatch);
-
 							break;
 					}
 
