@@ -89,6 +89,9 @@ namespace MonoZombie
                     }
 
                     MapSegment currentSegment = FindMapSegmentFromPosition(x, y);
+
+                    //Prints adjacency list
+
                     //Console.WriteLine($"MapSegment at {currentSegment.TileAtVertex.X},{currentSegment.TileAtVertex.Y}  ");
                     //
                     //foreach(MapSegment vertex in adjacencyDictionary[currentSegment])
@@ -102,7 +105,6 @@ namespace MonoZombie
                 }
             }
 
-            //TODO: Make adjacency matrix.
             //Set all indicies of the matrix to 0 (connectionless).
             adjacencyMatrix = new int[MapSegmentList.Count, MapSegmentList.Count];
             for(int i = 0; i < MapSegmentList.Count; i++)
@@ -124,7 +126,8 @@ namespace MonoZombie
                 }
             }
 
-            //Prints the adjacency matrix to the console. Only check the first few entries if debugging.
+            //Prints the adjacency matrix to the console. Advice: Only check the first few entries if debugging.
+
             //for (int i = 0; i < MapSegmentList.Count; i++)
             //{
             //    Console.WriteLine();

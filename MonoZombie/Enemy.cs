@@ -59,14 +59,22 @@ namespace MonoZombie {
 			toMove = new Vector2(movement.X - MathF.Truncate(movement.X), movement.Y - MathF.Truncate(movement.Y));
 
 			// Move the zombie
-			MoveBy(movement);
+			//MoveBy(movement);
+			AStar(Main.GetMapGraph.GetZombieVertex(this), Main.GetMapGraph.GetPlayerVertex());
 		}
 
-
-		///private void A_Star(MapSegment start, MapSegment goal, h heuristic)
-		///{
-		///
-		///}
+		/// <summary>
+		/// Purpose: The fastest known pathfinding algorithim. 
+		///			 Finds the shortest path between the zombie's vertex and the player's vertex.
+		/// </summary>
+		/// <param name="start">the zombie's vertex</param>
+		/// <param name="goal">the player's vertex</param>
+		/// <param name="heuristic">i have no freaking clue</param>
+		private void AStar(MapSegment start, MapSegment goal /*, h heuristic*/)
+		{
+			List<MapSegment> open = new List<MapSegment>(); // set of nodes to be evaluated
+			List<MapSegment> closed = new List<MapSegment>(); // set of nodes already evaluated
+		}
 
 		/// <summary>
 		/// Update, make sure the time works 

@@ -61,7 +61,7 @@ namespace MonoZombie {
 		private Map map;
 
 		// Map Graph
-		private MapGraph graph;
+		private static MapGraph graph;
 
 		// Map Tile Texture Arrays
 		// * These are arrays because when a tile is created, it picks a random texture from these
@@ -134,6 +134,7 @@ namespace MonoZombie {
 		} = new List<Turret>();
 
 		public static Player GetPlayer {get {return player;} }
+		public static MapGraph GetMapGraph { get { return graph; } }
 
 		public Main ( ) {
 			_graphics = new GraphicsDeviceManager(this);
