@@ -31,6 +31,8 @@ namespace MonoZombie
             TotalDistance = 0;
             TileAtVertex = tileAtThisVertex;
             PreviousNode = null;
+            GValue = 0;
+            HValue = 0;
         }
     }
 }

@@ -76,10 +76,26 @@ namespace MonoZombie {
 			List<MapSegment> closed = new List<MapSegment>(); // set of nodes already evaluated
 			open.Add(start);
 
-			MapSegment current = null;
-			while(!(current == goal))
+			//the tutorial suggests making the loop go on forever until it returns.
+			while(open.Count > 0)
 			{
-				
+				MapSegment current = open[0];
+				for(int i = 1; i < open.Count; i++)
+				{
+					if(open[i].FValue < current.FValue || 
+					  (open[i].FValue == current.FValue && open[i].HValue < current.HValue))
+					{
+						current = open[i];
+					}
+				}
+
+				open.Remove(current);
+				closed.Add(current);
+
+				if(current == goal)
+				{
+					return;
+				}
 			}
 		}
 
