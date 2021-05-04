@@ -74,6 +74,13 @@ namespace MonoZombie {
 		{
 			List<MapSegment> open = new List<MapSegment>(); // set of nodes to be evaluated
 			List<MapSegment> closed = new List<MapSegment>(); // set of nodes already evaluated
+			open.Add(start);
+
+			MapSegment current = null;
+			while(!(current == goal))
+			{
+				
+			}
 		}
 
 		/// <summary>

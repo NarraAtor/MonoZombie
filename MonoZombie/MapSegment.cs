@@ -15,10 +15,15 @@ namespace MonoZombie
     /// </summary>
     class MapSegment
     {
+        public Tile TileAtVertex { get; set; }
         public bool Permanent { get; set; }
         public int TotalDistance { get; set; }
-        public Tile TileAtVertex { get; set; }
         public MapSegment PreviousNode { get; set; }
+
+        //A* stuff
+        public int GValue { get; set; } //How far away this node is from the source node
+        public int HValue { get; set; } //How far away this node is from the end node
+        public int FValue { get { return GValue + HValue; } }
 
         public MapSegment(Tile tileAtThisVertex)
         {
