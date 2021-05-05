@@ -10,10 +10,12 @@ namespace MonoZombie {
 		private Action onClick;
 		private bool isPressed;
 		private string text;
+		private float fontScale;
 
-		public UIButton (string text, Vector2 position, Action onClick, bool isCentered = true) : base(Main.buttonTexture, position, isCentered) {
+		public UIButton (string text, Vector2 position, Action onClick, float fontScale = 1f, bool isCentered = true) : base(Main.buttonTexture, position, isCentered) {
 			this.text = text;
 			this.onClick = onClick;
+			this.fontScale = fontScale;
 
 			isPressed = false;
 		}
@@ -38,9 +40,9 @@ namespace MonoZombie {
 						onClick( );
 					}
 
-					scale = SpriteUtils.UI_UPSCALE;
+					buttonScale = SpriteUtils.UI_UPSCALE;
 				} else {
-					scale = SpriteUtils.UI_SCALE;
+					buttonScale = SpriteUtils.UI_SCALE;
 				}
 			} else {
 				// Reset the isPressed variable when the mouse button is released to allow for the ui button
@@ -53,7 +55,7 @@ namespace MonoZombie {
 
 		public override void Draw (SpriteBatch spriteBatch) {
 			SpriteUtils.DrawImage(spriteBatch, Main.buttonTexture, rect, Color.White);
-			SpriteUtils.DrawText(spriteBatch, rect, text, Color.Black);
+			SpriteUtils.DrawText(spriteBatch, rect, text, Color.Black, fontScale: fontScale);
 		}
 	}
 }

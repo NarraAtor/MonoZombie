@@ -21,7 +21,7 @@ namespace MonoZombie {
 				return SpriteUtils.GetBoundingRect(texture, Position, SpriteUtils.OBJECT_SCALE);
 			}
 		}
-		
+
 		public bool IsOnScreen {
 			get {
 				return (Rect.Right >= 0 && Rect.Left <= Main.SCREEN_DIMENSIONS.X && Rect.Bottom >= 0 && Rect.Top <= Main.SCREEN_DIMENSIONS.Y);
@@ -30,7 +30,7 @@ namespace MonoZombie {
 
 		public Vector2 Position {
 			get;
-			private set;
+			set;
 		}
 
 		public Vector2 CameraPosition {
@@ -152,8 +152,11 @@ namespace MonoZombie {
 			} else if (typeof(Zombie).IsInstanceOfType(this)) {
 				Main.Zombies.Remove((Zombie) this);
 
-				// CHANGE 10 TO LIKE A RANDOM NUMBER OR SOMETHING
-				Main.currency += 10;
+				int mult = (((Zombie) this).IsSpecial ? Main.ZOMBIE_SPECIAL_MULT : 1);
+				int addedCurrency = new Random( ).Next(Main.ZOMBIE_REWARD_MIN, Main.ZOMBIE_REWARD_MAX) * mult;
+				Main.currency += addedCurrency;
+
+				Main.Particles.Add(new Particle($"+${addedCurrency}", Color.Yellow, Position, Main.DAMAGE_INDIC_TIME * 3, this));
 			} else if (typeof(Turret).IsInstanceOfType(this)) {
 				Main.Turrets.Remove((Turret) this);
 			} else if (typeof(Particle).IsInstanceOfType(this)) {

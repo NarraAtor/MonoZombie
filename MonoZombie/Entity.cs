@@ -19,7 +19,7 @@ namespace MonoZombie {
 			private set;
 		}
 
-		protected float AttacksPerSecond {
+		public float AttacksPerSecond {
 			get;
 			set;
 		}
@@ -41,6 +41,11 @@ namespace MonoZombie {
 				return (Health <= 0);
 			}
 		}
+
+		public Color BaseTint {
+			get;
+			set;
+		} = Color.White;
 
 		public Entity (Texture2D texture, Vector2 centerPosition, int health = 1, float attacksPerSecond = 1, GameObject parent = null, float moveSpeed = 0, bool canRotate = false, bool canMove = true)
 			: base(texture, centerPosition, parent: parent, moveSpeed: moveSpeed, canRotate: canRotate, canMove: canMove) {
@@ -67,14 +72,18 @@ namespace MonoZombie {
 
 		public void Draw (GameTime gameTime, SpriteBatch spriteBatch, GraphicsDeviceManager graphics) {
 			if (IsOnScreen) {
-				SpriteUtils.DrawImage(spriteBatch, texture, Rect, ((WasDamaged) ? Color.Red : Color.White), angle: Angle);
+				SpriteUtils.DrawImage(spriteBatch, texture, Rect, ((WasDamaged) ? Color.Red : BaseTint), angle: Angle);
 
-				// Draw the health bar
-				SpriteUtils.DrawRect(spriteBatch, graphics, healthBarBorder, Color.Black);
+				DrawHealthBar(gameTime, spriteBatch, graphics);
+			}
+		}
 
-				if (healthBar.Width > 0) {
-					SpriteUtils.DrawRect(spriteBatch, graphics, healthBar, Color.Red);
-				}
+		protected void DrawHealthBar (GameTime gameTime, SpriteBatch spriteBatch, GraphicsDeviceManager graphics) {
+			// Draw the health bar
+			SpriteUtils.DrawRect(spriteBatch, graphics, healthBarBorder, Color.Black);
+
+			if (healthBar.Width > 0) {
+				SpriteUtils.DrawRect(spriteBatch, graphics, healthBar, Color.Red);
 			}
 		}
 

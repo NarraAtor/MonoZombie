@@ -52,6 +52,9 @@ namespace MonoZombie {
 		private UIButton menuQuitButton;
 		private UIButton pauseResumeButton;
 		private UIButton pauseMenuButton;
+		private UIButton shopCannonTurretButton;
+		private UIButton shopBuffTurretButton;
+		private UIButton shopArcherTurretButton;
 
 		// Map
 		private Map map;
@@ -92,28 +95,19 @@ namespace MonoZombie {
 		private bool isInBetweenRounds;
 		private bool isPaused;
 		private bool isInShop;
-
-		// Turret
-		private List<Turret> turretButtonList;                      // the list that holds all of the turret images
-		private List<string> turretNames;                           // holds the names of the turret types, please update
-																	// when new turrets are added to the ButtonList
-		private Turret turretInPurchase;                            // the turret that the player is currently purchasing from the shop.
-		private List<Turret> turretList;                            // turrets that exist in the game;
-		private List<int> turretsPurchased;                         // the list of what turrets have been purchased 
-																	// should be directly linked with the turretButtonList
-		private UIButton shopCannonTurretButton;
-		private UIButton shopBuffTurretButton;
-		private UIButton shopArcherTurretButton;
-
-		private int cannonTurretsOwned;
-		private int buffTurretsOwned;
-		private int archerTurretsOwner;
+		private int cannonTurretsStored;
+		private int buffTurretsStored;
+		private int archerTurretsStored;
 
 		// Constants
 		public const int ZOMBIE_BASE_HEALTH = 100; // The default health of the zombie
 		public const int ZOMBIE_BASE_MOVESPEED = 2; // The default movespeed of the zombie
 		public const int ZOMBIE_BASE_ATTACKSPEED = 1; // The default attackspeed of the zombie
 		public const int ZOMBIE_BASE_COUNT = 5; // The starting number of zombies in round 1
+		public const int ZOMBIE_REWARD_MIN = 7;
+		public const int ZOMBIE_REWARD_MAX = 13;
+		public const float ZOMBIE_SPECIAL_CHANCE = 1f; //0.05f
+		public const int ZOMBIE_SPECIAL_MULT = 3;
 		public const float DAMAGE_INDIC_TIME = 0.25f; // The amount of seconds that entities flash when they are damaged
 		public const int BULLET_SPEED = 15;
 		public const int CANNON_BULLET_DAMAGE = 202;
@@ -121,6 +115,9 @@ namespace MonoZombie {
 		public const int PLAYER_BULLET_DAMAGE = 10;
 		public const int HEALTHBAR_OFFSET = 30;
 		public const int HEALTHBAR_PADDING = 2;
+		public const int CANNON_TURRET_COST = 120;
+		public const int BUFF_TURRET_COST = 210;
+		public const int ARCHER_TURRET_COST = 75;
 		public static Vector2 SCREEN_DIMENSIONS = new Vector2(1280, 720);
 
 		private static Random random;
@@ -160,10 +157,6 @@ namespace MonoZombie {
 			menuState = MenuState.MainMenu;
 
 			easyModeTEST = false;
-
-			turretButtonList = new List<Turret>( );
-			turretNames = new List<string>( );
-			turretsPurchased = new List<int>( );
 
 			random = new Random( );
 
@@ -361,25 +354,26 @@ namespace MonoZombie {
 			});
 
 			// Initializing different turret types for the shop
-			
+			shopCannonTurretButton = new UIButton($"Buy Cannon Turret", new Vector2(SCREEN_DIMENSIONS.X / 5, 2 * (SCREEN_DIMENSIONS.Y / 3)), ( ) => {
+				if (currency >= CANNON_TURRET_COST) {
+					currency -= CANNON_TURRET_COST;
+					cannonTurretsStored++;
+				}
+			}, fontScale: 0.75f);
 
-			turretButtonList.Add(
-				new Turret(TurretType.Archer, turretArcherBaseTexture, turretArcherHeadTexture, new Vector2(SCREEN_DIMENSIONS.X / 7 * 2, SCREEN_DIMENSIONS.Y / 5 * 2))
-				);
-			turretNames.Add("Archer");
-			turretsPurchased.Add(1);
+			shopBuffTurretButton = new UIButton($"Buy Buff Turret", new Vector2(SCREEN_DIMENSIONS.X / 2, 2 * (SCREEN_DIMENSIONS.Y / 3)), ( ) => {
+				if (currency >= BUFF_TURRET_COST) {
+					currency -= BUFF_TURRET_COST;
+					buffTurretsStored++;
+				}
+			}, fontScale: 0.75f);
 
-			turretButtonList.Add(
-				new Turret(TurretType.Buff, turretArcherBaseTexture, buffTexture, new Vector2(SCREEN_DIMENSIONS.X / 7 * 4, SCREEN_DIMENSIONS.Y / 5 * 2))
-				);
-			turretsPurchased.Add(1);
-			turretNames.Add("Buff");
-
-			turretButtonList.Add(
-				new Turret(TurretType.Buff, turretArcherBaseTexture, cannonTexture, new Vector2(SCREEN_DIMENSIONS.X / 7 * 6, SCREEN_DIMENSIONS.Y / 5 * 2))
-				);
-			turretsPurchased.Add(0);
-			turretNames.Add("Canon");
+			shopArcherTurretButton = new UIButton($"Buy Cannon Turret", new Vector2(4 * (SCREEN_DIMENSIONS.X / 5), 2 * (SCREEN_DIMENSIONS.Y / 3)), ( ) => {
+				if (currency >= ARCHER_TURRET_COST) {
+					currency -= ARCHER_TURRET_COST;
+					archerTurretsStored++;
+				}
+			}, fontScale: 0.75f);
 
 			base.LoadContent( );
 		}
@@ -534,54 +528,37 @@ namespace MonoZombie {
 							isInShop = !isInShop;
 						}
 
+						if (cannonTurretsStored > 0 && GetKeyDown(Keys.T)) {
+							Turrets.Add(new Turret(TurretType.Cannon, turretArcherBaseTexture, cannonTexture, Player.Position, Player));
+							cannonTurretsStored--;
+						}
+
+						if (buffTurretsStored > 0 && GetKeyDown(Keys.Y)) {
+							Turrets.Add(new Turret(TurretType.Buff, turretArcherBaseTexture, buffTexture, Player.Position, Player));
+							buffTurretsStored--;
+						}
+
+						if (archerTurretsStored > 0 && GetKeyDown(Keys.U)) {
+							// Mouse.SetPosition((int) (SCREEN_DIMENSIONS.X / 2), (int) (SCREEN_DIMENSIONS.Y / 2));
+							Turrets.Add(new Turret(TurretType.Archer, turretArcherBaseTexture, turretArcherHeadTexture, Player.Position, Player));
+							archerTurretsStored--;
+						}
+
 						if (GetKeyDown(Keys.Enter)) {
 							StartNextRound( );
 						}
 					}
 
 					if (isInShop) {
-						for (int i = 0; i < turretButtonList.Count; i++) {
-							if (currMouseState.X > turretButtonList[i].Rect.Left && currMouseState.X < turretButtonList[i].Rect.Right
-									&& currMouseState.Y <= turretButtonList[i].Rect.Bottom && currMouseState.Y >= turretButtonList[i].Rect.Top) {
-								Console.WriteLine(turretButtonList[i].Rect.Top + " " + turretButtonList[i].Rect.Bottom);
-								if (currMouseState.LeftButton == ButtonState.Pressed) {
-									if (currency >= 30) {
-										//turretsPurchased[i]++;
-										turretsPurchased[i]++;
-										currency -= 30;
-										break;
-									}
-								}
-							}
-						}
+						shopCannonTurretButton.Update(gameTime, currMouseState);
+						shopBuffTurretButton.Update(gameTime, currMouseState);
+						shopArcherTurretButton.Update(gameTime, currMouseState);
 					}
 
 					if (isPaused) {
 						pauseResumeButton.Update(gameTime, currMouseState);
 						pauseMenuButton.Update(gameTime, currMouseState);
 					}
-
-					/*
-					if (GetKeyDown(Keys.T)) {
-						if (turretsPurchased[0] > 0) {
-							ListOfTurrets.Add(new Turret(TurretType.Archer, turretArcherBaseTexture, turretArcherHeadTexture, Player.Position, parent: Player));
-							--turretsPurchased[0];
-						}
-					}
-
-					if (GetKeyDown(Keys.Y)) {
-						if (turretsPurchased[1] > 0) {
-							ListOfTurrets.Add(new Turret(TurretType.Buff, turretArcherBaseTexture, buffTexture, Player.Position, parent: Player));
-						}
-					}
-
-					if (GetKeyDown(Keys.U)) {
-						if (turretsPurchased[2] > 0) {
-							ListOfTurrets.Add(new Turret(TurretType.Cannon, turretArcherBaseTexture, turretArcherHeadTexture, Player.Position, parent: Player));
-							--turretsPurchased[2];
-						}
-					}
-					*/
 
 					break;
 				case MenuState.GameOver:
@@ -639,7 +616,6 @@ namespace MonoZombie {
 					}
 
 					// Draw UI elements
-					SpriteUtils.DrawText(spriteBatch, new Vector2(10, 10), $"${currency}", Color.Yellow, fontScale: 0.75f);
 					SpriteUtils.DrawText(spriteBatch, new Vector2(SCREEN_DIMENSIONS.X - 175, 10), $"Round: {roundNumber}", Color.White, fontScale: 0.75f);
 					if (Zombies.Count > 0) {
 						SpriteUtils.DrawText(spriteBatch, new Vector2(SCREEN_DIMENSIONS.X - 300, 35), $"Zombies Left: {Zombies.Count}", Color.Red, fontScale: 0.75f);
@@ -655,30 +631,42 @@ namespace MonoZombie {
 					}
 
 					// Draw turret charges
-					// Archer
-					SpriteUtils.DrawImage(spriteBatch, turretArcherBaseTexture, new Vector2(400, 50), new Color(255, 255, 255, 255), scale: SpriteUtils.UI_SCALE - 3);
-					SpriteUtils.DrawImage(spriteBatch, turretArcherHeadTexture, new Vector2(400, 50), new Color(255, 255, 255, 255), scale: SpriteUtils.UI_SCALE - 3);
-					SpriteUtils.DrawText(spriteBatch, new Vector2(405, 100), turretsPurchased[0].ToString( ), Color.White, fontScale: 1f);
+					// Cannon
+					SpriteUtils.DrawImage(spriteBatch, turretArcherBaseTexture, new Vector2(2 * (SCREEN_DIMENSIONS.X / 5), 50), Color.White, scale: SpriteUtils.UI_SCALE - 3, isCentered: true);
+					SpriteUtils.DrawImage(spriteBatch, cannonTexture, new Vector2(2 * (SCREEN_DIMENSIONS.X / 5), 50), Color.White, scale: SpriteUtils.UI_SCALE - 3, isCentered: true);
+					SpriteUtils.DrawText(spriteBatch, new Vector2(2 * (SCREEN_DIMENSIONS.X / 5), 75), $"x{cannonTurretsStored} | 'T'", Color.Purple, fontScale: 0.75f, isCentered: true);
 					// Buff
-					SpriteUtils.DrawImage(spriteBatch, turretArcherBaseTexture, new Vector2(475, 50), new Color(255, 255, 255, 255), scale: SpriteUtils.UI_SCALE - 3);
-					SpriteUtils.DrawImage(spriteBatch, buffTexture, new Vector2(475, 50), new Color(255, 255, 255, 255), scale: SpriteUtils.UI_SCALE - 3);
-					SpriteUtils.DrawText(spriteBatch, new Vector2(480, 100), turretsPurchased[1].ToString( ), Color.White, fontScale: 1f);
-					// Canon
-					SpriteUtils.DrawImage(spriteBatch, turretArcherBaseTexture, new Vector2(550, 50), new Color(255, 255, 255, 255), scale: SpriteUtils.UI_SCALE - 3);
-					SpriteUtils.DrawImage(spriteBatch, cannonTexture, new Vector2(550, 50), new Color(255, 255, 255, 255), scale: SpriteUtils.UI_SCALE - 3);
-					SpriteUtils.DrawText(spriteBatch, new Vector2(555, 100), turretsPurchased[2].ToString( ), Color.White, fontScale: 1f);
+					SpriteUtils.DrawImage(spriteBatch, turretArcherBaseTexture, new Vector2(SCREEN_DIMENSIONS.X / 2, 50), Color.White, scale: SpriteUtils.UI_SCALE - 3, isCentered: true);
+					SpriteUtils.DrawImage(spriteBatch, buffTexture, new Vector2(SCREEN_DIMENSIONS.X / 2, 50), Color.White, scale: SpriteUtils.UI_SCALE - 3, isCentered: true);
+					SpriteUtils.DrawText(spriteBatch, new Vector2(SCREEN_DIMENSIONS.X / 2, 75), $"x{buffTurretsStored} | 'Y'", Color.Purple, fontScale: 0.75f, isCentered: true);
+					// Archer
+					SpriteUtils.DrawImage(spriteBatch, turretArcherBaseTexture, new Vector2(3 * (SCREEN_DIMENSIONS.X / 5), 50), Color.White, scale: SpriteUtils.UI_SCALE - 3, isCentered: true);
+					SpriteUtils.DrawImage(spriteBatch, turretArcherHeadTexture, new Vector2(3 * (SCREEN_DIMENSIONS.X / 5), 50), Color.White, scale: SpriteUtils.UI_SCALE - 3, isCentered: true);
+					SpriteUtils.DrawText(spriteBatch, new Vector2(3 * (SCREEN_DIMENSIONS.X / 5), 75), $"x{archerTurretsStored} | 'U'", Color.Purple, fontScale: 0.75f, isCentered: true);
 
 					if (isInShop) {
 						SpriteUtils.DrawRect(spriteBatch, graphics, new Rectangle(Point.Zero, SCREEN_DIMENSIONS.ToPoint( )), Color.Black, opacity: 0.5f);
 
-						spriteBatch.DrawString(font, "Shop", new Vector2(graphics.PreferredBackBufferWidth / 2 - 40, 30), Color.White);
+						SpriteUtils.DrawText(spriteBatch, new Vector2(SCREEN_DIMENSIONS.X / 2, SCREEN_DIMENSIONS.Y / 4), "Shop", Color.Purple, isCentered: true);
+						shopCannonTurretButton.Draw(spriteBatch);
+						shopBuffTurretButton.Draw(spriteBatch);
+						shopArcherTurretButton.Draw(spriteBatch);
 
-						for (int i = 0; i < turretButtonList.Count; i++) {
-							turretButtonList[i].Draw(gameTime, spriteBatch);
-							spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].Position.X - 75, turretButtonList[i].Position.Y + 75), Color.White);
-							spriteBatch.DrawString(font, "X" + turretsPurchased[i].ToString( ), new Vector2(turretButtonList[i].Position.X + 100, turretButtonList[i].Position.Y + 75), Color.Gold);
-						}
+						// Cannon
+						SpriteUtils.DrawImage(spriteBatch, turretArcherBaseTexture, new Vector2(shopCannonTurretButton.Position.X, SCREEN_DIMENSIONS.Y / 2), Color.White, scale: SpriteUtils.UI_SCALE, isCentered: true);
+						SpriteUtils.DrawImage(spriteBatch, cannonTexture, new Vector2(shopCannonTurretButton.Position.X, SCREEN_DIMENSIONS.Y / 2), Color.White, scale: SpriteUtils.UI_SCALE, isCentered: true);
+						SpriteUtils.DrawText(spriteBatch, new Vector2(shopCannonTurretButton.Position.X, 4 * (SCREEN_DIMENSIONS.Y / 5)), $"${CANNON_TURRET_COST}", Color.Yellow, fontScale: 0.75f, isCentered: true);
+						// Buff
+						SpriteUtils.DrawImage(spriteBatch, turretArcherBaseTexture, new Vector2(shopBuffTurretButton.Position.X, SCREEN_DIMENSIONS.Y / 2), Color.White, scale: SpriteUtils.UI_SCALE, isCentered: true);
+						SpriteUtils.DrawImage(spriteBatch, buffTexture, new Vector2(shopBuffTurretButton.Position.X, SCREEN_DIMENSIONS.Y / 2), Color.White, scale: SpriteUtils.UI_SCALE, isCentered: true);
+						SpriteUtils.DrawText(spriteBatch, new Vector2(shopBuffTurretButton.Position.X, 4 * (SCREEN_DIMENSIONS.Y / 5)), $"${BUFF_TURRET_COST}", Color.Yellow, fontScale: 0.75f, isCentered: true);
+						// Archer
+						SpriteUtils.DrawImage(spriteBatch, turretArcherBaseTexture, new Vector2(shopArcherTurretButton.Position.X, SCREEN_DIMENSIONS.Y / 2), Color.White, scale: SpriteUtils.UI_SCALE, isCentered: true);
+						SpriteUtils.DrawImage(spriteBatch, turretArcherHeadTexture, new Vector2(shopArcherTurretButton.Position.X, SCREEN_DIMENSIONS.Y / 2), Color.White, scale: SpriteUtils.UI_SCALE, isCentered: true);
+						SpriteUtils.DrawText(spriteBatch, new Vector2(shopArcherTurretButton.Position.X, 4 * (SCREEN_DIMENSIONS.Y / 5)), $"${ARCHER_TURRET_COST}", Color.Yellow, fontScale: 0.75f, isCentered: true);
 					}
+
+					SpriteUtils.DrawText(spriteBatch, new Vector2(10, 10), $"${currency}", Color.Yellow, fontScale: 0.75f);
 
 					if (isPaused) {
 						SpriteUtils.DrawRect(spriteBatch, graphics, new Rectangle(Point.Zero, SCREEN_DIMENSIONS.ToPoint( )), Color.Black, opacity: 0.5f);

@@ -45,34 +45,33 @@ namespace MonoZombie {
 		}
 
 		public Turret (TurretType turretType, Texture2D turretBaseTexture, Texture2D turretHeadTexture, Vector2 centerPosition, GameObject parent = null)
-			: base(turretHeadTexture, centerPosition, parent: parent, canRotate: true) {
+			: base(turretBaseTexture, centerPosition, parent: parent, canRotate: true) {
 			// Goes through each of the diffrent turret types and then sets stats accordingly 
 			this.turretBaseTexture = turretBaseTexture;
 			this.turretHeadTexture = turretHeadTexture;
-
 			this.turretType = turretType;
+
 			switch (this.turretType) {
+				case TurretType.Cannon:
+					Range = 100;
+					Damage = 100;
+					Price = 200;
 
-				case TurretType.Cannon: {
-						Range = 100;
-						Damage = 100;
-						Price = 200;
-						break;
-					}
-				case TurretType.Archer: {
-						Range = 50;
-						Damage = 100;
-						Price = 300;
-						AttacksPerSecond = 5;
-						break;
-					}
+					break;
+				case TurretType.Archer:
+					Range = 50;
+					Damage = 100;
+					Price = 300;
+					AttacksPerSecond = 5;
 
-				case TurretType.Buff: {
-						Range = 100;
-						Damage = 100;
-						Price = 400;
-						break;
-					}
+					break;
+
+				case TurretType.Buff:
+					Range = 100;
+					Damage = 100;
+					Price = 400;
+
+					break;
 				case TurretType.Magic:
 					Range = 50;
 					Damage = 100;
@@ -128,23 +127,36 @@ namespace MonoZombie {
 		public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
 			base.Update(gameTime, mouse, keyboard);
 
-			// Detect nearby targets
-			DetectTarget( );
+			if (turretType == TurretType.Buff) {
+				for (int i = Main.Turrets.Count - 1; i >= 0; i--) {
+					if (Vector2.Distance(Main.Turrets[i].Position, Position) <= Range) {
+						Main.Turrets[i].AttacksPerSecond = 7;
+					}
+				}
 
-			if (target != null) {
-				RotateTo(target.Position);
+				if (Vector2.Distance(Main.Player.Position, Position) <= Range) {
+					Main.Player.AttacksPerSecond = 7;
+				}
+			} else {
+				// Detect nearby targets
+				DetectTarget( );
 
-				if (CanAttack) {
-					ShootBullet(Damage);
+				if (target != null) {
+					RotateTo(target.Position);
+
+					if (CanAttack) {
+						ShootBullet(Damage);
+					}
 				}
 			}
 		}
 
-
 		public new void Draw (GameTime gameTime, SpriteBatch spriteBatch, GraphicsDeviceManager graphics) {
 			if (IsOnScreen) {
-				base.Draw(gameTime, spriteBatch, graphics); // Draws the base texture
-				SpriteUtils.DrawImage(spriteBatch, turretHeadTexture, Rect, Color.White, angle: Angle);
+				SpriteUtils.DrawImage(spriteBatch, turretBaseTexture, Rect, ((WasDamaged) ? Color.Red : BaseTint), angle: Angle);
+				SpriteUtils.DrawImage(spriteBatch, turretHeadTexture, Rect, ((WasDamaged) ? Color.Red : BaseTint), angle: Angle);
+
+				DrawHealthBar(gameTime, spriteBatch, graphics);
 			}
 		}
 	}

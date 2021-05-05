@@ -9,9 +9,17 @@ namespace MonoZombie {
 	public class Zombie : Entity {
 		private Vector2 toMove;
 
+		public bool IsSpecial {
+			get;
+			private set;
+		}
+
 		public Zombie (Vector2 position, int health, float attacksPerSecond, int zombieSpeed, Tile spawnTile)
 			: base(GetTexture( ), position, health, attacksPerSecond, parent: spawnTile, moveSpeed: zombieSpeed, canRotate: true) {
-
+			if (new Random( ).NextDouble( ) <= Main.ZOMBIE_SPECIAL_CHANCE) {
+				IsSpecial = true;
+				BaseTint = Color.Yellow;
+			}
 		}
 
 		public void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard, Player player) {
