@@ -148,14 +148,16 @@ namespace MonoZombie {
 		 */
 		public bool Destroy ( ) {
 			if (typeof(Bullet).IsInstanceOfType(this)) {
-				Main.ListOfBullets.Remove((Bullet) this);
+				Main.Bullets.Remove((Bullet) this);
 			} else if (typeof(Zombie).IsInstanceOfType(this)) {
-				Main.ListOfZombies.Remove((Zombie) this);
+				Main.Zombies.Remove((Zombie) this);
 
 				// CHANGE 10 TO LIKE A RANDOM NUMBER OR SOMETHING
 				Main.currency += 10;
 			} else if (typeof(Turret).IsInstanceOfType(this)) {
-				Main.ListOfTurrets.Remove((Turret) this);
+				Main.Turrets.Remove((Turret) this);
+			} else if (typeof(Particle).IsInstanceOfType(this)) {
+				Main.Particles.Remove((Particle) this);
 			} else {
 				return false;
 			}

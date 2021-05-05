@@ -12,6 +12,7 @@ namespace MonoZombie {
 		// How much to scale the UI and game objects up by in-game
 		public const float UI_SCALE = 5f;
 		public const float OBJECT_SCALE = 4f;
+		public const float PARTICLE_SCALE = 0.5f;
 
 		/*
 		 * Author : Frank Alfano
@@ -126,6 +127,20 @@ namespace MonoZombie {
 		public static Rectangle GetBoundingRect (Texture2D texture, Vector2 position, float scale = 1, bool isCentered = true) {
 			// Calculate the dimensions of the bounding rect
 			Vector2 rectSize = texture.Bounds.Size.ToVector2( ) * scale;
+			Vector2 rectPosition = position;
+
+			// If the position given for the bounding rectangle is supposed to be the center of the rectangle, adjust the final bounding rectangle
+			// accordingly
+			if (isCentered) {
+				rectPosition -= rectSize / 2;
+			}
+
+			return new Rectangle(rectPosition.ToPoint( ), rectSize.ToPoint( ));
+		}
+
+		public static Rectangle GetBoundingRect (string text, Vector2 position, float scale = 1, bool isCentered = true) {
+			// Calculate the dimensions of the bounding rect
+			Vector2 rectSize = Main.font.MeasureString(text) * scale;
 			Vector2 rectPosition = position;
 
 			// If the position given for the bounding rectangle is supposed to be the center of the rectangle, adjust the final bounding rectangle

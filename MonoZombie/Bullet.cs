@@ -45,9 +45,7 @@ namespace MonoZombie
         /*
          * * Overridden from the GameObject Class
          */
-        public override void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
-            base.Update(gameTime, mouse, keyboard);
-
+        public void Update (GameTime gameTime) {
             // Move the bullet in the direction it is travelling
             MoveBy(movement);
 

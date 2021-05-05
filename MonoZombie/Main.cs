@@ -28,8 +28,8 @@ namespace MonoZombie {
 	/// Restrictions:
 	/// </summary>
 	public class Main : Game {
-		private GraphicsDeviceManager _graphics;
-		private SpriteBatch _spriteBatch;
+		private GraphicsDeviceManager graphics;
+		private SpriteBatch spriteBatch;
 
 		// Game states
 		private MenuState menuState;
@@ -125,17 +125,21 @@ namespace MonoZombie {
 
 		private static Random random;
 
-		public static List<Bullet> ListOfBullets {
+		public static List<Bullet> Bullets {
 			get;
 		} = new List<Bullet>( );
 
-		public static List<Zombie> ListOfZombies {
+		public static List<Zombie> Zombies {
 			get;
 		} = new List<Zombie>( );
 
-		public static List<Turret> ListOfTurrets {
+		public static List<Turret> Turrets {
 			get;
 		} = new List<Turret>( );
+
+		public static List<Particle> Particles {
+			get;
+		} = new List<Particle>( );
 
 		public static Player Player {
 			get;
@@ -145,7 +149,7 @@ namespace MonoZombie {
 		public static MapGraph GetMapGraph { get { return graph; } }
 
 		public Main ( ) {
-			_graphics = new GraphicsDeviceManager(this);
+			graphics = new GraphicsDeviceManager(this);
 
 			Content.RootDirectory = "Content";
 
@@ -168,7 +172,7 @@ namespace MonoZombie {
 		}
 
 		protected override void LoadContent ( ) {
-			_spriteBatch = new SpriteBatch(GraphicsDevice);
+			spriteBatch = new SpriteBatch(GraphicsDevice);
 
 			// Load textures for game objects
 			nullTexture = Content.Load<Texture2D>("MapTiles/NullTile");
@@ -319,9 +323,9 @@ namespace MonoZombie {
 			// Load the map
 			map = new Map("../../../MapLevels\\TestLevel1.level");
 
-			_graphics.PreferredBackBufferWidth = (int) SCREEN_DIMENSIONS.X;
-			_graphics.PreferredBackBufferHeight = (int) SCREEN_DIMENSIONS.Y;
-			_graphics.ApplyChanges( );
+			graphics.PreferredBackBufferWidth = (int) SCREEN_DIMENSIONS.X;
+			graphics.PreferredBackBufferHeight = (int) SCREEN_DIMENSIONS.Y;
+			graphics.ApplyChanges( );
 
 			//Test map graph creation
 			graph = new MapGraph(map.Tiles);
@@ -413,16 +417,20 @@ namespace MonoZombie {
 								// Update all game objects
 								Player.Update(gameTime, currMouseState, currKeyboardState);
 
-								for (int i = ListOfTurrets.Count - 1; i >= 0; i--) {
-									ListOfTurrets[i].Update(gameTime, currMouseState, currKeyboardState);
+								for (int i = Turrets.Count - 1; i >= 0; i--) {
+									Turrets[i].Update(gameTime, currMouseState, currKeyboardState);
 								}
 
-								for (int i = ListOfBullets.Count - 1; i >= 0; i--) {
-									ListOfBullets[i].Update(gameTime, currMouseState, currKeyboardState);
+								for (int i = Bullets.Count - 1; i >= 0; i--) {
+									Bullets[i].Update(gameTime);
 								}
 
-								for (int i = ListOfZombies.Count - 1; i >= 0; i--) {
-									ListOfZombies[i].Update(gameTime, currMouseState, currKeyboardState, Player);
+								for (int i = Zombies.Count - 1; i >= 0; i--) {
+									Zombies[i].Update(gameTime, currMouseState, currKeyboardState, Player);
+								}
+
+								for (int i = Particles.Count - 1; i >= 0; i--) {
+									Particles[i].Update(gameTime);
 								}
 
 								debugTimes[0] = debugTimer.ElapsedMilliseconds;
@@ -435,10 +443,10 @@ namespace MonoZombie {
 								}
 
 								// If there are no more zombies, then advance to the next round
-								if (!isInBetweenRounds && ListOfZombies.Count == 0) {
+								if (!isInBetweenRounds && Zombies.Count == 0) {
 									//loop through each turret and check if they are out of time and update their duration
-									for (int i = ListOfTurrets.Count - 1; i >= 0; i--) {
-										ListOfTurrets[i].TakeDamage(1);
+									for (int i = Turrets.Count - 1; i >= 0; i--) {
+										Turrets[i].TakeDamage(1);
 									}
 
 									isInBetweenRounds = true;
@@ -448,45 +456,45 @@ namespace MonoZombie {
 
 								// Check collisions
 								for (int i = 0; i < map.CollidableTiles.Length; i++) {
-									for (int j = ListOfZombies.Count - 1; j >= 0; j--) {
-										ListOfZombies[j].CheckUpdateCollision(map.CollidableTiles[i]);
+									for (int j = Zombies.Count - 1; j >= 0; j--) {
+										Zombies[j].CheckUpdateCollision(map.CollidableTiles[i]);
 									}
 
-									for (int j = ListOfTurrets.Count - 1; j >= 0; j--) {
-										ListOfTurrets[j].CheckUpdateCollision(map.CollidableTiles[i]);
+									for (int j = Turrets.Count - 1; j >= 0; j--) {
+										Turrets[j].CheckUpdateCollision(map.CollidableTiles[i]);
 									}
 
-									for (int j = ListOfBullets.Count - 1; j >= 0; j--) {
-										ListOfBullets[j].CheckUpdateCollision(map.CollidableTiles[i]);
+									for (int j = Bullets.Count - 1; j >= 0; j--) {
+										Bullets[j].CheckUpdateCollision(map.CollidableTiles[i]);
 									}
 
 									Player.CheckUpdateCollision(map.CollidableTiles[i]);
 								}
 
-								for (int i = ListOfZombies.Count - 1; i >= 0; i--) {
-									for (int j = ListOfZombies.Count - 1; j >= 0; j--) {
-										ListOfZombies[j].CheckUpdateCollision(ListOfZombies[i]);
+								for (int i = Zombies.Count - 1; i >= 0; i--) {
+									for (int j = Zombies.Count - 1; j >= 0; j--) {
+										Zombies[j].CheckUpdateCollision(Zombies[i]);
 									}
 
-									for (int j = ListOfTurrets.Count - 1; j >= 0; j--) {
-										ListOfTurrets[j].CheckUpdateCollision(ListOfZombies[i]);
+									for (int j = Turrets.Count - 1; j >= 0; j--) {
+										Turrets[j].CheckUpdateCollision(Zombies[i]);
 									}
 
-									Player.CheckUpdateCollision(ListOfZombies[i]);
+									Zombies[i].CheckUpdateCollision(Player);
 
-									for (int j = ListOfBullets.Count - 1; j >= 0; j--) {
-										if (ListOfBullets[j].CheckUpdateCollision(ListOfZombies[i])) {
+									for (int j = Bullets.Count - 1; j >= 0; j--) {
+										if (Bullets[j].CheckUpdateCollision(Zombies[i])) {
 											break;
 										}
 									}
 								}
 
-								for (int i = ListOfTurrets.Count - 1; i >= 0; i--) {
-									for (int j = ListOfTurrets.Count - 1; j >= 0; j--) {
-										ListOfTurrets[j].CheckUpdateCollision(ListOfTurrets[i]);
+								for (int i = Turrets.Count - 1; i >= 0; i--) {
+									for (int j = Turrets.Count - 1; j >= 0; j--) {
+										Turrets[j].CheckUpdateCollision(Turrets[i]);
 									}
 
-									Player.CheckUpdateCollision(ListOfTurrets[i]);
+									Player.CheckUpdateCollision(Turrets[i]);
 								}
 
 								debugTimes[1] = debugTimer.ElapsedMilliseconds;
@@ -497,16 +505,20 @@ namespace MonoZombie {
 								// Update camera screen positions of all game objects
 								Player.UpdateCameraScreenPosition(camera);
 
-								for (int i = ListOfTurrets.Count - 1; i >= 0; i--) {
-									ListOfTurrets[i].UpdateCameraScreenPosition(camera);
+								for (int i = Turrets.Count - 1; i >= 0; i--) {
+									Turrets[i].UpdateCameraScreenPosition(camera);
 								}
 
-								for (int i = ListOfBullets.Count - 1; i >= 0; i--) {
-									ListOfBullets[i].UpdateCameraScreenPosition(camera);
+								for (int i = Bullets.Count - 1; i >= 0; i--) {
+									Bullets[i].UpdateCameraScreenPosition(camera);
 								}
 
-								for (int i = ListOfZombies.Count - 1; i >= 0; i--) {
-									ListOfZombies[i].UpdateCameraScreenPosition(camera);
+								for (int i = Zombies.Count - 1; i >= 0; i--) {
+									Zombies[i].UpdateCameraScreenPosition(camera);
+								}
+
+								for (int i = Particles.Count - 1; i >= 0; i--) {
+									Particles[i].UpdateCameraScreenPosition(camera);
 								}
 
 								map.UpdateCameraScreenPosition(camera);
@@ -597,98 +609,102 @@ namespace MonoZombie {
 			// * These settings in SpriteBatch.Begin() prevent sprites from becoming blurry when scaled up. This
 			// means we can make pixel art images and import them into the game very small and then scale them up.
 			// This makes the images a lot easier to edit if we need to do that again.
-			_spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp);
+			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp);
 
 			switch (menuState) {
 				case MenuState.MainMenu:
 					// Draw menu UI objects
-					SpriteUtils.DrawImage(_spriteBatch, titleTexture, SCREEN_DIMENSIONS * new Vector2(0.5f, 0.25f), Color.White, scale: SpriteUtils.UI_SCALE, isCentered: true);
-					menuPlayButton.Draw(_spriteBatch);
-					menuPlayEasyModeButton.Draw(_spriteBatch);
-					menuQuitButton.Draw(_spriteBatch);
+					SpriteUtils.DrawImage(spriteBatch, titleTexture, SCREEN_DIMENSIONS * new Vector2(0.5f, 0.25f), Color.White, scale: SpriteUtils.UI_SCALE, isCentered: true);
+					menuPlayButton.Draw(spriteBatch);
+					menuPlayEasyModeButton.Draw(spriteBatch);
+					menuQuitButton.Draw(spriteBatch);
 
 					break;
 				case MenuState.Game:
 					switch (gameState) {
 						case GameState.Playing:
 							// Draw all game objects
-							map.Draw(gameTime, _spriteBatch);
+							map.Draw(gameTime, spriteBatch);
 
-							for (int i = ListOfTurrets.Count - 1; i >= 0; i--) {
-								ListOfTurrets[i].Draw(gameTime, _spriteBatch);
+							for (int i = Turrets.Count - 1; i >= 0; i--) {
+								Turrets[i].Draw(gameTime, spriteBatch);
 							}
 
-							for (int i = ListOfBullets.Count - 1; i >= 0; i--) {
-								ListOfBullets[i].Draw(gameTime, _spriteBatch);
+							for (int i = Bullets.Count - 1; i >= 0; i--) {
+								Bullets[i].Draw(gameTime, spriteBatch);
 							}
 
-							for (int i = ListOfZombies.Count - 1; i >= 0; i--) {
-								ListOfZombies[i].Draw(gameTime, _spriteBatch);
+							for (int i = Zombies.Count - 1; i >= 0; i--) {
+								Zombies[i].Draw(gameTime, spriteBatch);
 							}
 
-							Player.Draw(gameTime, _spriteBatch);
+							Player.Draw(gameTime, spriteBatch);
+
+							for (int i = Particles.Count - 1; i >= 0; i--) {
+								Particles[i].Draw(gameTime, spriteBatch);
+							}
 
 							// Draw UI elements
-							SpriteUtils.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), Color.White, scale: SpriteUtils.UI_SCALE);
-							SpriteUtils.DrawText(_spriteBatch, new Vector2(30, 30), $"Currency: {currency}", Color.Black, fontScale: 0.5f);
-							SpriteUtils.DrawText(_spriteBatch, new Vector2(30, 45), $"Round Number: {roundNumber}", Color.Black, fontScale: 0.5f);
+							SpriteUtils.DrawImage(spriteBatch, tabTexture, new Vector2(15, 15), Color.White, scale: SpriteUtils.UI_SCALE);
+							SpriteUtils.DrawText(spriteBatch, new Vector2(30, 30), $"Currency: {currency}", Color.Black, fontScale: 0.5f);
+							SpriteUtils.DrawText(spriteBatch, new Vector2(30, 45), $"Round Number: {roundNumber}", Color.Black, fontScale: 0.5f);
 							// SpriteManager.DrawText(_spriteBatch, new Vector2(30, 60), $"Player Health: {player.Health}", Color.Black, fontScale: 0.5f);
 
 							// Draw Debug variables
-							SpriteUtils.DrawText(_spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 20), $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds, 3)}", Color.White, fontScale: 0.5f);
-							SpriteUtils.DrawText(_spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 40), $"UPT: {string.Join(" | ", debugTimes)}", Color.White, fontScale: 0.5f);
+							SpriteUtils.DrawText(spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 20), $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds, 3)}", Color.White, fontScale: 0.5f);
+							SpriteUtils.DrawText(spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 40), $"UPT: {string.Join(" | ", debugTimes)}", Color.White, fontScale: 0.5f);
 
 							// Draw turret charges
 							// Archer
-							SpriteUtils.DrawImage(_spriteBatch, turretArcherBaseTexture, new Vector2(400, 50), new Color(255, 255, 255, 255), scale: SpriteUtils.UI_SCALE - 3);
-							SpriteUtils.DrawImage(_spriteBatch, turretArcherHeadTexture, new Vector2(400, 50), new Color(255, 255, 255, 255), scale: SpriteUtils.UI_SCALE - 3);
-							SpriteUtils.DrawText(_spriteBatch, new Vector2(405, 100), turretsPurchased[0].ToString( ), Color.White, fontScale: 1f);
+							SpriteUtils.DrawImage(spriteBatch, turretArcherBaseTexture, new Vector2(400, 50), new Color(255, 255, 255, 255), scale: SpriteUtils.UI_SCALE - 3);
+							SpriteUtils.DrawImage(spriteBatch, turretArcherHeadTexture, new Vector2(400, 50), new Color(255, 255, 255, 255), scale: SpriteUtils.UI_SCALE - 3);
+							SpriteUtils.DrawText(spriteBatch, new Vector2(405, 100), turretsPurchased[0].ToString( ), Color.White, fontScale: 1f);
 							// Buff
-							SpriteUtils.DrawImage(_spriteBatch, turretArcherBaseTexture, new Vector2(475, 50), new Color(255, 255, 255, 255), scale: SpriteUtils.UI_SCALE - 3);
-							SpriteUtils.DrawImage(_spriteBatch, buffTexture, new Vector2(475, 50), new Color(255, 255, 255, 255), scale: SpriteUtils.UI_SCALE - 3);
-							SpriteUtils.DrawText(_spriteBatch, new Vector2(480, 100), turretsPurchased[1].ToString( ), Color.White, fontScale: 1f);
+							SpriteUtils.DrawImage(spriteBatch, turretArcherBaseTexture, new Vector2(475, 50), new Color(255, 255, 255, 255), scale: SpriteUtils.UI_SCALE - 3);
+							SpriteUtils.DrawImage(spriteBatch, buffTexture, new Vector2(475, 50), new Color(255, 255, 255, 255), scale: SpriteUtils.UI_SCALE - 3);
+							SpriteUtils.DrawText(spriteBatch, new Vector2(480, 100), turretsPurchased[1].ToString( ), Color.White, fontScale: 1f);
 							// Canon
-							SpriteUtils.DrawImage(_spriteBatch, turretArcherBaseTexture, new Vector2(550, 50), new Color(255, 255, 255, 255), scale: SpriteUtils.UI_SCALE - 3);
-							SpriteUtils.DrawImage(_spriteBatch, cannonTexture, new Vector2(550, 50), new Color(255, 255, 255, 255), scale: SpriteUtils.UI_SCALE - 3);
-							SpriteUtils.DrawText(_spriteBatch, new Vector2(555, 100), turretsPurchased[2].ToString( ), Color.White, fontScale: 1f);
+							SpriteUtils.DrawImage(spriteBatch, turretArcherBaseTexture, new Vector2(550, 50), new Color(255, 255, 255, 255), scale: SpriteUtils.UI_SCALE - 3);
+							SpriteUtils.DrawImage(spriteBatch, cannonTexture, new Vector2(550, 50), new Color(255, 255, 255, 255), scale: SpriteUtils.UI_SCALE - 3);
+							SpriteUtils.DrawText(spriteBatch, new Vector2(555, 100), turretsPurchased[2].ToString( ), Color.White, fontScale: 1f);
 
 							if (isInShop) {
-								SpriteUtils.DrawRect(_spriteBatch, _graphics, new Rectangle(Point.Zero, SCREEN_DIMENSIONS.ToPoint( )), Color.Black, opacity: 0.5f);
+								SpriteUtils.DrawRect(spriteBatch, graphics, new Rectangle(Point.Zero, SCREEN_DIMENSIONS.ToPoint( )), Color.Black, opacity: 0.5f);
 
-								_spriteBatch.DrawString(font, "Shop", new Vector2(_graphics.PreferredBackBufferWidth / 2 - 40, 30), Color.White);
+								spriteBatch.DrawString(font, "Shop", new Vector2(graphics.PreferredBackBufferWidth / 2 - 40, 30), Color.White);
 
 								for (int i = 0; i < turretButtonList.Count; i++) {
-									turretButtonList[i].Draw(gameTime, _spriteBatch);
-									_spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].Position.X - 75, turretButtonList[i].Position.Y + 75), Color.White);
-									_spriteBatch.DrawString(font, "X" + turretsPurchased[i].ToString( ), new Vector2(turretButtonList[i].Position.X + 100, turretButtonList[i].Position.Y + 75), Color.Gold);
+									turretButtonList[i].Draw(gameTime, spriteBatch);
+									spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].Position.X - 75, turretButtonList[i].Position.Y + 75), Color.White);
+									spriteBatch.DrawString(font, "X" + turretsPurchased[i].ToString( ), new Vector2(turretButtonList[i].Position.X + 100, turretButtonList[i].Position.Y + 75), Color.Gold);
 								}
 							}
 
 							if (isPaused) {
-								SpriteUtils.DrawRect(_spriteBatch, _graphics, new Rectangle(Point.Zero, SCREEN_DIMENSIONS.ToPoint( )), Color.Black, opacity: 0.5f);
+								SpriteUtils.DrawRect(spriteBatch, graphics, new Rectangle(Point.Zero, SCREEN_DIMENSIONS.ToPoint( )), Color.Black, opacity: 0.5f);
 
 								// _spriteBatch.Draw(new Rectangle(0,0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight), Color.LightBlue);
-								_spriteBatch.DrawString(font, "Paused", new Vector2(_graphics.PreferredBackBufferWidth / 2 - 50, 30), Color.White);
+								spriteBatch.DrawString(font, "Paused", new Vector2(graphics.PreferredBackBufferWidth / 2 - 50, 30), Color.White);
 
-								pauseResumeButton.Draw(_spriteBatch);
-								pauseMenuButton.Draw(_spriteBatch);
+								pauseResumeButton.Draw(spriteBatch);
+								pauseMenuButton.Draw(spriteBatch);
 							}
 
 							break;
 						case GameState.ShopInPlacment:
-							turretInPurchase.Draw(gameTime, _spriteBatch);
+							turretInPurchase.Draw(gameTime, spriteBatch);
 							break;
 					}
 
 					break;
 				case MenuState.GameOver:
-					_spriteBatch.DrawString(font, "Game Over!", new Vector2(_graphics.PreferredBackBufferWidth / 2 - 50, _graphics.PreferredBackBufferHeight / 5 * 2), Color.DarkRed);
-					_spriteBatch.DrawString(font, "Press 'Enter' to return to main menu!", new Vector2(_graphics.PreferredBackBufferWidth / 2 - 400, _graphics.PreferredBackBufferHeight / 5 * 4), Color.White);
+					spriteBatch.DrawString(font, "Game Over!", new Vector2(graphics.PreferredBackBufferWidth / 2 - 50, graphics.PreferredBackBufferHeight / 5 * 2), Color.DarkRed);
+					spriteBatch.DrawString(font, "Press 'Enter' to return to main menu!", new Vector2(graphics.PreferredBackBufferWidth / 2 - 400, graphics.PreferredBackBufferHeight / 5 * 4), Color.White);
 
 					break;
 			}
 
-			_spriteBatch.End( );
+			spriteBatch.End( );
 
 			base.Draw(gameTime);
 		}
@@ -744,7 +760,7 @@ namespace MonoZombie {
 						break;
 				}
 
-				ListOfZombies.Add(new Zombie(tile.Position, zombieHealth, zombieMoveSpeed, zombieAttackSpeed, tile));
+				Zombies.Add(new Zombie(tile.Position, zombieHealth, zombieMoveSpeed, zombieAttackSpeed, tile));
 			}
 		}
 
@@ -758,9 +774,9 @@ namespace MonoZombie {
 			isInShop = false;
 
 			// Clear all of the lists of game objects
-			ListOfBullets.Clear( );
-			ListOfZombies.Clear( );
-			ListOfTurrets.Clear( );
+			Bullets.Clear( );
+			Zombies.Clear( );
+			Turrets.Clear( );
 
 			// Create (or re-create) the player
 			Player = new Player(playerTexture, SCREEN_DIMENSIONS / 2, 100, 5, 3);

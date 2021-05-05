@@ -10,6 +10,9 @@ namespace MonoZombie {
 		private float secondsSinceLastDamage;
 		private float secondsSinceLastAttack;
 
+		private int lastDamageTaken;
+		private Vector2 lastDamagePosition;
+
 		public int Health {
 			get;
 			private set;
@@ -55,13 +58,13 @@ namespace MonoZombie {
 
 		public new void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
 			if (IsOnScreen) {
-				SpriteManager.DrawImage(spriteBatch, texture, Rect, ((WasDamaged) ? Color.Red : Color.White), angle: Angle);
+				SpriteUtils.DrawImage(spriteBatch, texture, Rect, ((WasDamaged) ? Color.Red : Color.White), angle: Angle);
 			}
 		}
 
 		protected void ShootBullet (int bulletDamage) {
 			if (CanAttack) {
-				Main.ListOfBullets.Add(new Bullet(Main.bulletTexture, Position, this, Angle, bulletDamage: bulletDamage));
+				Main.Bullets.Add(new Bullet(Main.bulletTexture, Position, this, Angle, bulletDamage: bulletDamage));
 
 				secondsSinceLastAttack = 0;
 			}
@@ -77,11 +80,14 @@ namespace MonoZombie {
 
 		public void TakeDamage (int damage) {
 			Health -= damage;
+
 			secondsSinceLastDamage = 0;
 
 			if (Health <= 0) {
 				Destroy( );
 			}
+
+			Main.Particles.Add(new Particle($"-{damage}", Color.Red, Position, Main.DAMAGE_INDIC_TIME * 2, this));
 		}
 	}
 }

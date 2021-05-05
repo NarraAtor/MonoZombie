@@ -108,14 +108,14 @@ namespace MonoZombie {
 			float closestRange = Range;
 
 			// Loop through each of the enemies currently on the map to find the closest one
-			for (int i = Main.ListOfZombies.Count - 1; i >= 0; i--) {
+			for (int i = Main.Zombies.Count - 1; i >= 0; i--) {
 				// Get the distance from this turret to the current zombie
-				float distancetoZombie = Vector2.Distance(Main.ListOfZombies[i].Position, Position);
+				float distancetoZombie = Vector2.Distance(Main.Zombies[i].Position, Position);
 
 				// Check to see if the current zombie is the closest one discovered
 				if (distancetoZombie < closestRange) {
 					closestRange = distancetoZombie;
-					target = Main.ListOfZombies[i];
+					target = Main.Zombies[i];
 				}
 			}
 		}
