@@ -18,7 +18,7 @@ namespace MonoZombie {
 
 		public Rectangle Rect {
 			get {
-				return SpriteManager.GetBoundingRect(texture, Position, SpriteManager.OBJECT_SCALE);
+				return SpriteUtils.GetBoundingRect(texture, Position, SpriteUtils.OBJECT_SCALE);
 			}
 		}
 		
@@ -90,7 +90,7 @@ namespace MonoZombie {
 		 */
 		public virtual void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
 			if (IsOnScreen) {
-				SpriteManager.DrawImage(spriteBatch, texture, Rect, Color.White, angle: Angle);
+				SpriteUtils.DrawImage(spriteBatch, texture, Rect, Color.White, angle: Angle);
 			}
 		}
 

@@ -8,9 +8,9 @@ using System.Text;
 // Purpose : A class that has methods to draw images and text to the screen with a lot of customization
 
 namespace MonoZombie {
-	public static class SpriteManager {
+	public static class SpriteUtils {
 		// How much to scale the UI and game objects up by in-game
-		public const float UI_SCALE = 5;
+		public const float UI_SCALE = 5f;
 		public const float OBJECT_SCALE = 4f;
 
 		/*
@@ -147,16 +147,26 @@ namespace MonoZombie {
 		 * Rectangle rect							: The rectangle bounds of the debug rect
 		 * Color color								: The color of the debug rectangle
 		 */
-		public static void DrawDebugRect (SpriteBatch spriteBatch, GraphicsDeviceManager graphics, Rectangle rect, Color color) {
+		public static void DrawRect (SpriteBatch spriteBatch, GraphicsDeviceManager graphics, Rectangle rect, Color color, bool isFilled = true, float opacity = 1) {
 			// Create a blank rectangular texture
 			Texture2D debugTexture = new Texture2D(graphics.GraphicsDevice, rect.Width, rect.Height);
+
+			color = new Color(color.R, color.G, color.B, opacity);
 
 			// Create a blank color array the size of the debug texture
 			Color[ ] data = new Color[rect.Width * rect.Height];
 
 			// Set all of the color values in the array to the color specified
-			for (int i = 0; i < data.Length; ++i) {
-				data[i] = color;
+			for (int x = 0; x < rect.Width; x++) {
+				for (int y = 0; y < rect.Height; y++) {
+					if (!isFilled) {
+						if ((x != 0 && x != rect.Width - 1) && (y != 0 && y != rect.Height - 1)) {
+							continue;
+						}
+					}
+
+					data[(x * rect.Height) + y] = color;
+				}
 			}
 
 			// Apply the color changes to the blank debug texture

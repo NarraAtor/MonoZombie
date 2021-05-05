@@ -58,35 +58,35 @@ namespace MonoZombie {
 			[0] = 47
 		};
 
-		private Tile[ , ] tiles;
+		public Tile[, ] Tiles {
+			get;
+			private set;
+		}
 
-		// private Vector2[ ] zombieSpawns;
-
-		public Tile[ , ] Tiles { get { return tiles; } }
 		public Tile this[int x, int y] {
 			get {
 				if (x >= 0 && x < Width && y >= 0 && y < Height) {
-					return tiles[x, y];
+					return Tiles[x, y];
 				}
 
 				return null;
 			}
 		}
 
-		public GameObject[ ] CollidableMapTiles {
+		public GameObject[ ] CollidableTiles {
 			get;
 			private set;
 		}
 
 		public int Width {
 			get {
-				return tiles.GetLength(0);
+				return Tiles.GetLength(0);
 			}
 		}
 
 		public int Height {
 			get {
-				return tiles.GetLength(1);
+				return Tiles.GetLength(1);
 			}
 		}
 
@@ -108,7 +108,7 @@ namespace MonoZombie {
 		public void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
 			for (int x = 0; x < Width; x++) {
 				for (int y = 0; y < Height; y++) {
-					tiles[x, y].Update(gameTime, mouse, keyboard);
+					Tiles[x, y].Update(gameTime, mouse, keyboard);
 				}
 			}
 		}
@@ -116,7 +116,7 @@ namespace MonoZombie {
 		public void UpdateCameraScreenPosition (Camera camera) {
 			for (int x = 0; x < Width; x++) {
 				for (int y = 0; y < Height; y++) {
-					tiles[x, y].UpdateCameraScreenPosition(camera);
+					Tiles[x, y].UpdateCameraScreenPosition(camera);
 				}
 			}
 		}
@@ -135,31 +135,9 @@ namespace MonoZombie {
 		public void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
 			for (int x = 0; x < Width; x++) {
 				for (int y = 0; y < Height; y++) {
-					tiles[x, y].Draw(gameTime, spriteBatch);
+					Tiles[x, y].Draw(gameTime, spriteBatch);
 				}
 			}
-		}
-
-		// Author: Ken Adachi-Bartholomay
-		// Purpose: Checks for circle-circle collision between tiles and another object (primarily used for bullets)
-		// Params: other for the other gameObject to check collision with any tiles
-		// Restrictions: Shouldn't be used for anything other than bullets/other small objects
-		public bool CheckRadiusCollision (GameObject other) {
-			// Whether or not the "other" gameobject is colliding with any of the tiles on the map
-			bool foundCollision = false;
-
-			// Loop through all the collidable tiles on the map
-			for (int i = 0; i < CollidableMapTiles.Length; i++) {
-				GameObject tile = CollidableMapTiles[i];
-
-				double distanceSqrd = Math.Pow(other.Rect.Center.X - tile.Rect.Center.X, 2) + Math.Pow(other.Rect.Center.Y - tile.Rect.Center.Y, 2);
-				double totalRadiiSqrd = Math.Pow(((other.Rect.Width / 3) + (tile.Rect.Width / 3)), 2);
-				if (distanceSqrd <= totalRadiiSqrd) {
-					foundCollision = true;
-				}
-			}
-
-			return foundCollision;
 		}
 
 		/*
@@ -194,7 +172,7 @@ namespace MonoZombie {
 				// Based on the current indexes of the map tiles, get their positions on the screen
 				// First, get the dimensions of the actual tile sprite in pixels
 				Vector2 tileBaseSpriteDimensions = Main.grassTextures[0].Bounds.Size.ToVector2( );
-				Vector2 tileSpriteDimensions = tileBaseSpriteDimensions * SpriteManager.OBJECT_SCALE;
+				Vector2 tileSpriteDimensions = tileBaseSpriteDimensions * SpriteUtils.OBJECT_SCALE;
 
 				// Calculate the x and y of the tile incorperating the fact that the sprites need to be scaled up for the game
 				// Also, shift the sprites a bit to get their center position rather than the top left position. This makes it a lot
@@ -215,10 +193,10 @@ namespace MonoZombie {
 				loadedTiles[currX, currY] = new Tile(tileType, tilePosition, !(tileType == TileType.Lava || tileType == TileType.Wall));
 			}
 
-			tiles = loadedTiles;
+			Tiles = loadedTiles;
 
 			// Get all of the tiles in the map that have colliders
-			CollidableMapTiles = GetColliders( );
+			CollidableTiles = GetColliders( );
 
 			// Update all textures that are reliant on bitmasking
 			UpdateBitmaskedTextures( );
@@ -237,8 +215,8 @@ namespace MonoZombie {
 			// Loop through all the tiles and only get the ones that are collidable
 			for (int x = 0; x < Width; x++) {
 				for (int y = 0; y < Height; y++) {
-					if (!tiles[x, y].IsWalkable) {
-						tileColliders.Add(tiles[x, y]);
+					if (!Tiles[x, y].IsWalkable) {
+						tileColliders.Add(Tiles[x, y]);
 					}
 				}
 			}
@@ -250,7 +228,7 @@ namespace MonoZombie {
 			for (int x = 0; x < Width; x++) {
 				for (int y = 0; y < Height; y++) {
 					// Get the current type of the current tile
-					TileType currType = tiles[x, y].Type;
+					TileType currType = Tiles[x, y].Type;
 
 					// If the tile is not equal to a tile that need to be bitmasked, then just continue to the next tile
 					if (currType != TileType.Gravel && currType != TileType.Wall) {
@@ -297,10 +275,10 @@ namespace MonoZombie {
 					// Set the current tiles texture to the bitmask caluclated texture
 					switch (currType) {
 						case TileType.Wall:
-							tiles[x, y].SetTexture(Main.wallTextures[textureIndex]);
+							Tiles[x, y].SetTexture(Main.wallTextures[textureIndex]);
 							break;
 						case TileType.Gravel:
-							tiles[x, y].SetTexture(Main.gravelTextures[textureIndex]);
+							Tiles[x, y].SetTexture(Main.gravelTextures[textureIndex]);
 							break;
 						default:
 							Console.WriteLine("Yikes this isnt right bro");

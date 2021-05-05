@@ -25,21 +25,23 @@ namespace MonoZombie {
 		private Texture2D turretBaseTexture; // The base image of the turret
 		private Texture2D turretHeadTexture; // The rotating head of the turret
 
-		private TurretType turretType;
-		private int turretRange;
-		private int turretDamage;
 		private Zombie target; // the target to shoot at
+
+		private TurretType turretType;
 
 		public int Price {
 			get;
 			private set;
 		}
 
-		public int Range { get { return turretRange; } }
-
-		public int RoundTimer {
+		public int Range {
 			get;
-			set;
+			private set;
+		}
+
+		public int Damage {
+			get;
+			private set;
 		}
 
 		public Turret (TurretType turretType, Texture2D turretBaseTexture, Texture2D turretHeadTexture, Vector2 centerPosition, GameObject parent = null)
@@ -47,49 +49,48 @@ namespace MonoZombie {
 			// Goes through each of the diffrent turret types and then sets stats accordingly 
 			this.turretBaseTexture = turretBaseTexture;
 			this.turretHeadTexture = turretHeadTexture;
-			RoundTimer = 1;
 
 			this.turretType = turretType;
 			switch (this.turretType) {
 
 				case TurretType.Cannon: {
-						turretRange = 100;
-						turretDamage = 100;
+						Range = 100;
+						Damage = 100;
 						Price = 200;
 						break;
 					}
 				case TurretType.Archer: {
-						turretRange = 50;
-						turretDamage = 100;
+						Range = 50;
+						Damage = 100;
 						Price = 300;
 						AttacksPerSecond = 5;
 						break;
 					}
 
 				case TurretType.Buff: {
-						turretRange = 100;
-						turretDamage = 100;
+						Range = 100;
+						Damage = 100;
 						Price = 400;
 						break;
 					}
 				case TurretType.Magic:
-					turretRange = 50;
-					turretDamage = 100;
+					Range = 50;
+					Damage = 100;
 					Price = 500;
 
 					break;
 				case TurretType.Trap:
-					turretRange = 50;
-					turretDamage = 100;
+					Range = 50;
+					Damage = 100;
 					Price = 500;
 
 					break;
 			}
 
 			// Turret test values
-			AttacksPerSecond = 1;
-			turretRange = 400;
-			turretDamage = 40;
+			// AttacksPerSecond = 1;
+			// Range = 400;
+			// Damage = 40;
 		}
 
 		/// <summary>
@@ -104,7 +105,7 @@ namespace MonoZombie {
 			target = null;
 
 			// The closest zombie in range of the turret
-			float closestRange = turretRange;
+			float closestRange = Range;
 
 			// Loop through each of the enemies currently on the map to find the closest one
 			for (int i = Main.ListOfZombies.Count - 1; i >= 0; i--) {
@@ -134,7 +135,7 @@ namespace MonoZombie {
 				RotateTo(target.Position);
 
 				if (CanAttack) {
-					ShootBullet(turretDamage);
+					ShootBullet(Damage);
 				}
 			}
 		}
@@ -142,8 +143,8 @@ namespace MonoZombie {
 
 		public new void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
 			if (IsOnScreen) {
-				SpriteManager.DrawImage(spriteBatch, turretBaseTexture, Rect, Color.White);
-				SpriteManager.DrawImage(spriteBatch, turretHeadTexture, Rect, Color.White, angle: Angle);
+				SpriteUtils.DrawImage(spriteBatch, turretBaseTexture, Rect, Color.White);
+				SpriteUtils.DrawImage(spriteBatch, turretHeadTexture, Rect, Color.White, angle: Angle);
 			}
 		}
 	}

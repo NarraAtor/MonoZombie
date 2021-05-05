@@ -10,7 +10,6 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MonoZombie {
 	public class Player : Entity {
-
 		public Player (Texture2D texture, Vector2 position, int health, float playerSpeed, float attacksPerSecond)
 			: base(texture, position, health, attacksPerSecond, moveSpeed: playerSpeed, canRotate: true) {
 		}

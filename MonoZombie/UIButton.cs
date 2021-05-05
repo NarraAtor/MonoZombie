@@ -44,8 +44,8 @@ namespace MonoZombie {
 		}
 
 		public override void Draw (SpriteBatch spriteBatch) {
-			SpriteManager.DrawImage(spriteBatch, Main.buttonTexture, rect, Color.White);
-			SpriteManager.DrawText(spriteBatch, rect, text, Color.Black);
+			SpriteUtils.DrawImage(spriteBatch, Main.buttonTexture, rect, Color.White);
+			SpriteUtils.DrawText(spriteBatch, rect, text, Color.Black);
 		}
 	}
 }

@@ -18,7 +18,10 @@ namespace MonoZombie
     public class Bullet : GameObject {
         private Vector2 movement;
 
-        private int bulletDamage;
+        public int Damage {
+            get;
+            private set;
+		}
 
         /// <summary>
         /// Instantiates a Bullet object
@@ -32,7 +35,7 @@ namespace MonoZombie
         /// <param name="bulletSpeed"> How fast the bullet is going to be moving</param>
         public Bullet (Texture2D texture, Vector2 position, GameObject parent, float angle, int bulletSpeed = Main.BULLET_SPEED, int bulletDamage = Main.PLAYER_BULLET_DAMAGE)
             : base(texture, position, parent: parent, moveSpeed: bulletSpeed, canRotate: true) {
-            this.bulletDamage = bulletDamage;
+            Damage = bulletDamage;
 
             movement = new Vector2(MathF.Sin(angle), -MathF.Cos(angle));
             movement.Normalize( );
@@ -67,7 +70,7 @@ namespace MonoZombie
                 // If the bullet collides with an enemy, we want to destroy the bullet and decrease the zombie health
                 if (typeof(Zombie).IsInstanceOfType(other)) {
                     // 10 can be changed later, its just the number I found in the code in the Main class
-                    ((Zombie) other).TakeDamage(bulletDamage);
+                    ((Zombie) other).TakeDamage(Damage);
 
                     Destroy( );
                 } else if (typeof(Tile).IsInstanceOfType(other)) {
