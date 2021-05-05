@@ -718,9 +718,7 @@ namespace MonoZombie {
 			// Increment the round number
 			roundNumber++;
 
-			for (int i = Turrets.Count - 1; i >= 0; i--) {
-				Turrets[i].TakeDamage(1);
-			}
+			isInBetweenRounds = false;
 
 			// Generate zombie stats based on the round number
 			// * This means that as the rounds go on, the zombies get harder and harder
