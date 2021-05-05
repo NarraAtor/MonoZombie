@@ -25,7 +25,7 @@ namespace MonoZombie {
 		private Texture2D turretBaseTexture; // The base image of the turret
 		private Texture2D turretHeadTexture; // The rotating head of the turret
 
-		private TurretType type;
+		private TurretType turretType;
 		private int turretRange;
 		private int turretDamage;
 		private Zombie target; // the target to shoot at
@@ -35,10 +35,9 @@ namespace MonoZombie {
 			private set;
 		}
 
-		public int Range { get { return range; } }
+		public int Range { get { return turretRange; } }
 
-		public int RoundTimer
-		{
+		public int RoundTimer {
 			get;
 			set;
 		}
@@ -50,31 +49,29 @@ namespace MonoZombie {
 			this.turretHeadTexture = turretHeadTexture;
 			RoundTimer = 1;
 
-			this.type = type;
-			switch (type) {
+			this.turretType = turretType;
+			switch (this.turretType) {
 
 				case TurretType.Cannon: {
-						range = 100;
-						damage = 100;
+						turretRange = 100;
+						turretDamage = 100;
 						Price = 200;
 						break;
 					}
 				case TurretType.Archer: {
-						range = 50;
-						damage = 100;
+						turretRange = 50;
+						turretDamage = 100;
 						Price = 300;
-						attacksPerSecond = 5;
+						AttacksPerSecond = 5;
 						break;
 					}
 
 				case TurretType.Buff: {
-						range = 100;
-						damage = 100;
+						turretRange = 100;
+						turretDamage = 100;
 						Price = 400;
 						break;
 					}
-
-					break;
 				case TurretType.Magic:
 					turretRange = 50;
 					turretDamage = 100;
@@ -131,29 +128,10 @@ namespace MonoZombie {
 			base.Update(gameTime, mouse, keyboard);
 
 			// Detect nearby targets
-			DetectTarget();
+			DetectTarget( );
 
-			if (type == TurretType.Archer)
-			{
-				// If the current target is not equal to null, then rotate the turret to look towards it
-				if (target != null)
-				{
-					RotateTo(target.Position);
-
-					// If the turret can shoot a bullet, shoot a bullet
-					if (timeSinceLastAttack >= 1 / attacksPerSecond)
-					{
-						Main.ListOfBullets.Add(new Bullet(Main.bulletTexture, centerPosition, this, Angle, bulletDamage: Main.ARCHER_BULLET_DAMAGE));
-
-						timeSinceLastAttack = 0;
-					}
-				}
-			}
-			else if (type == TurretType.Cannon)
-			{
-				if (target != null)
-				{
-					RotateTo(target.Position);
+			if (target != null) {
+				RotateTo(target.Position);
 
 				if (CanAttack) {
 					ShootBullet(turretDamage);

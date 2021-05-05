@@ -124,8 +124,6 @@ namespace MonoZombie {
 
 		private static Random random;
 
-		public static Player Player { get { return player; } }
-
 		public static List<Bullet> ListOfBullets {
 			get;
 		} = new List<Bullet>();
@@ -516,7 +514,7 @@ namespace MonoZombie {
 							if (GetKeyDown(Keys.T)) {
 								if(turretsPurchased[0] > 0)
 								{
-									ListOfTurrets.Add(new Turret(TurretType.Archer, turretArcherBaseTexture, turretArcherHeadTexture, player.Position, parent: player));
+									ListOfTurrets.Add(new Turret(TurretType.Archer, turretArcherBaseTexture, turretArcherHeadTexture, Player.Position, parent: Player));
 									--turretsPurchased[0];
 								}
 							}
@@ -524,14 +522,14 @@ namespace MonoZombie {
                             {
 								if (turretsPurchased[1] > 0)
                                 {
-									ListOfTurrets.Add(new Turret(TurretType.Buff, turretArcherBaseTexture, buffTexture, player.Position, parent: player));
+									ListOfTurrets.Add(new Turret(TurretType.Buff, turretArcherBaseTexture, buffTexture, Player.Position, parent: Player));
                                 }
                             }
 							if (GetKeyDown(Keys.U))
                             {
 								if (turretsPurchased[2] > 0)
                                 {
-									ListOfTurrets.Add(new Turret(TurretType.Cannon, turretArcherBaseTexture, turretArcherHeadTexture, player.Position, parent: player));
+									ListOfTurrets.Add(new Turret(TurretType.Cannon, turretArcherBaseTexture, turretArcherHeadTexture, Player.Position, parent: Player));
 									--turretsPurchased[2];
                                 }
                             }
@@ -547,7 +545,7 @@ namespace MonoZombie {
 
 						case GameState.InBetweenRounds:
 
-							player.Update(gameTime, currMouseState, currKeyboardState);
+							Player.Update(gameTime, currMouseState, currKeyboardState);
 
 							for (int i = ListOfTurrets.Count - 1; i >= 0; i--)
 							{
@@ -555,7 +553,7 @@ namespace MonoZombie {
 							}
 
 							// Update camera screen positions of all game objects
-							player.UpdateCameraScreenPosition(camera);
+							Player.UpdateCameraScreenPosition(camera);
 
 							map.UpdateCameraScreenPosition(camera);
 
@@ -563,7 +561,7 @@ namespace MonoZombie {
 							{
 								if (turretsPurchased[0] > 0)
 								{
-									ListOfTurrets.Add(new Turret(TurretType.Archer, turretArcherBaseTexture, turretArcherHeadTexture, player.Position, parent: player));
+									ListOfTurrets.Add(new Turret(TurretType.Archer, turretArcherBaseTexture, turretArcherHeadTexture, Player.Position, parent: Player));
 									--turretsPurchased[0];
 								}
 							}
@@ -571,14 +569,14 @@ namespace MonoZombie {
 							{
 								if (turretsPurchased[1] > 0)
 								{
-									ListOfTurrets.Add(new Turret(TurretType.Buff, turretArcherBaseTexture, buffTexture, player.Position, parent: player));
+									ListOfTurrets.Add(new Turret(TurretType.Buff, turretArcherBaseTexture, buffTexture, Player.Position, parent: Player));
 								}
 							}
 							if (GetKeyDown(Keys.U))
 							{
 								if (turretsPurchased[2] > 0)
 								{
-									ListOfTurrets.Add(new Turret(TurretType.Cannon, turretArcherBaseTexture, turretArcherHeadTexture, player.Position, parent: player));
+									ListOfTurrets.Add(new Turret(TurretType.Cannon, turretArcherBaseTexture, turretArcherHeadTexture, Player.Position, parent: Player));
 									--turretsPurchased[2];
 								}
 							}
@@ -715,13 +713,13 @@ namespace MonoZombie {
 								ListOfTurrets[i].Draw(gameTime, _spriteBatch);
 							}
 
-							player.Draw(gameTime, _spriteBatch);
+							Player.Draw(gameTime, _spriteBatch);
 
 							// Draw UI elements
 							SpriteManager.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), Color.White, scale: SpriteManager.UI_SCALE);
 							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 30), $"Currency: {currency}", Color.Black, fontScale: 0.5f);
 							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 45), $"Round Number: {roundNumber}", Color.Black, fontScale: 0.5f);
-							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 60), $"Player Health: {player.Health}", Color.Black, fontScale: 0.5f);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 60), $"Player Health: {Player.Health}", Color.Black, fontScale: 0.5f);
 
 							// Draw FPS counter
 							SpriteManager.DrawText(_spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 20), $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds)}", Color.Black, fontScale: 0.5f);
@@ -850,8 +848,8 @@ namespace MonoZombie {
 
 			for (int i = 0; i < turretButtonList.Count; i++) {
 				turretButtonList[i].Draw(gameTime, _spriteBatch);
-				_spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].X-75, turretButtonList[i].Y + 75), Color.White);
-				_spriteBatch.DrawString(font, "X"+turretsPurchased[i].ToString(), new Vector2(turretButtonList[i].X + 100, turretButtonList[i].Y + 75), Color.Gold);
+				_spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].Position.X -75, turretButtonList[i].Position.Y + 75), Color.White);
+				_spriteBatch.DrawString(font, "X"+turretsPurchased[i].ToString(), new Vector2(turretButtonList[i].Position.X + 100, turretButtonList[i].Position.Y + 75), Color.Gold);
 			}
 		}
 	}
