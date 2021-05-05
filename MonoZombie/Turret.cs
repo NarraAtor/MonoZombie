@@ -21,98 +21,57 @@ namespace MonoZombie {
 	/// Purpose: Manages turrets and their function.
 	/// Restrictions:
 	/// </summary>
-	public class Turret : GameObject {
-		protected float timeSinceLastAttack;
-		protected float attacksPerSecond;
-
+	public class Turret : Entity {
 		private Texture2D turretBaseTexture; // The base image of the turret
 		private Texture2D turretHeadTexture; // The rotating head of the turret
 
-		private int range;
-		private int damage;
-		private Enemy target; // the target to shoot at
-		private TurretType type;
+		private Zombie target; // the target to shoot at
 
-		public int Price {
+		private TurretType turretType;
+
+		public int Range {
 			get;
 			private set;
 		}
 
-		public int Range { get { return range; } }
-
-		public int RoundTimer
-		{
+		public int Damage {
 			get;
-			set;
+			private set;
 		}
 
-		public bool CanAttack {
-			get {
-				return (timeSinceLastAttack >= 1 / attacksPerSecond);
+		public Turret (TurretType turretType, Vector2 centerPosition, GameObject parent = null)
+			: base(Main.turretBaseTexture, centerPosition, health: 3, parent: parent, canRotate: true) {
+			// Goes through each of the diffrent turret types and then sets stats accordingly
+			this.turretType = turretType;
+
+			turretBaseTexture = Main.turretBaseTexture;
+
+			switch (this.turretType) {
+				case TurretType.Cannon:
+					Range = 250;
+					Damage = Main.CANNON_BULLET_DAMAGE;
+					AttacksPerSecond = 1;
+
+					turretHeadTexture = Main.turretCannonHeadTexture;
+
+					break;
+				case TurretType.Archer:
+					Range = 350;
+					Damage = Main.ARCHER_BULLET_DAMAGE;
+					AttacksPerSecond = 2;
+
+					turretHeadTexture = Main.turretArcherHeadTexture;
+
+					break;
+
+				case TurretType.Buff:
+					Range = 150;
+					Damage = 0;
+
+					turretHeadTexture = Main.turretBuffHeadTexture;
+
+					break;
 			}
-		}
-
-		public TurretType Type { get { return type; } }
-
-		public Turret (TurretType type, Texture2D turretBaseTexture, Texture2D turretHeadTexture, Vector2 position, GameObject parent = null) : base(turretHeadTexture, position, parent: parent, canRotate: true) {
-			// Goes through each of the diffrent turret types and then sets stats accordingly 
-
-			this.turretBaseTexture = turretBaseTexture;
-			this.turretHeadTexture = turretHeadTexture;
-			RoundTimer = 1;
-
-			this.type = type;
-			switch (type) {
-
-				case TurretType.Cannon: {
-						range = 100;
-						damage = 100;
-						Price = 200;
-						break;
-					}
-				case TurretType.Archer: {
-						range = 50;
-						damage = 100;
-						Price = 300;
-						attacksPerSecond = 5;
-						break;
-					}
-
-				case TurretType.Buff: {
-						range = 100;
-						damage = 100;
-						Price = 400;
-						break;
-					}
-
-				case TurretType.DeBuff: {
-						range = 50;
-						damage = 100;
-						Price = 500;
-						break;
-					}
-
-				case TurretType.Magic: {
-						range = 50;
-						damage = 100;
-						Price = 500;
-						break;
-					}
-
-				case TurretType.Trap: {
-						range = 50;
-						damage = 100;
-						Price = 500;
-						break;
-					}
-
-
-			}
-
-			// Turret test values
-			range = 400;
-			attacksPerSecond = 1;
-			damage = 40;
 		}
 
 		/// <summary>
@@ -127,17 +86,17 @@ namespace MonoZombie {
 			target = null;
 
 			// The closest zombie in range of the turret
-			float closestRange = range;
+			float closestRange = Range;
 
 			// Loop through each of the enemies currently on the map to find the closest one
-			foreach (Enemy zombie in Main.ListOfZombies) {
+			for (int i = Main.Zombies.Count - 1; i >= 0; i--) {
 				// Get the distance from this turret to the current zombie
-				float distancetoZombie = Vector2.Distance(zombie.Position, Position);
+				float distancetoZombie = Vector2.Distance(Main.Zombies[i].Position, Position);
 
 				// Check to see if the current zombie is the closest one discovered
 				if (distancetoZombie < closestRange) {
 					closestRange = distancetoZombie;
-					target = zombie;
+					target = Main.Zombies[i];
 				}
 			}
 		}
@@ -147,58 +106,36 @@ namespace MonoZombie {
 		 * 
 		 * * Overriden from GameObject class
 		 */
-		public new void Update(GameTime gameTime, MouseState mouse, KeyboardState keyboard)
-		{
-			// Update the last time since this game object has attacked
-			timeSinceLastAttack += (float)gameTime.ElapsedGameTime.TotalSeconds;
+		public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
+			base.Update(gameTime, mouse, keyboard);
 
-			// Detect nearby targets
-			DetectTarget();
-
-			if (type == TurretType.Archer)
-			{
-				// If the current target is not equal to null, then rotate the turret to look towards it
-				if (target != null)
-				{
-					RotateTo(target.Position);
-
-					// If the turret can shoot a bullet, shoot a bullet
-					if (timeSinceLastAttack >= 1 / attacksPerSecond)
-					{
-						Main.ListOfBullets.Add(new Bullet(Main.bulletTexture, centerPosition, this, Angle, bulletDamage: Main.ARCHER_BULLET_DAMAGE));
-
-						timeSinceLastAttack = 0;
-					}
-				}
-			}
-			else if (type == TurretType.Cannon)
-			{
-				if (target != null)
-				{
-					RotateTo(target.Position);
-
-					// If the turret can shoot a bullet, shoot a bullet
-
-					// See what I did here? Hehe. The faster the other archer turret shoots , the slower this one does
-					if (timeSinceLastAttack >= 1 * attacksPerSecond)
-					{
-						Main.ListOfBullets.Add(new Bullet(Main.bulletTexture, centerPosition, this, Angle, bulletDamage: Main.CANNON_BULLET_DAMAGE));
-
-						timeSinceLastAttack = 0;
-					}
+			if (turretType == TurretType.Buff) {
+				for (int i = Main.Turrets.Count - 1; i >= 0; i--) {
+					Main.Turrets[i].IsBuffed = (Vector2.Distance(Main.Turrets[i].Position, Position) <= Range);
 				}
 
-				base.Update(gameTime, mouse, keyboard);
+				Main.Player.IsBuffed = (Vector2.Distance(Main.Player.Position, Position) <= Range);
+			} else {
+				// Detect nearby targets
+				DetectTarget( );
+
+				if (target != null) {
+					RotateTo(target.Position);
+
+					if (CanAttack) {
+						ShootBullet(Damage);
+					}
+				}
 			}
 		}
 
+		public new void Draw (GameTime gameTime, SpriteBatch spriteBatch, GraphicsDeviceManager graphics) {
+			if (IsOnScreen) {
+				SpriteUtils.DrawImage(spriteBatch, turretBaseTexture, Rect, ((WasDamaged) ? Color.Red : BaseTint));
+				SpriteUtils.DrawImage(spriteBatch, turretHeadTexture, Rect, ((WasDamaged) ? Color.Red : BaseTint), angle: Angle);
 
-		public new void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
-			SpriteManager.DrawImage(spriteBatch, turretBaseTexture, Rect, Color.White);
-
-			//Change the angle the gun is drawn at since the asset is drawn a bit differently 
-			//(about 90 degrees off from where it's actually facing).
-			SpriteManager.DrawImage(spriteBatch, turretHeadTexture, Rect, Color.White, angle: Angle);
+				DrawHealthBar(gameTime, spriteBatch, graphics);
+			}
 		}
 	}
 }

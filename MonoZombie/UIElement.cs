@@ -10,16 +10,28 @@ using System.Text;
 
 namespace MonoZombie {
 	public abstract class UIElement {
+		private Texture2D texture;
+
 		protected Rectangle rect;
+		protected float buttonScale;
 		protected bool isCentered;
 
-		public UIElement (Texture2D texture, Vector2 position, bool isCentered = true) {
-			this.isCentered = isCentered;
-
-			rect = SpriteManager.GetBoundingRect(texture, position, scale: SpriteManager.UI_SCALE, isCentered: this.isCentered);
+		public Vector2 Position {
+			get;
+			private set;
 		}
 
-		public abstract void Update (GameTime gameTime, MouseState mouse);
+		public UIElement (Texture2D texture, Vector2 position, bool isCentered = true) {
+			this.texture = texture;
+			Position = position;
+			this.isCentered = isCentered;
+
+			rect = SpriteUtils.GetBoundingRect(texture, position, scale: SpriteUtils.UI_SCALE, isCentered: isCentered);
+		}
+
+		public virtual void Update (GameTime gameTime, MouseState mouse) {
+			rect = SpriteUtils.GetBoundingRect(texture, Position, scale: buttonScale, isCentered: isCentered);
+		}
 
 		public abstract void Draw (SpriteBatch spriteBatch);
 	}

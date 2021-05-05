@@ -177,7 +177,7 @@ namespace MonoZombie
         /// </summary>
         /// <param name="zombie">the zombie being implemented in this function</param>
         /// <returns>the vertex the zombie is in</returns>
-        public MapSegment GetZombieVertex(Enemy zombie)
+        public MapSegment GetZombieVertex(Zombie zombie)
         {
             //loop through the list of verticies and use Rectangle.Intersects with the tiles they contain.
             //Find the tile with the biggest intersection.
@@ -270,8 +270,8 @@ namespace MonoZombie
         /// <returns></returns>
         public int GetDistance(MapSegment mapSegmentA, MapSegment mapSegmentB)
         {
-            int dstX = Math.Abs(mapSegmentA.TileAtVertex.X - mapSegmentB.TileAtVertex.X);
-            int dstY = Math.Abs(mapSegmentA.TileAtVertex.Y - mapSegmentB.TileAtVertex.Y);
+            int dstX = (int) Math.Abs(mapSegmentA.TileAtVertex.Position.X - mapSegmentB.TileAtVertex.Position.X);
+            int dstY = (int) Math.Abs(mapSegmentA.TileAtVertex.Position.Y - mapSegmentB.TileAtVertex.Position.Y);
 
             //The shorter number tells us how many diagonal steps is needed. 
             //The larger number shows how many cardinal steps are needed.

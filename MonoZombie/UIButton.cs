@@ -10,15 +10,19 @@ namespace MonoZombie {
 		private Action onClick;
 		private bool isPressed;
 		private string text;
+		private float fontScale;
 
-		public UIButton (string text, Vector2 position, Action onClick, bool isCentered = true) : base(Main.buttonTexture, position, isCentered) {
+		public UIButton (string text, Vector2 position, Action onClick, float fontScale = 1f, bool isCentered = true) : base(Main.buttonTexture, position, isCentered) {
 			this.text = text;
 			this.onClick = onClick;
+			this.fontScale = fontScale;
 
 			isPressed = false;
 		}
 
 		public override void Update (GameTime gameTime, MouseState mouse) {
+			base.Update(gameTime, mouse);
+
 			// Check to see if the mouse is within the area of the button
 			bool inXBounds = mouse.X > rect.Left && mouse.X < rect.Right;
 			bool inYBounds = mouse.Y > rect.Top && mouse.Y < rect.Bottom;
@@ -28,11 +32,17 @@ namespace MonoZombie {
 			if (!isPressed) {
 				// If the mouse is within the button bounds and the left mouse button is pressed,
 				// execute the delegate method that was stored within the button
-				if ((inXBounds && inYBounds) && mouse.LeftButton == ButtonState.Pressed) {
-					isPressed = true;
+				if ((inXBounds && inYBounds)) {
+					if (Main.GetLeftMouseButtonDown( )) {
+						isPressed = true;
 
-					// Run the method
-					onClick( );
+						// Run the method
+						onClick( );
+					}
+
+					buttonScale = SpriteUtils.UI_UPSCALE;
+				} else {
+					buttonScale = SpriteUtils.UI_SCALE;
 				}
 			} else {
 				// Reset the isPressed variable when the mouse button is released to allow for the ui button
@@ -44,8 +54,8 @@ namespace MonoZombie {
 		}
 
 		public override void Draw (SpriteBatch spriteBatch) {
-			SpriteManager.DrawImage(spriteBatch, Main.buttonTexture, rect, Color.White);
-			SpriteManager.DrawText(spriteBatch, rect, text, Color.Black);
+			SpriteUtils.DrawImage(spriteBatch, Main.buttonTexture, rect, Color.White);
+			SpriteUtils.DrawText(spriteBatch, rect, text, Color.Black, fontScale: fontScale);
 		}
 	}
 }

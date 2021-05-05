@@ -12,62 +12,32 @@ namespace MonoZombie {
 	public abstract class GameObject {
 		protected Texture2D texture;
 
-		protected Vector2 centerPosition;
-
 		protected bool canRotate;
 		protected bool canMove;
-
 		protected float moveSpeed;
 
 		public Rectangle Rect {
 			get {
-				return SpriteManager.GetBoundingRect(texture, centerPosition, SpriteManager.OBJECT_SCALE);
+				return SpriteUtils.GetBoundingRect(texture, Position, SpriteUtils.OBJECT_SCALE);
 			}
 		}
 
-		public int CamX {
-			get;
-			private set;
-		}
-
-		public int CamY {
-			get;
-			private set;
+		public bool IsOnScreen {
+			get {
+				return (Rect.Right >= 0 && Rect.Left <= Main.SCREEN_DIMENSIONS.X && Rect.Bottom >= 0 && Rect.Top <= Main.SCREEN_DIMENSIONS.Y);
+			}
 		}
 
 		public Vector2 Position {
-			get {
-				return centerPosition;
-			}
+			get;
+			set;
 		}
 
-		// The game object's pixel position X value on the screen
-		public int X {
-			get {
-				return (int) centerPosition.X;
-			}
-
-			set {
-				if (canMove) {
-					centerPosition.X = value;
-				}
-			}
+		public Vector2 CameraPosition {
+			get;
+			private set;
 		}
 
-		// The game object's pixel position Y value on the screen
-		public int Y {
-			get {
-				return (int) centerPosition.Y;
-			}
-
-			set {
-				if (canMove) {
-					centerPosition.Y = value;
-				}
-			}
-		}
-
-		// The angle that the game object is rotated to in radians
 		public float Angle {
 			get;
 			protected set;
@@ -75,18 +45,17 @@ namespace MonoZombie {
 
 		public GameObject (Texture2D texture, Vector2 centerPosition, GameObject parent = null, float moveSpeed = 0, bool canRotate = false, bool canMove = true) {
 			this.texture = texture;
-			this.centerPosition = centerPosition;
+			Position = centerPosition;
+
 			this.canRotate = canRotate;
 			this.canMove = canMove;
 			this.moveSpeed = moveSpeed;
 
 			// Calculate the initial camera position
 			if (parent != null) {
-				CamX = parent.CamX;
-				CamY = parent.CamY;
+				CameraPosition = parent.CameraPosition;
 			} else {
-				CamX = X - (int) (Main.SCREEN_DIMENSIONS / 2).X;
-				CamY = Y - (int) (Main.SCREEN_DIMENSIONS / 2).Y;
+				CameraPosition = centerPosition - Main.SCREEN_DIMENSIONS / 2;
 			}
 		}
 
@@ -112,20 +81,6 @@ namespace MonoZombie {
 		/*
 		 * Author : Frank Alfano
 		 * 
-		 * Update this game objects position based on the camera
-		 * 
-		 * Camera camera			: The camera object
-		 * 
-		 * return					:
-		 */
-		public void UpdateCameraScreenPosition (Camera camera) {
-			// Update the position of the game object based on the target game object
-			centerPosition = camera.CalculateScreenPosition(this);
-		}
-
-		/*
-		 * Author : Frank Alfano
-		 * 
 		 * An overridable method that is used to draw the game object
 		 * * This method needs to be called within a SpriteBatch Begin() and End() draw methods
 		 * 
@@ -134,10 +89,23 @@ namespace MonoZombie {
 		 * return					:
 		 */
 		public virtual void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
-			// Make sure the texture is not null before trying to draw it
-			if (texture != null) {
-				SpriteManager.DrawImage(spriteBatch, texture, Rect, Color.White, angle: Angle);
+			if (IsOnScreen) {
+				SpriteUtils.DrawImage(spriteBatch, texture, Rect, Color.White, angle: Angle);
 			}
+		}
+
+		/*
+		 * Author : Frank Alfano
+		 * 
+		 * Update this game objects position based on the camera
+		 * 
+		 * Camera camera			: The camera object
+		 * 
+		 * return					:
+		 */
+		public void UpdateCameraScreenPosition (Camera camera) {
+			// Update the position of the game object based on the target game object
+			Position = camera.CalculateScreenPosition(this);
 		}
 
 		/* 
@@ -151,50 +119,23 @@ namespace MonoZombie {
 		 */
 		public void RotateTo (Vector2 face) {
 			// Make sure the object can rotate before doing the calculations to rotate it
-			if (canRotate) {
-				// Get the position of the other object with the game object as the origin instead of the top left corner of the screen
-				Vector2 posObjectAsOrigin = new Vector2(face.X - X, Y - face.Y);
+			if (canRotate && IsOnScreen) {
+				Vector2 A = Position + new Vector2(0, Vector2.Distance(Position, face));
+				Vector2 B = face;
+				Vector2 C = Position;
 
-				// If the other point is not directly on top of the player, continue with the calculations
-				// This is to make sure we don't divide by 0 and crash the game
-				if (posObjectAsOrigin != Vector2.Zero) {
-					// Get this distance between the player and the other position
-					float distanceToPoint = Vector2.Distance(face, centerPosition);
+				float dirC2A = MathF.Atan2(A.Y - C.Y, A.X - C.X);
+				float dirC2B = MathF.Atan2(B.Y - C.Y, face.X - C.X);
+				float angleABC = dirC2B - dirC2A;
 
-					// Calculate the angle between the other point and the player
-					// The reason this is done twice is because Cos is always positive and Sin is both positive and negative.
-					// Sin is used to determine how much to adjust the Cos angle because Cos only goes from 0-3.14 (PI) when we need it
-					// to go all the way from 0-6.28 (2PI)
-					float sinAngle = MathF.Asin(posObjectAsOrigin.Y / distanceToPoint);
-					float cosAngle = MathF.Acos(posObjectAsOrigin.X / distanceToPoint);
-					
-					// Make sure the angles are finite numbers to avoid errors
-					if (float.IsNaN(sinAngle) || float.IsInfinity(sinAngle)) {
-						return;
-					}
-					if (float.IsNaN(cosAngle) || float.IsInfinity(cosAngle)) {
-						return;
-					}
-
-					// The is used to determine whether the sin angle is positive or negative
-					int sinMod = (int) -(sinAngle / MathF.Abs(sinAngle));
-
-
-					// If either of the angles are negative, do not calculate the angle because it will just be 0
-					if (sinAngle != 0 && cosAngle != 0) {
-						// Set the rotation based on the calculated angle
-						Angle = (MathF.PI / 2) + (sinMod * cosAngle);
-					}
-				}
+				Angle = angleABC + MathF.PI;
 			}
 		}
 
 		public void MoveBy (Vector2 moveBy) {
 			if (canMove) {
-				centerPosition += moveBy;
-
-				CamX += (int) moveBy.X;
-				CamY += (int) moveBy.Y;
+				Position += moveBy;
+				CameraPosition += moveBy;
 			}
 		}
 
@@ -207,11 +148,19 @@ namespace MonoZombie {
 		 */
 		public bool Destroy ( ) {
 			if (typeof(Bullet).IsInstanceOfType(this)) {
-				Main.ListOfBullets.Remove((Bullet) this);
-			} else if (typeof(Enemy).IsInstanceOfType(this)) {
-				Main.ListOfZombies.Remove((Enemy) this);
+				Main.Bullets.Remove((Bullet) this);
+			} else if (typeof(Zombie).IsInstanceOfType(this)) {
+				Main.Zombies.Remove((Zombie) this);
+
+				int mult = (((Zombie) this).IsSpecial ? Main.ZOMBIE_SPECIAL_MULT : 1);
+				int addedCurrency = new Random( ).Next(Main.ZOMBIE_REWARD_MIN, Main.ZOMBIE_REWARD_MAX) * mult;
+				Main.currency += addedCurrency;
+
+				Main.Particles.Add(new Particle($"+${addedCurrency}", Color.Yellow, Position, Main.DAMAGE_INDIC_TIME * 3, this));
 			} else if (typeof(Turret).IsInstanceOfType(this)) {
-				Main.ListOfTurrets.Remove((Turret) this);
+				Main.Turrets.Remove((Turret) this);
+			} else if (typeof(Particle).IsInstanceOfType(this)) {
+				Main.Particles.Remove((Particle) this);
 			} else {
 				return false;
 			}
@@ -229,6 +178,11 @@ namespace MonoZombie {
 		 * return bool				: Whether or not the game object has collided with something
 		 */
 		public bool CheckUpdateCollision (GameObject other) {
+			// Make sure the other object isnt the same as this object
+			if (other == this) {
+				return false;
+			}
+
 			// Get the intersect rectangle between this game objects rectangle collider and the other game object's rectangle collider
 			Rectangle intersectRect = Rectangle.Intersect(other.Rect, Rect);
 
