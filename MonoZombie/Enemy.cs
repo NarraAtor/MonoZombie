@@ -96,6 +96,8 @@ namespace MonoZombie {
 				{
 					return;
 				}
+
+				//foreach(MapSegment neighbor in Main.GetMapGraph.)
 			}
 		}
 

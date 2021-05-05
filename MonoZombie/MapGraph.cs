@@ -52,13 +52,18 @@ namespace MonoZombie
                     //{
                     //    if (y != 0 && y != tileMatrix.GetLength(1) - 1)
                         {
-                            //Get the verticies in the cardinal directions around this vertex
+                            //Get the verticies in all directions around this vertex
                             List<MapSegment> currentVertexAdjacencies = new List<MapSegment>();
                             currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x , y - 1));
                             currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x, y + 1));
                             currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x + 1, y));
                             currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x - 1, y));
-                            adjacencyDictionary.Add(currentVertex, currentVertexAdjacencies);
+                            //diagnals
+                            currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x - 1, y - 1));
+                            currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x - 1, y + 1));
+                            currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x + 1, y - 1));
+                            currentVertexAdjacencies.Add(FindMapSegmentFromPosition(x + 1, y + 1));
+                        adjacencyDictionary.Add(currentVertex, currentVertexAdjacencies);
                         }
                    // }
 
@@ -216,30 +221,39 @@ namespace MonoZombie
         }
 
         /// <summary>
-        /// Purpose: Helper method that returns the neighbors of the selected MapSegment. For A*.
+        /// Purpose: Returns the neighbors of the selected MapSegment. For A*.
         /// </summary>
         /// <param name="source">the MapSegment who's neighbors we're finding.</param>
         /// <returns></returns>
-        private List<MapSegment> GetNeighbors(MapSegment source)
+        public List<MapSegment> GetNeighbors(MapSegment source)
         {
             List<MapSegment> neighbors = new List<MapSegment>();
+            //
+            ////Check in a 3x3 grid around the MapSegment.
+            ////Ignore the source
+            //for(int x = -1; x <= 1; x++ )
+            //{
+            //    for(int y = -1; y <= 1; y++)
+            //    {
+            //        if(x == 0 && y == 0)
+            //        {
+            //            continue;
+            //        }
+            //
+            //        if(!(FindMapSegmentFromPosition(source.TileAtVertex.X - x, source.TileAtVertex.Y - y) is null))
+            //        {
+            //            neighbors.Add(FindMapSegmentFromPosition(source.TileAtVertex.X - x, source.TileAtVertex.Y - y));
+            //        }
+            //    }
+            //}
 
-            //Check in a 3x3 grid around the MapSegment.
-            //Ignore the source
-            for(int x = -1; x <= 1; x++ )
+            foreach(MapSegment mapSegment in adjacencyDictionary[source])
             {
-                for(int y = -1; y <= 1; y++)
+                if(mapSegment is null)
                 {
-                    if(x == 0 && y == 0)
-                    {
-                        continue;
-                    }
-
-                    if(!(FindMapSegmentFromPosition(source.TileAtVertex.X - x, source.TileAtVertex.Y - y) is null))
-                    {
-                        neighbors.Add(FindMapSegmentFromPosition(source.TileAtVertex.X - x, source.TileAtVertex.Y - y));
-                    }
+                    continue;
                 }
+                neighbors.Add(mapSegment);
             }
             return neighbors;
         }
