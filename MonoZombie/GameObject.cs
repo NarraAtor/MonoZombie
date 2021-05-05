@@ -173,6 +173,11 @@ namespace MonoZombie {
 		 * return bool				: Whether or not the game object has collided with something
 		 */
 		public bool CheckUpdateCollision (GameObject other) {
+			// Make sure the other object isnt the same as this object
+			if (other == this) {
+				return false;
+			}
+
 			// Get the intersect rectangle between this game objects rectangle collider and the other game object's rectangle collider
 			Rectangle intersectRect = Rectangle.Intersect(other.Rect, Rect);
 

@@ -14,7 +14,9 @@ namespace MonoZombie {
 
 		}
 
-		public void MoveTo (Player player) {
+		public void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard, Player player) {
+			base.Update(gameTime, mouse, keyboard);
+
 			// Rotate the zombie towards the player
 			RotateTo(player.Position);
 

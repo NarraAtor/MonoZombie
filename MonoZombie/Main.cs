@@ -5,6 +5,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System;
+using System.Threading.Tasks;
 
 namespace MonoZombie {
 	public enum MenuState {
@@ -38,6 +39,12 @@ namespace MonoZombie {
 		private KeyboardState prevKeyboardState;
 		private MouseState currMouseState;
 		private MouseState prevMouseState;
+
+		// Debug variables
+		private float gameObjectUpdateTime;
+		private float gameObjectCollisionTime;
+		private float gameObjectCameraTime;
+		private Stopwatch timer = new Stopwatch( );
 
 		//Test variables
 		private bool easyModeTEST;
@@ -83,9 +90,6 @@ namespace MonoZombie {
 		public static Texture2D buttonTexture;
 		public static Texture2D tabTexture;
 
-		// Game Objects
-		private Player player;
-
 		// Game Logic Variables
 		public static int currency;
 		private int roundNumber;
@@ -122,6 +126,11 @@ namespace MonoZombie {
 		public static List<Turret> ListOfTurrets {
 			get;
 		} = new List<Turret>( );
+
+		public static Player Player {
+			get;
+			private set;
+		}
 
 		public Main ( ) {
 			_graphics = new GraphicsDeviceManager(this);
@@ -351,8 +360,10 @@ namespace MonoZombie {
 				case MenuState.Game:
 					switch (gameState) {
 						case GameState.Playing:
+							timer.Start( );
+
 							// Update all game objects
-							player.Update(gameTime, currMouseState, currKeyboardState);
+							Player.Update(gameTime, currMouseState, currKeyboardState);
 
 							for (int i = ListOfTurrets.Count - 1; i >= 0; i--) {
 								ListOfTurrets[i].Update(gameTime, currMouseState, currKeyboardState);
@@ -363,13 +374,15 @@ namespace MonoZombie {
 							}
 
 							for (int i = ListOfZombies.Count - 1; i >= 0; i--) {
-								ListOfZombies[i].MoveTo(player);
-								ListOfZombies[i].Update(gameTime, currMouseState, currKeyboardState);
+								ListOfZombies[i].Update(gameTime, currMouseState, currKeyboardState, Player);
 							}
 
+							gameObjectUpdateTime = timer.ElapsedMilliseconds;
+							timer.Reset( );
+							
 							// Do game logic calculations
 							// Check if the player is dead
-							if (player.IsDead && !easyModeTEST) {
+							if (Player.IsDead && !easyModeTEST) {
 								menuState = MenuState.GameOver;
 							}
 
@@ -385,52 +398,57 @@ namespace MonoZombie {
 								StartNextRound( );
 							}
 
+							timer.Start( );
+
 							// Check collisions
-							// * The reason I think we should do it like this is because each of the game objects
-							// have their own custom collisions functions, and in order for each of them to work
-							// we need to call them like this
-							foreach (GameObject wallTile in map.CollidableMapTiles) {
-								// Update the player colliding with the wall
-								player.CheckUpdateCollision(wallTile);
-
-								// Update zombies colliding with walls, other zombies, and the player
-								foreach (Zombie zombie in ListOfZombies) {
-									zombie.CheckUpdateCollision(wallTile);
-									zombie.CheckUpdateCollision(player);
-
-									for (int i = ListOfZombies.Count - 1; i >= 0; i--) {
-										// Makes sure the zombie doesn't check itself
-										if (zombie != ListOfZombies[i]) {
-											zombie.CheckUpdateCollision(ListOfZombies[i]);
-										}
-									}
+							for (int i = 0; i < map.CollidableMapTiles.Length; i++) {
+								for (int j = ListOfZombies.Count - 1; j >= 0; j--) {
+									ListOfZombies[j].CheckUpdateCollision(map.CollidableMapTiles[i]);
 								}
 
-								// Update bullets colliding with walls and zombies
-								// * Since bullets and zombies can be destroyed within this loop, we cant do a foreach or there will be an error
-								for (int i = ListOfBullets.Count - 1; i >= 0; i--) {
-									// If the bullet gets too far from the player, destroy it so it doesn't cause lag
-									if (Vector2.Distance(ListOfBullets[i].Position, player.Position) > 1000) {
-										ListOfBullets[i].Destroy( );
-										continue;
-									}
+								for (int j = ListOfTurrets.Count - 1; j >= 0; j--) {
+									ListOfTurrets[j].CheckUpdateCollision(map.CollidableMapTiles[i]);
+								}
 
-									// The bullet collision was successfull with either the wall tile or a zombie, then we dont want to check any more collisions
-									// with the current bullet because the object will be destroyed
-									if (ListOfBullets[i].CheckCollision(wallTile)) {
-										continue;
-									}
+								for (int j = ListOfBullets.Count - 1; j >= 0; j--) {
+									ListOfBullets[j].CheckUpdateCollision(map.CollidableMapTiles[i]);
+								}
 
-									for (int j = ListOfZombies.Count - 1; j >= 0; j--) {
-										if (ListOfBullets[i].CheckCollision(ListOfZombies[j])) {
-											break;
-										}
+								Player.CheckUpdateCollision(map.CollidableMapTiles[i]);
+							}
+
+							for (int i = ListOfZombies.Count - 1; i >= 0; i--) {
+								for (int j = ListOfZombies.Count - 1; j >= 0; j--) {
+									ListOfZombies[j].CheckUpdateCollision(ListOfZombies[i]);
+								}
+
+								for (int j = ListOfTurrets.Count - 1; j >= 0; j--) {
+									ListOfTurrets[j].CheckUpdateCollision(ListOfZombies[i]);
+								}
+
+								Player.CheckUpdateCollision(ListOfZombies[i]);
+
+								for (int j = ListOfBullets.Count - 1; j >= 0; j--) {
+									if (ListOfBullets[j].CheckUpdateCollision(ListOfZombies[i])) {
+										break;
 									}
 								}
 							}
 
+							for (int i = ListOfTurrets.Count - 1; i >= 0; i--) {
+								for (int j = ListOfTurrets.Count - 1; j >= 0; j--) {
+									ListOfTurrets[j].CheckUpdateCollision(ListOfTurrets[i]);
+								}
+
+								Player.CheckUpdateCollision(ListOfTurrets[i]);
+							}
+
+							gameObjectCollisionTime = timer.ElapsedMilliseconds;
+							timer.Reset( );
+
 							// Update camera screen positions of all game objects
-							player.UpdateCameraScreenPosition(camera);
+
+							Player.UpdateCameraScreenPosition(camera);
 
 							map.UpdateCameraScreenPosition(camera);
 
@@ -446,12 +464,17 @@ namespace MonoZombie {
 								ListOfZombies[i].UpdateCameraScreenPosition(camera);
 							}
 
+							gameObjectCameraTime = timer.ElapsedMilliseconds;
+							timer.Reset( );
+
+							/*
 							if (GetKeyDown(Keys.O)) {
 								if (archerTurretCharges > 0) {
 									ListOfTurrets.Add(new Turret(TurretType.Cannon, turretCannonBaseTexture, turretCannonHeadTexture, player.Position, parent: player));
 									--archerTurretCharges;
 								}
 							}
+							*/
 
 							if (GetKeyDown(Keys.Escape)) {
 								gameState = GameState.Pause;
@@ -542,17 +565,19 @@ namespace MonoZombie {
 								ListOfZombies[i].Draw(gameTime, _spriteBatch);
 							}
 
-							player.Draw(gameTime, _spriteBatch);
+							Player.Draw(gameTime, _spriteBatch);
 
 							// Draw UI elements
 							SpriteManager.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), Color.White, scale: SpriteManager.UI_SCALE);
 							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 30), $"Currency: {currency}", Color.Black, fontScale: 0.5f);
 							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 45), $"Round Number: {roundNumber}", Color.Black, fontScale: 0.5f);
-							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 60), $"Player Health: {player.Health}", Color.Black, fontScale: 0.5f);
+							// SpriteManager.DrawText(_spriteBatch, new Vector2(30, 60), $"Player Health: {player.Health}", Color.Black, fontScale: 0.5f);
 
-							// Draw FPS counter
+							// Draw Debug variables
 							SpriteManager.DrawText(_spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 20), $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds, 3)}", Color.White, fontScale: 0.5f);
-							SpriteManager.DrawText(_spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 40), $"UT: {Math.Round(gameTime.ElapsedGameTime.TotalSeconds, 3)}", Color.White, fontScale: 0.5f);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 40), $"GO UpdT: {Math.Round(gameObjectUpdateTime, 3)}", Color.White, fontScale: 0.5f);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 60), $"GO ColT: {Math.Round(gameObjectCollisionTime, 3)}", Color.White, fontScale: 0.5f);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 80), $"GO CamT: {Math.Round(gameObjectCameraTime, 3)}", Color.White, fontScale: 0.5f);
 
 							// Draw turret charges
 							SpriteManager.DrawImage(_spriteBatch, turretCannonBaseTexture, new Vector2(400, 30), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE);
@@ -600,6 +625,10 @@ namespace MonoZombie {
 			return (currKeyboardState.IsKeyDown(key) && !prevKeyboardState.IsKeyDown(key));
 		}
 
+		public bool GetLeftMouseButtonDown ( ) {
+			return (currMouseState.LeftButton == ButtonState.Pressed && prevMouseState.LeftButton != ButtonState.Pressed);
+		}
+
 		public void StartNextRound ( ) {
 			// Increment the round number
 			roundNumber++;
@@ -634,6 +663,7 @@ namespace MonoZombie {
 						break;
 				}
 
+				// GameObjectManager.CreateZombie(tile.Position, zombieHealth, zombieMoveSpeed, zombieAttackSpeed, tile);
 				ListOfZombies.Add(new Zombie(tile.Position, zombieHealth, zombieMoveSpeed, zombieAttackSpeed, tile));
 			}
 		}
@@ -649,10 +679,10 @@ namespace MonoZombie {
 			ListOfTurrets.Clear( );
 
 			// Create (or re-create) the player
-			player = new Player(playerTexture, SCREEN_DIMENSIONS / 2, 100, 5, 3);
+			Player = new Player(playerTexture, SCREEN_DIMENSIONS / 2, 100, 5, 3);
 
 			// Create (or re-create) the camera
-			camera = new Camera(player);
+			camera = new Camera(Player);
 		}
 
 		private void DrawPauseMenu ( ) {

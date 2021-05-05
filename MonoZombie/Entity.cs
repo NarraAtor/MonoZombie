@@ -47,6 +47,8 @@ namespace MonoZombie {
 		}
 
 		public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
+			base.Update(gameTime, mouse, keyboard);
+
 			secondsSinceLastAttack += (float) gameTime.ElapsedGameTime.TotalSeconds;
 			secondsSinceLastDamage += (float) gameTime.ElapsedGameTime.TotalSeconds;
 		}

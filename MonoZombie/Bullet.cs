@@ -43,6 +43,8 @@ namespace MonoZombie
          * * Overridden from the GameObject Class
          */
         public override void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
+            base.Update(gameTime, mouse, keyboard);
+
             // Move the bullet in the direction it is travelling
             MoveBy(movement);
 
@@ -57,8 +59,8 @@ namespace MonoZombie
          * 
          * return bool                  : If the bullet has hit a zombie
          */
-        public new bool CheckCollision (GameObject other) {
-            bool didCollide = base.CheckCollision(other);
+        public new bool CheckUpdateCollision (GameObject other) {
+            bool didCollide = CheckCollision(other);
 
             // If the bullet has collided with something, then destroy it
             if (didCollide) {
