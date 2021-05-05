@@ -21,8 +21,8 @@ namespace MonoZombie {
 	/// </summary>
 	public class Main : Game {
 		private Stopwatch stopwatch = new Stopwatch();
-		private GraphicsDeviceManager _graphics;
-		private SpriteBatch _spriteBatch;
+		private GraphicsDeviceManager graphics;
+		private SpriteBatch spriteBatch;
 
 		// Game states
 		private MenuState menuState;
