@@ -71,7 +71,10 @@ namespace MonoZombie {
 
 				// Draw the health bar
 				SpriteUtils.DrawRect(spriteBatch, graphics, healthBarBorder, Color.Black);
-				SpriteUtils.DrawRect(spriteBatch, graphics, healthBar, Color.Red);
+
+				if (healthBar.Width > 0) {
+					SpriteUtils.DrawRect(spriteBatch, graphics, healthBar, Color.Red);
+				}
 			}
 		}
 

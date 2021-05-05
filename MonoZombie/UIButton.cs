@@ -31,7 +31,7 @@ namespace MonoZombie {
 				// If the mouse is within the button bounds and the left mouse button is pressed,
 				// execute the delegate method that was stored within the button
 				if ((inXBounds && inYBounds)) {
-					if (mouse.LeftButton == ButtonState.Pressed) {
+					if (Main.GetLeftMouseButtonDown( )) {
 						isPressed = true;
 
 						// Run the method
