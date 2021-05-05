@@ -5,6 +5,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System;
+using System.Threading.Tasks;
 
 namespace MonoZombie {
 	public enum MenuState {
@@ -27,6 +28,7 @@ namespace MonoZombie {
 	/// Restrictions:
 	/// </summary>
 	public class Main : Game {
+		private Stopwatch stopwatch = new Stopwatch();
 		private GraphicsDeviceManager _graphics;
 		private SpriteBatch _spriteBatch;
 
@@ -456,6 +458,7 @@ namespace MonoZombie {
 								gameState = GameState.InBetweenRounds;
 							}
 
+							stopwatch.Start();
 							// Check collisions
 							// * The reason I think we should do it like this is because each of the game objects
 							// have their own custom collisions functions, and in order for each of them to work
@@ -470,22 +473,22 @@ namespace MonoZombie {
 									zombie.CheckUpdateCollision(player);
 									
 									//turret collision
-									for (int i = ListOfTurrets.Count - 1; i >= 0; i--)
-									{
-										zombie.CheckUpdateCollision(ListOfTurrets[i]);
-										player.CheckUpdateCollision(ListOfTurrets[i]);
-										wallTile.CheckUpdateCollision(ListOfTurrets[i]);
-
-									}
-									
-										for (int i = ListOfZombies.Count - 1; i >= 0; i--)
-									{
-										// Makes sure the zombie doesn't check itself
-										if (zombie != ListOfZombies[i])
-										{
-											zombie.CheckUpdateCollision(ListOfZombies[i]);
-										}
-									}
+									//for (int i = ListOfTurrets.Count - 1; i >= 0; i--)
+									//{
+									//	zombie.CheckUpdateCollision(ListOfTurrets[i]);
+									//	player.CheckUpdateCollision(ListOfTurrets[i]);
+									//	wallTile.CheckUpdateCollision(ListOfTurrets[i]);
+									//
+									//}
+									//
+									//	for (int i = ListOfZombies.Count - 1; i >= 0; i--)
+									//{
+									//	// Makes sure the zombie doesn't check itself
+									//	if (zombie != ListOfZombies[i])
+									//	{
+									//		zombie.CheckUpdateCollision(ListOfZombies[i]);
+									//	}
+									//}
 								}
 
 								// Update bullets colliding with walls and zombies
@@ -510,7 +513,9 @@ namespace MonoZombie {
 									}
 								}
 							}
+							stopwatch.Stop();
 
+							Console.WriteLine(stopwatch.ElapsedMilliseconds);
 							// Update camera screen positions of all game objects
 							player.UpdateCameraScreenPosition(camera);
 

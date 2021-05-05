@@ -298,7 +298,6 @@ namespace MonoZombie
                 currentMapSegment = currentMapSegment.PreviousMapSegment;
             }
             path.Add(currentMapSegment);
-
             return path;
         }
     }

@@ -86,7 +86,7 @@ namespace MonoZombie
         private MapSegment AStar(MapSegment start, MapSegment goal)
         {
             List<MapSegment> open = new List<MapSegment>(); // set of nodes to be fully evaluated
-            List<MapSegment> closed = new List<MapSegment>(); // set of nodes already fully evaluated
+            HashSet<MapSegment> closed = new HashSet<MapSegment>(); // set of nodes already fully evaluated
             open.Add(start);
 
             //the tutorial suggests making the loop go on forever until it returns.
