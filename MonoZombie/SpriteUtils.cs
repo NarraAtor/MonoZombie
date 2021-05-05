@@ -11,6 +11,7 @@ namespace MonoZombie {
 	public static class SpriteUtils {
 		// How much to scale the UI and game objects up by in-game
 		public const float UI_SCALE = 5f;
+		public const float UI_UPSCALE = 5.5f;
 		public const float OBJECT_SCALE = 4f;
 		public const float PARTICLE_SCALE = 0.5f;
 

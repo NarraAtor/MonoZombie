@@ -122,6 +122,8 @@ namespace MonoZombie {
 		public const int CANNON_BULLET_DAMAGE = 202;
 		public const int ARCHER_BULLET_DAMAGE = 40;
 		public const int PLAYER_BULLET_DAMAGE = 10;
+		public const int HEALTHBAR_OFFSET = 30;
+		public const int HEALTHBAR_PADDING = 2;
 		public static Vector2 SCREEN_DIMENSIONS = new Vector2(1280, 720);
 
 		private static Random random;

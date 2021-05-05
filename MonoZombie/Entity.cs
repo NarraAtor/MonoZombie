@@ -10,6 +10,7 @@ namespace MonoZombie {
 		private float secondsSinceLastDamage;
 		private float secondsSinceLastAttack;
 
+		private Rectangle healthBarBorder;
 		private Rectangle healthBar;
 		private int maxHealth;
 
@@ -47,8 +48,9 @@ namespace MonoZombie {
 			AttacksPerSecond = attacksPerSecond;
 
 			secondsSinceLastDamage = Main.DAMAGE_INDIC_TIME + 1;
-
-			healthBar = new Rectangle(Rect.X, Rect.Y - 30, Rect.Width, Rect.Height / 4);
+			
+			healthBarBorder = new Rectangle(Rect.X, Rect.Y - Main.HEALTHBAR_OFFSET, Rect.Width, Rect.Height / 4);
+			healthBar = new Rectangle(healthBarBorder.X + Main.HEALTHBAR_PADDING, healthBarBorder.Y + Main.HEALTHBAR_PADDING, healthBarBorder.Width - (Main.HEALTHBAR_PADDING * 2), healthBarBorder.Height - (Main.HEALTHBAR_PADDING * 2));
 		}
 
 		public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
@@ -57,7 +59,10 @@ namespace MonoZombie {
 			secondsSinceLastAttack += (float) gameTime.ElapsedGameTime.TotalSeconds;
 			secondsSinceLastDamage += (float) gameTime.ElapsedGameTime.TotalSeconds;
 
-			healthBar = new Rectangle(Rect.X, Rect.Y - 30, Rect.Width, Rect.Height / 4);
+			// Update health bar position and width
+			healthBarBorder.Location = new Point(Rect.X, Rect.Y - Main.HEALTHBAR_OFFSET);
+			healthBar.Location = new Point(healthBarBorder.X + Main.HEALTHBAR_PADDING, healthBarBorder.Y + Main.HEALTHBAR_PADDING);
+			healthBar.Width = (int) ((healthBarBorder.Width * ((float) Health / maxHealth)) - (Main.HEALTHBAR_PADDING * 2));
 		}
 
 		public void Draw (GameTime gameTime, SpriteBatch spriteBatch, GraphicsDeviceManager graphics) {
@@ -65,10 +70,7 @@ namespace MonoZombie {
 				SpriteUtils.DrawImage(spriteBatch, texture, Rect, ((WasDamaged) ? Color.Red : Color.White), angle: Angle);
 
 				// Draw the health bar
-				SpriteUtils.DrawRect(spriteBatch, graphics, healthBar, Color.Black);
-				healthBar.Inflate(-5, -5);
-				healthBar.Width = (int) (healthBar.Width * ((float) Health / maxHealth));
-
+				SpriteUtils.DrawRect(spriteBatch, graphics, healthBarBorder, Color.Black);
 				SpriteUtils.DrawRect(spriteBatch, graphics, healthBar, Color.Red);
 			}
 		}
