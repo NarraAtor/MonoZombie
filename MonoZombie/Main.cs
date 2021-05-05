@@ -78,11 +78,11 @@ namespace MonoZombie {
 		public static Texture2D playerTexture;
 		public static Texture2D bulletTexture;
 
-		public static Texture2D turretArcherBaseTexture;
+		public static Texture2D turretBaseTexture;
 		public static Texture2D turretArcherHeadTexture;
+		public static Texture2D turretBuffHeadTexture;
+		public static Texture2D turretCannonHeadTexture;
 		public static Texture2D mineHeadTexture;
-		public static Texture2D buffTexture;
-		public static Texture2D cannonTexture;
 
 		// UI Textures
 		public static Texture2D titleTexture;
@@ -106,11 +106,11 @@ namespace MonoZombie {
 		public const int ZOMBIE_BASE_COUNT = 5; // The starting number of zombies in round 1
 		public const int ZOMBIE_REWARD_MIN = 7;
 		public const int ZOMBIE_REWARD_MAX = 13;
-		public const float ZOMBIE_SPECIAL_CHANCE = 1f; //0.05f
+		public const float ZOMBIE_SPECIAL_CHANCE = 0.05f;
 		public const int ZOMBIE_SPECIAL_MULT = 3;
 		public const float DAMAGE_INDIC_TIME = 0.25f; // The amount of seconds that entities flash when they are damaged
 		public const int BULLET_SPEED = 15;
-		public const int CANNON_BULLET_DAMAGE = 202;
+		public const int CANNON_BULLET_DAMAGE = 65;
 		public const int ARCHER_BULLET_DAMAGE = 40;
 		public const int PLAYER_BULLET_DAMAGE = 10;
 		public const int HEALTHBAR_OFFSET = 30;
@@ -168,11 +168,11 @@ namespace MonoZombie {
 
 			// Load textures for game objects
 			nullTexture = Content.Load<Texture2D>("MapTiles/NullTile");
-			turretArcherBaseTexture = Content.Load<Texture2D>("Turrets/TurretCannonBase");
-			turretArcherHeadTexture = Content.Load<Texture2D>("Turrets/TurretCannonHead");
+			turretBaseTexture = Content.Load<Texture2D>("Turrets/TurretCannonBase");
+			turretCannonHeadTexture = Content.Load<Texture2D>("Turrets/TurretCannonHead");
 			mineHeadTexture = Content.Load<Texture2D>("Turrets/MineHead");
-			buffTexture = Content.Load<Texture2D>("Turrets/Buff");
-			cannonTexture = Content.Load<Texture2D>("Turrets/Canon");
+			turretBuffHeadTexture = Content.Load<Texture2D>("Turrets/Buff");
+			turretArcherHeadTexture = Content.Load<Texture2D>("Turrets/Canon");
 			playerTexture = Content.Load<Texture2D>("Player");
 			bulletTexture = Content.Load<Texture2D>("Bullet");
 
@@ -368,7 +368,7 @@ namespace MonoZombie {
 				}
 			}, fontScale: 0.75f);
 
-			shopArcherTurretButton = new UIButton($"Buy Cannon Turret", new Vector2(4 * (SCREEN_DIMENSIONS.X / 5), 2 * (SCREEN_DIMENSIONS.Y / 3)), ( ) => {
+			shopArcherTurretButton = new UIButton($"Buy Archer Turret", new Vector2(4 * (SCREEN_DIMENSIONS.X / 5), 2 * (SCREEN_DIMENSIONS.Y / 3)), ( ) => {
 				if (currency >= ARCHER_TURRET_COST) {
 					currency -= ARCHER_TURRET_COST;
 					archerTurretsStored++;
@@ -529,18 +529,18 @@ namespace MonoZombie {
 						}
 
 						if (cannonTurretsStored > 0 && GetKeyDown(Keys.T)) {
-							Turrets.Add(new Turret(TurretType.Cannon, turretArcherBaseTexture, cannonTexture, Player.Position, Player));
+							Turrets.Add(new Turret(TurretType.Cannon, Player.Position, Player));
 							cannonTurretsStored--;
 						}
 
 						if (buffTurretsStored > 0 && GetKeyDown(Keys.Y)) {
-							Turrets.Add(new Turret(TurretType.Buff, turretArcherBaseTexture, buffTexture, Player.Position, Player));
+							Turrets.Add(new Turret(TurretType.Buff, Player.Position, Player));
 							buffTurretsStored--;
 						}
 
 						if (archerTurretsStored > 0 && GetKeyDown(Keys.U)) {
 							// Mouse.SetPosition((int) (SCREEN_DIMENSIONS.X / 2), (int) (SCREEN_DIMENSIONS.Y / 2));
-							Turrets.Add(new Turret(TurretType.Archer, turretArcherBaseTexture, turretArcherHeadTexture, Player.Position, Player));
+							Turrets.Add(new Turret(TurretType.Archer, Player.Position, Player));
 							archerTurretsStored--;
 						}
 
@@ -632,15 +632,15 @@ namespace MonoZombie {
 
 					// Draw turret charges
 					// Cannon
-					SpriteUtils.DrawImage(spriteBatch, turretArcherBaseTexture, new Vector2(2 * (SCREEN_DIMENSIONS.X / 5), 50), Color.White, scale: SpriteUtils.UI_SCALE - 3, isCentered: true);
-					SpriteUtils.DrawImage(spriteBatch, cannonTexture, new Vector2(2 * (SCREEN_DIMENSIONS.X / 5), 50), Color.White, scale: SpriteUtils.UI_SCALE - 3, isCentered: true);
+					SpriteUtils.DrawImage(spriteBatch, turretBaseTexture, new Vector2(2 * (SCREEN_DIMENSIONS.X / 5), 50), Color.White, scale: SpriteUtils.UI_SCALE - 3, isCentered: true);
+					SpriteUtils.DrawImage(spriteBatch, turretCannonHeadTexture, new Vector2(2 * (SCREEN_DIMENSIONS.X / 5), 50), Color.White, scale: SpriteUtils.UI_SCALE - 3, isCentered: true);
 					SpriteUtils.DrawText(spriteBatch, new Vector2(2 * (SCREEN_DIMENSIONS.X / 5), 75), $"x{cannonTurretsStored} | 'T'", Color.Purple, fontScale: 0.75f, isCentered: true);
 					// Buff
-					SpriteUtils.DrawImage(spriteBatch, turretArcherBaseTexture, new Vector2(SCREEN_DIMENSIONS.X / 2, 50), Color.White, scale: SpriteUtils.UI_SCALE - 3, isCentered: true);
-					SpriteUtils.DrawImage(spriteBatch, buffTexture, new Vector2(SCREEN_DIMENSIONS.X / 2, 50), Color.White, scale: SpriteUtils.UI_SCALE - 3, isCentered: true);
+					SpriteUtils.DrawImage(spriteBatch, turretBaseTexture, new Vector2(SCREEN_DIMENSIONS.X / 2, 50), Color.White, scale: SpriteUtils.UI_SCALE - 3, isCentered: true);
+					SpriteUtils.DrawImage(spriteBatch, turretBuffHeadTexture, new Vector2(SCREEN_DIMENSIONS.X / 2, 50), Color.White, scale: SpriteUtils.UI_SCALE - 3, isCentered: true);
 					SpriteUtils.DrawText(spriteBatch, new Vector2(SCREEN_DIMENSIONS.X / 2, 75), $"x{buffTurretsStored} | 'Y'", Color.Purple, fontScale: 0.75f, isCentered: true);
 					// Archer
-					SpriteUtils.DrawImage(spriteBatch, turretArcherBaseTexture, new Vector2(3 * (SCREEN_DIMENSIONS.X / 5), 50), Color.White, scale: SpriteUtils.UI_SCALE - 3, isCentered: true);
+					SpriteUtils.DrawImage(spriteBatch, turretBaseTexture, new Vector2(3 * (SCREEN_DIMENSIONS.X / 5), 50), Color.White, scale: SpriteUtils.UI_SCALE - 3, isCentered: true);
 					SpriteUtils.DrawImage(spriteBatch, turretArcherHeadTexture, new Vector2(3 * (SCREEN_DIMENSIONS.X / 5), 50), Color.White, scale: SpriteUtils.UI_SCALE - 3, isCentered: true);
 					SpriteUtils.DrawText(spriteBatch, new Vector2(3 * (SCREEN_DIMENSIONS.X / 5), 75), $"x{archerTurretsStored} | 'U'", Color.Purple, fontScale: 0.75f, isCentered: true);
 
@@ -653,15 +653,15 @@ namespace MonoZombie {
 						shopArcherTurretButton.Draw(spriteBatch);
 
 						// Cannon
-						SpriteUtils.DrawImage(spriteBatch, turretArcherBaseTexture, new Vector2(shopCannonTurretButton.Position.X, SCREEN_DIMENSIONS.Y / 2), Color.White, scale: SpriteUtils.UI_SCALE, isCentered: true);
-						SpriteUtils.DrawImage(spriteBatch, cannonTexture, new Vector2(shopCannonTurretButton.Position.X, SCREEN_DIMENSIONS.Y / 2), Color.White, scale: SpriteUtils.UI_SCALE, isCentered: true);
+						SpriteUtils.DrawImage(spriteBatch, turretBaseTexture, new Vector2(shopCannonTurretButton.Position.X, SCREEN_DIMENSIONS.Y / 2), Color.White, scale: SpriteUtils.UI_SCALE, isCentered: true);
+						SpriteUtils.DrawImage(spriteBatch, turretCannonHeadTexture, new Vector2(shopCannonTurretButton.Position.X, SCREEN_DIMENSIONS.Y / 2), Color.White, scale: SpriteUtils.UI_SCALE, isCentered: true);
 						SpriteUtils.DrawText(spriteBatch, new Vector2(shopCannonTurretButton.Position.X, 4 * (SCREEN_DIMENSIONS.Y / 5)), $"${CANNON_TURRET_COST}", Color.Yellow, fontScale: 0.75f, isCentered: true);
 						// Buff
-						SpriteUtils.DrawImage(spriteBatch, turretArcherBaseTexture, new Vector2(shopBuffTurretButton.Position.X, SCREEN_DIMENSIONS.Y / 2), Color.White, scale: SpriteUtils.UI_SCALE, isCentered: true);
-						SpriteUtils.DrawImage(spriteBatch, buffTexture, new Vector2(shopBuffTurretButton.Position.X, SCREEN_DIMENSIONS.Y / 2), Color.White, scale: SpriteUtils.UI_SCALE, isCentered: true);
+						SpriteUtils.DrawImage(spriteBatch, turretBaseTexture, new Vector2(shopBuffTurretButton.Position.X, SCREEN_DIMENSIONS.Y / 2), Color.White, scale: SpriteUtils.UI_SCALE, isCentered: true);
+						SpriteUtils.DrawImage(spriteBatch, turretBuffHeadTexture, new Vector2(shopBuffTurretButton.Position.X, SCREEN_DIMENSIONS.Y / 2), Color.White, scale: SpriteUtils.UI_SCALE, isCentered: true);
 						SpriteUtils.DrawText(spriteBatch, new Vector2(shopBuffTurretButton.Position.X, 4 * (SCREEN_DIMENSIONS.Y / 5)), $"${BUFF_TURRET_COST}", Color.Yellow, fontScale: 0.75f, isCentered: true);
 						// Archer
-						SpriteUtils.DrawImage(spriteBatch, turretArcherBaseTexture, new Vector2(shopArcherTurretButton.Position.X, SCREEN_DIMENSIONS.Y / 2), Color.White, scale: SpriteUtils.UI_SCALE, isCentered: true);
+						SpriteUtils.DrawImage(spriteBatch, turretBaseTexture, new Vector2(shopArcherTurretButton.Position.X, SCREEN_DIMENSIONS.Y / 2), Color.White, scale: SpriteUtils.UI_SCALE, isCentered: true);
 						SpriteUtils.DrawImage(spriteBatch, turretArcherHeadTexture, new Vector2(shopArcherTurretButton.Position.X, SCREEN_DIMENSIONS.Y / 2), Color.White, scale: SpriteUtils.UI_SCALE, isCentered: true);
 						SpriteUtils.DrawText(spriteBatch, new Vector2(shopArcherTurretButton.Position.X, 4 * (SCREEN_DIMENSIONS.Y / 5)), $"${ARCHER_TURRET_COST}", Color.Yellow, fontScale: 0.75f, isCentered: true);
 					}
@@ -749,16 +749,21 @@ namespace MonoZombie {
 		public void ResetGame ( ) {
 			// Reset the round number
 			roundNumber = 0;
-			currency = 0;
+			currency = 2000;
 
 			isPaused = false;
 			isInBetweenRounds = false;
 			isInShop = false;
 
+			cannonTurretsStored = 0;
+			buffTurretsStored = 0;
+			archerTurretsStored = 0;
+
 			// Clear all of the lists of game objects
 			Bullets.Clear( );
 			Zombies.Clear( );
 			Turrets.Clear( );
+			Particles.Clear( );
 
 			// Create (or re-create) the player
 			Player = new Player(playerTexture, SCREEN_DIMENSIONS / 2, 100, 5, 3);

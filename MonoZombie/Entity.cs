@@ -14,12 +14,14 @@ namespace MonoZombie {
 		private Rectangle healthBar;
 		private int maxHealth;
 
+		private float baseAttacksPerSecond;
+
 		public int Health {
 			get;
 			private set;
 		}
 
-		public float AttacksPerSecond {
+		protected float AttacksPerSecond {
 			get;
 			set;
 		}
@@ -47,10 +49,15 @@ namespace MonoZombie {
 			set;
 		} = Color.White;
 
+		public bool IsBuffed {
+			get;
+			set;
+		}
+
 		public Entity (Texture2D texture, Vector2 centerPosition, int health = 1, float attacksPerSecond = 1, GameObject parent = null, float moveSpeed = 0, bool canRotate = false, bool canMove = true)
 			: base(texture, centerPosition, parent: parent, moveSpeed: moveSpeed, canRotate: canRotate, canMove: canMove) {
 			Health = maxHealth = health;
-			AttacksPerSecond = attacksPerSecond;
+			AttacksPerSecond = baseAttacksPerSecond = attacksPerSecond;
 
 			secondsSinceLastDamage = Main.DAMAGE_INDIC_TIME + 1;
 			
@@ -68,6 +75,9 @@ namespace MonoZombie {
 			healthBarBorder.Location = new Point(Rect.X, Rect.Y - Main.HEALTHBAR_OFFSET);
 			healthBar.Location = new Point(healthBarBorder.X + Main.HEALTHBAR_PADDING, healthBarBorder.Y + Main.HEALTHBAR_PADDING);
 			healthBar.Width = (int) ((healthBarBorder.Width * ((float) Health / maxHealth)) - (Main.HEALTHBAR_PADDING * 2));
+
+			// Reset the attacks per second
+			AttacksPerSecond = (IsBuffed) ? baseAttacksPerSecond * 2 : baseAttacksPerSecond;
 		}
 
 		public void Draw (GameTime gameTime, SpriteBatch spriteBatch, GraphicsDeviceManager graphics) {

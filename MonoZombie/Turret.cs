@@ -29,11 +29,6 @@ namespace MonoZombie {
 
 		private TurretType turretType;
 
-		public int Price {
-			get;
-			private set;
-		}
-
 		public int Range {
 			get;
 			private set;
@@ -44,52 +39,39 @@ namespace MonoZombie {
 			private set;
 		}
 
-		public Turret (TurretType turretType, Texture2D turretBaseTexture, Texture2D turretHeadTexture, Vector2 centerPosition, GameObject parent = null)
-			: base(turretBaseTexture, centerPosition, parent: parent, canRotate: true) {
-			// Goes through each of the diffrent turret types and then sets stats accordingly 
-			this.turretBaseTexture = turretBaseTexture;
-			this.turretHeadTexture = turretHeadTexture;
+		public Turret (TurretType turretType, Vector2 centerPosition, GameObject parent = null)
+			: base(Main.turretBaseTexture, centerPosition, parent: parent, canRotate: true) {
+			// Goes through each of the diffrent turret types and then sets stats accordingly
 			this.turretType = turretType;
+
+			turretBaseTexture = Main.turretBaseTexture;
 
 			switch (this.turretType) {
 				case TurretType.Cannon:
-					Range = 100;
-					Damage = 100;
-					Price = 200;
+					Range = 250;
+					Damage = Main.CANNON_BULLET_DAMAGE;
+					AttacksPerSecond = 1;
+
+					turretHeadTexture = Main.turretCannonHeadTexture;
 
 					break;
 				case TurretType.Archer:
-					Range = 50;
-					Damage = 100;
-					Price = 300;
-					AttacksPerSecond = 5;
+					Range = 400;
+					Damage = Main.ARCHER_BULLET_DAMAGE;
+					AttacksPerSecond = 2;
+
+					turretHeadTexture = Main.turretArcherHeadTexture;
 
 					break;
 
 				case TurretType.Buff:
-					Range = 100;
-					Damage = 100;
-					Price = 400;
+					Range = 150;
+					Damage = 0;
 
-					break;
-				case TurretType.Magic:
-					Range = 50;
-					Damage = 100;
-					Price = 500;
-
-					break;
-				case TurretType.Trap:
-					Range = 50;
-					Damage = 100;
-					Price = 500;
+					turretHeadTexture = Main.turretBuffHeadTexture;
 
 					break;
 			}
-
-			// Turret test values
-			// AttacksPerSecond = 1;
-			// Range = 400;
-			// Damage = 40;
 		}
 
 		/// <summary>
@@ -129,14 +111,10 @@ namespace MonoZombie {
 
 			if (turretType == TurretType.Buff) {
 				for (int i = Main.Turrets.Count - 1; i >= 0; i--) {
-					if (Vector2.Distance(Main.Turrets[i].Position, Position) <= Range) {
-						Main.Turrets[i].AttacksPerSecond = 7;
-					}
+					Main.Turrets[i].IsBuffed = (Vector2.Distance(Main.Turrets[i].Position, Position) <= Range);
 				}
 
-				if (Vector2.Distance(Main.Player.Position, Position) <= Range) {
-					Main.Player.AttacksPerSecond = 7;
-				}
+				Main.Player.IsBuffed = (Vector2.Distance(Main.Player.Position, Position) <= Range);
 			} else {
 				// Detect nearby targets
 				DetectTarget( );
