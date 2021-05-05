@@ -313,7 +313,7 @@ namespace MonoZombie {
 			tabTexture = Content.Load<Texture2D>("tab");
 
 			// Load the map
-			map = new Map("../../../MapLevels\\TestLevel1.level");
+			map = new Map("../../../MapLevels\\TestLevel2.level");
 
 			graphics.PreferredBackBufferWidth = (int) SCREEN_DIMENSIONS.X;
 			graphics.PreferredBackBufferHeight = (int) SCREEN_DIMENSIONS.Y;
@@ -523,6 +523,10 @@ namespace MonoZombie {
 						isInDebugMode = !isInDebugMode;
 					}
 
+					if (GetKeyDown(Keys.P)) {
+						currency += 400;
+					}
+
 					if (isInBetweenRounds) {
 						if (GetKeyDown(Keys.Tab)) {
 							isInShop = !isInShop;
@@ -539,7 +543,6 @@ namespace MonoZombie {
 						}
 
 						if (archerTurretsStored > 0 && GetKeyDown(Keys.U)) {
-							// Mouse.SetPosition((int) (SCREEN_DIMENSIONS.X / 2), (int) (SCREEN_DIMENSIONS.Y / 2));
 							Turrets.Add(new Turret(TurretType.Archer, Player.Position, Player));
 							archerTurretsStored--;
 						}
@@ -588,9 +591,12 @@ namespace MonoZombie {
 				case MenuState.MainMenu:
 					// Draw menu UI objects
 					SpriteUtils.DrawImage(spriteBatch, titleTexture, SCREEN_DIMENSIONS * new Vector2(0.5f, 0.25f), Color.White, scale: SpriteUtils.UI_SCALE, isCentered: true);
+					
 					menuPlayButton.Draw(spriteBatch);
 					menuPlayEasyModeButton.Draw(spriteBatch);
 					menuQuitButton.Draw(spriteBatch);
+
+					SpriteUtils.DrawText(spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 30), "Created By: Frank Alfano, Eric Fotang, Matthew Sorrentino, Jack Shyshko, Ken Adachi-Bartholomay [2021]", Color.White, fontScale: 0.5f, isCentered: false);
 
 					break;
 				case MenuState.Game:
@@ -712,6 +718,10 @@ namespace MonoZombie {
 			// Increment the round number
 			roundNumber++;
 
+			for (int i = Turrets.Count - 1; i >= 0; i--) {
+				Turrets[i].TakeDamage(1);
+			}
+
 			// Generate zombie stats based on the round number
 			// * This means that as the rounds go on, the zombies get harder and harder
 			// * Each of these stats follower a quadratic equation that I came up with in 2 minutes so it can definitely be tweated
@@ -749,7 +759,7 @@ namespace MonoZombie {
 		public void ResetGame ( ) {
 			// Reset the round number
 			roundNumber = 0;
-			currency = 2000;
+			currency = 0;
 
 			isPaused = false;
 			isInBetweenRounds = false;

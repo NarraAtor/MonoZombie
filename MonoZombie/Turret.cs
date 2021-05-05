@@ -40,7 +40,7 @@ namespace MonoZombie {
 		}
 
 		public Turret (TurretType turretType, Vector2 centerPosition, GameObject parent = null)
-			: base(Main.turretBaseTexture, centerPosition, parent: parent, canRotate: true) {
+			: base(Main.turretBaseTexture, centerPosition, health: 3, parent: parent, canRotate: true) {
 			// Goes through each of the diffrent turret types and then sets stats accordingly
 			this.turretType = turretType;
 
@@ -56,7 +56,7 @@ namespace MonoZombie {
 
 					break;
 				case TurretType.Archer:
-					Range = 400;
+					Range = 350;
 					Damage = Main.ARCHER_BULLET_DAMAGE;
 					AttacksPerSecond = 2;
 
@@ -131,7 +131,7 @@ namespace MonoZombie {
 
 		public new void Draw (GameTime gameTime, SpriteBatch spriteBatch, GraphicsDeviceManager graphics) {
 			if (IsOnScreen) {
-				SpriteUtils.DrawImage(spriteBatch, turretBaseTexture, Rect, ((WasDamaged) ? Color.Red : BaseTint), angle: Angle);
+				SpriteUtils.DrawImage(spriteBatch, turretBaseTexture, Rect, ((WasDamaged) ? Color.Red : BaseTint));
 				SpriteUtils.DrawImage(spriteBatch, turretHeadTexture, Rect, ((WasDamaged) ? Color.Red : BaseTint), angle: Angle);
 
 				DrawHealthBar(gameTime, spriteBatch, graphics);
