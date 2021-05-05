@@ -164,7 +164,7 @@ namespace MonoZombie {
 		 */
 		public static void DrawRect (SpriteBatch spriteBatch, GraphicsDeviceManager graphics, Rectangle rect, Color color, bool isFilled = true, float opacity = 1) {
 			// Create a blank rectangular texture
-			Texture2D debugTexture = new Texture2D(graphics.GraphicsDevice, rect.Width, rect.Height);
+			Texture2D rectTexture = new Texture2D(graphics.GraphicsDevice, rect.Width, rect.Height);
 
 			color = new Color(color.R, color.G, color.B, opacity);
 
@@ -185,10 +185,10 @@ namespace MonoZombie {
 			}
 
 			// Apply the color changes to the blank debug texture
-			debugTexture.SetData(data);
+			rectTexture.SetData(data);
 
 			// Draw the debug rectangle
-			spriteBatch.Draw(debugTexture, rect, Color.White);
+			spriteBatch.Draw(rectTexture, rect, Color.White);
 		}
 	}
 }

@@ -141,9 +141,9 @@ namespace MonoZombie {
 		}
 
 
-		public new void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
+		public new void Draw (GameTime gameTime, SpriteBatch spriteBatch, GraphicsDeviceManager graphics) {
 			if (IsOnScreen) {
-				SpriteUtils.DrawImage(spriteBatch, turretBaseTexture, Rect, Color.White);
+				base.Draw(gameTime, spriteBatch, graphics); // Draws the base texture
 				SpriteUtils.DrawImage(spriteBatch, turretHeadTexture, Rect, Color.White, angle: Angle);
 			}
 		}

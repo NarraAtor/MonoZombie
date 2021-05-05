@@ -10,8 +10,8 @@ namespace MonoZombie {
 		private float secondsSinceLastDamage;
 		private float secondsSinceLastAttack;
 
-		private int lastDamageTaken;
-		private Vector2 lastDamagePosition;
+		private Rectangle healthBar;
+		private int maxHealth;
 
 		public int Health {
 			get;
@@ -43,10 +43,12 @@ namespace MonoZombie {
 
 		public Entity (Texture2D texture, Vector2 centerPosition, int health = 1, float attacksPerSecond = 1, GameObject parent = null, float moveSpeed = 0, bool canRotate = false, bool canMove = true)
 			: base(texture, centerPosition, parent: parent, moveSpeed: moveSpeed, canRotate: canRotate, canMove: canMove) {
-			Health = health;
+			Health = maxHealth = health;
 			AttacksPerSecond = attacksPerSecond;
 
 			secondsSinceLastDamage = Main.DAMAGE_INDIC_TIME + 1;
+
+			healthBar = new Rectangle(Rect.X, Rect.Y - 30, Rect.Width, Rect.Height / 4);
 		}
 
 		public new void Update (GameTime gameTime, MouseState mouse, KeyboardState keyboard) {
@@ -54,11 +56,20 @@ namespace MonoZombie {
 
 			secondsSinceLastAttack += (float) gameTime.ElapsedGameTime.TotalSeconds;
 			secondsSinceLastDamage += (float) gameTime.ElapsedGameTime.TotalSeconds;
+
+			healthBar = new Rectangle(Rect.X, Rect.Y - 30, Rect.Width, Rect.Height / 4);
 		}
 
-		public new void Draw (GameTime gameTime, SpriteBatch spriteBatch) {
+		public void Draw (GameTime gameTime, SpriteBatch spriteBatch, GraphicsDeviceManager graphics) {
 			if (IsOnScreen) {
 				SpriteUtils.DrawImage(spriteBatch, texture, Rect, ((WasDamaged) ? Color.Red : Color.White), angle: Angle);
+
+				// Draw the health bar
+				SpriteUtils.DrawRect(spriteBatch, graphics, healthBar, Color.Black);
+				healthBar.Inflate(-5, -5);
+				healthBar.Width = (int) (healthBar.Width * ((float) Health / maxHealth));
+
+				SpriteUtils.DrawRect(spriteBatch, graphics, healthBar, Color.Red);
 			}
 		}
 

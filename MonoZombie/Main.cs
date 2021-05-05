@@ -44,6 +44,7 @@ namespace MonoZombie {
 		// Debug variables
 		private float[ ] debugTimes = new float[3];
 		private Stopwatch debugTimer = new Stopwatch( );
+		private bool isInDebugMode;
 
 		//Test variables
 		private bool easyModeTEST;
@@ -532,6 +533,10 @@ namespace MonoZombie {
 								isPaused = !isPaused;
 							}
 
+							if (GetKeyDown(Keys.OemQuestion)) {
+								isInDebugMode = !isInDebugMode;
+							}
+
 							if (isInBetweenRounds) {
 								if (GetKeyDown(Keys.Tab)) {
 									isInShop = !isInShop;
@@ -627,7 +632,7 @@ namespace MonoZombie {
 							map.Draw(gameTime, spriteBatch);
 
 							for (int i = Turrets.Count - 1; i >= 0; i--) {
-								Turrets[i].Draw(gameTime, spriteBatch);
+								Turrets[i].Draw(gameTime, spriteBatch, graphics);
 							}
 
 							for (int i = Bullets.Count - 1; i >= 0; i--) {
@@ -635,10 +640,10 @@ namespace MonoZombie {
 							}
 
 							for (int i = Zombies.Count - 1; i >= 0; i--) {
-								Zombies[i].Draw(gameTime, spriteBatch);
+								Zombies[i].Draw(gameTime, spriteBatch, graphics);
 							}
 
-							Player.Draw(gameTime, spriteBatch);
+							Player.Draw(gameTime, spriteBatch, graphics);
 
 							for (int i = Particles.Count - 1; i >= 0; i--) {
 								Particles[i].Draw(gameTime, spriteBatch);
@@ -651,8 +656,10 @@ namespace MonoZombie {
 							// SpriteManager.DrawText(_spriteBatch, new Vector2(30, 60), $"Player Health: {player.Health}", Color.Black, fontScale: 0.5f);
 
 							// Draw Debug variables
-							SpriteUtils.DrawText(spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 20), $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds, 3)}", Color.White, fontScale: 0.5f);
-							SpriteUtils.DrawText(spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 40), $"UPT: {string.Join(" | ", debugTimes)}", Color.White, fontScale: 0.5f);
+							if (isInDebugMode) {
+								SpriteUtils.DrawText(spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 20), $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds, 3)}", Color.White, fontScale: 0.5f);
+								SpriteUtils.DrawText(spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 40), $"UPT: {string.Join(" | ", debugTimes)}", Color.White, fontScale: 0.5f);
+							}
 
 							// Draw turret charges
 							// Archer
@@ -683,8 +690,7 @@ namespace MonoZombie {
 							if (isPaused) {
 								SpriteUtils.DrawRect(spriteBatch, graphics, new Rectangle(Point.Zero, SCREEN_DIMENSIONS.ToPoint( )), Color.Black, opacity: 0.5f);
 
-								// _spriteBatch.Draw(new Rectangle(0,0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight), Color.LightBlue);
-								spriteBatch.DrawString(font, "Paused", new Vector2(graphics.PreferredBackBufferWidth / 2 - 50, 30), Color.White);
+								SpriteUtils.DrawText(spriteBatch, new Vector2(graphics.PreferredBackBufferWidth / 2 - 50, 30), "Paused", Color.White, isCentered: true);
 
 								pauseResumeButton.Draw(spriteBatch);
 								pauseMenuButton.Draw(spriteBatch);
