@@ -399,14 +399,12 @@ namespace MonoZombie {
 							currentStateTEST = "Game - Playing";
 							Console.WriteLine();
 
-							//Update the graph's shortest path
-							//TODO: call shortest path algorithm
 							//Console.WriteLine($"{graph.GetPlayerVertex().TileAtVertex.X} {graph.GetPlayerVertex().TileAtVertex.Y}");
-							foreach (Enemy zombie in ListOfZombies)
-							{
-								Console.WriteLine($"{graph.GetZombieVertex(zombie).TileAtVertex.X} {graph.GetZombieVertex(zombie).TileAtVertex.Y}");
-							}
-							Console.WriteLine();
+							//foreach (Enemy zombie in ListOfZombies)
+							//{
+							//	Console.WriteLine($"{graph.GetZombieVertex(zombie).TileAtVertex.X} {graph.GetZombieVertex(zombie).TileAtVertex.Y}");
+							//}
+							//Console.WriteLine();
 							// Update all game objects
 							player.Update(gameTime, currMouseState, currKeyboardState);
 

@@ -164,7 +164,6 @@ namespace MonoZombie
                     biggestRectangle = Rectangle.Intersect(Main.Player.Rect, vertex.TileAtVertex.Rect);
                     playerCurrentMapSegment = vertex;
                 }
-
             }
             return playerCurrentMapSegment;
         }
@@ -228,7 +227,9 @@ namespace MonoZombie
         public List<MapSegment> GetNeighbors(MapSegment source)
         {
             List<MapSegment> neighbors = new List<MapSegment>();
-            //
+
+            //From the tutorial, I think I can use what we already have to make things faster/ more readable
+
             ////Check in a 3x3 grid around the MapSegment.
             ////Ignore the source
             //for(int x = -1; x <= 1; x++ )
@@ -256,6 +257,49 @@ namespace MonoZombie
                 neighbors.Add(mapSegment);
             }
             return neighbors;
+        }
+
+        /// <summary>
+        /// Purpose: Returns the cost to get from 1 node to the other. For A*.
+        /// I would use the adjacency matrix to solve this problem, but I can't figure out
+        /// what values would be stored for diagonals and I don't really have that much time.
+        /// For now, I want to focus on getting this in.
+        /// </summary>
+        /// <param name="mapSegmentA">the starting MapSegement</param>
+        /// <param name="mapSegmentB">the ending MapSegement</param>
+        /// <returns></returns>
+        public int GetDistance(MapSegment mapSegmentA, MapSegment mapSegmentB)
+        {
+            int dstX = Math.Abs(mapSegmentA.TileAtVertex.X - mapSegmentB.TileAtVertex.X);
+            int dstY = Math.Abs(mapSegmentA.TileAtVertex.Y - mapSegmentB.TileAtVertex.Y);
+
+            //The shorter number tells us how many diagonal steps is needed. 
+            //The larger number shows how many cardinal steps are needed.
+            if(dstX > dstY)
+            {
+                return 14 * dstY + 10 * (dstX - dstY);
+            }
+
+            return 14 * dstX + 10 * (dstY - dstX);
+        }
+
+        /// <summary>
+        /// Purpose: Returns the path to the final MapSegment in reverse.
+        /// </summary>
+        /// <param name="finalMapSegment">the presumed last MapSegment in a path of MapSegments</param>
+        /// <returns> the path to the finalMapSegment in reverse</returns>
+        public List<MapSegment> ReturnPath(MapSegment finalMapSegment)
+        {
+            List<MapSegment> path = new List<MapSegment>();
+            MapSegment currentMapSegment = finalMapSegment;
+            while(!(currentMapSegment.PreviousMapSegment is null))
+            {
+                path.Add(currentMapSegment);
+                currentMapSegment = currentMapSegment.PreviousMapSegment;
+            }
+            path.Add(currentMapSegment);
+
+            return path;
         }
     }
 }

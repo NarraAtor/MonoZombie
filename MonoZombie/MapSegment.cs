@@ -18,7 +18,7 @@ namespace MonoZombie
         public Tile TileAtVertex { get; set; }
         public bool Permanent { get; set; }
         public int TotalDistance { get; set; }
-        public MapSegment PreviousNode { get; set; }
+        public MapSegment PreviousMapSegment { get; set; }
 
         //A* stuff
         public int GValue { get; set; } //How far away this node is from the source node
@@ -30,7 +30,7 @@ namespace MonoZombie
             Permanent = false;
             TotalDistance = 0;
             TileAtVertex = tileAtThisVertex;
-            PreviousNode = null;
+            PreviousMapSegment = null;
             GValue = 0;
             HValue = 0;
         }
