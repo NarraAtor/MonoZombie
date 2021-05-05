@@ -18,7 +18,8 @@ namespace MonoZombie {
 		Playing,
 		Pause,
 		Shop,
-		ShopInPlacment
+		ShopInPlacment,
+		InBetweenRounds
 	}
 
 	/// <summary>
@@ -66,24 +67,30 @@ namespace MonoZombie {
 		// Map
 		private Map map;
 
+		// Map Graph
+		private static MapGraph graph;
+
 		// Map Tile Texture Arrays
 		// * These are arrays because when a tile is created, it picks a random texture from these
 		// arrays to add variation to the map
-		public static Texture2D[ ] grassTextures;
-		public static Texture2D[ ] wallTextures;
-		public static Texture2D[ ] gravelTextures;
-		public static Texture2D[ ] lavaTextures;
-		public static Texture2D[ ] speedTextures;
+		public static Texture2D[] grassTextures;
+		public static Texture2D[] wallTextures;
+		public static Texture2D[] gravelTextures;
+		public static Texture2D[] lavaTextures;
+		public static Texture2D[] speedTextures;
 
-		public static Texture2D[ ] zombieTextures;
+		public static Texture2D[] zombieTextures;
 
 		// Game Object Textures
 		public static Texture2D nullTexture;
 		public static Texture2D playerTexture;
 		public static Texture2D bulletTexture;
 
-		public static Texture2D turretCannonBaseTexture;
-		public static Texture2D turretCannonHeadTexture;
+		public static Texture2D turretArcherBaseTexture;
+		public static Texture2D turretArcherHeadTexture;
+		public static Texture2D mineHeadTexture;
+		public static Texture2D buffTexture;
+		public static Texture2D cannonTexture;
 
 		// UI Textures
 		public static Texture2D titleTexture;
@@ -94,13 +101,14 @@ namespace MonoZombie {
 		public static int currency;
 		private int roundNumber;
 
-		public static int archerTurretCharges;
-
+		// Turret
 		private List<Turret> turretButtonList;                      // the list that holds all of the turret images
 		private List<String> turretNames;                           // holds the names of the turret types, please update
 																	// when new turrets are added to the ButtonList
 		private Turret turretInPurchase;                            // the turret that the player is currently purchasing from the shop.
 		private List<Turret> turretList;                            // turrets that exist in the game;
+		private List<int> turretsPurchased;                         // the list of what turrets have been purchased 
+																	// should be directly linked with the turretButtonList
 
 		// Constants
 		public const int ZOMBIE_BASE_HEALTH = 100; // The default health of the zombie
@@ -109,15 +117,18 @@ namespace MonoZombie {
 		public const int ZOMBIE_BASE_COUNT = 5; // The starting number of zombies in round 1
 		public const float DAMAGE_INDIC_TIME = 0.25f; // The amount of seconds that entities flash when they are damaged
 		public const int BULLET_SPEED = 15;
-		public const int CANNON_BULLET_DAMAGE = 40;
-		public const int PLAYER_BULLET_DAMAGE = 100;
+		public const int CANNON_BULLET_DAMAGE = 202;
+		public const int ARCHER_BULLET_DAMAGE = 40;
+		public const int PLAYER_BULLET_DAMAGE = 10;
 		public static Vector2 SCREEN_DIMENSIONS = new Vector2(1280, 720);
 
 		private static Random random;
 
+		public static Player Player { get { return player; } }
+
 		public static List<Bullet> ListOfBullets {
 			get;
-		} = new List<Bullet>( );
+		} = new List<Bullet>();
 
 		public static List<Zombie> ListOfZombies {
 			get;
@@ -125,12 +136,14 @@ namespace MonoZombie {
 
 		public static List<Turret> ListOfTurrets {
 			get;
-		} = new List<Turret>( );
+		} = new List<Turret>();
 
 		public static Player Player {
 			get;
 			private set;
 		}
+
+		public static MapGraph GetMapGraph { get { return graph; } }
 
 		public Main ( ) {
 			_graphics = new GraphicsDeviceManager(this);
@@ -148,8 +161,7 @@ namespace MonoZombie {
 
 			turretButtonList = new List<Turret>( );
 			turretNames = new List<String>( );
-
-			archerTurretCharges = 0;
+			turretsPurchased = new List<int>();
 
 			random = new Random( );
 
@@ -161,8 +173,11 @@ namespace MonoZombie {
 
 			// Load textures for game objects
 			nullTexture = Content.Load<Texture2D>("MapTiles/NullTile");
-			turretCannonBaseTexture = Content.Load<Texture2D>("Turrets/TurretCannonBase");
-			turretCannonHeadTexture = Content.Load<Texture2D>("Turrets/TurretCannonHead");
+			turretArcherBaseTexture = Content.Load<Texture2D>("Turrets/TurretCannonBase");
+			turretArcherHeadTexture = Content.Load<Texture2D>("Turrets/TurretCannonHead");
+			mineHeadTexture = Content.Load<Texture2D>("Turrets/MineHead");
+			buffTexture = Content.Load<Texture2D>("Turrets/Buff");
+			cannonTexture = Content.Load<Texture2D>("Turrets/Canon");
 			playerTexture = Content.Load<Texture2D>("Player");
 			bulletTexture = Content.Load<Texture2D>("Bullet");
 
@@ -309,6 +324,9 @@ namespace MonoZombie {
 			_graphics.PreferredBackBufferHeight = (int) SCREEN_DIMENSIONS.Y;
 			_graphics.ApplyChanges( );
 
+			//Test map graph creation
+			graph = new MapGraph(map.Tiles);
+
 			// Create UI Buttons
 			menuPlayButton = new UIButton("Play", SCREEN_DIMENSIONS / 2, ( ) => {
 				menuState = MenuState.Game;
@@ -342,6 +360,27 @@ namespace MonoZombie {
 				menuState = MenuState.MainMenu;
 			});
 
+
+			// Initializing different turret types for the shop
+
+			turretButtonList.Add(
+				new Turret(TurretType.Archer, turretArcherBaseTexture, turretArcherHeadTexture, new Vector2(SCREEN_DIMENSIONS.X/7*2, SCREEN_DIMENSIONS.Y/5*2 ))
+				);
+			turretNames.Add("Archer");
+			turretsPurchased.Add(1);
+
+			turretButtonList.Add(
+				new Turret(TurretType.Buff, turretArcherBaseTexture, buffTexture, new Vector2(SCREEN_DIMENSIONS.X/7*4, SCREEN_DIMENSIONS.Y/5*2))
+				);
+			turretsPurchased.Add(1);
+			turretNames.Add("Buff");
+
+			turretButtonList.Add(
+				new Turret(TurretType.Buff, turretArcherBaseTexture, cannonTexture, new Vector2(SCREEN_DIMENSIONS.X / 7 * 6, SCREEN_DIMENSIONS.Y / 5 * 2))
+				);
+			turretsPurchased.Add(0);
+			turretNames.Add("Canon");
+
 			base.LoadContent( );
 		}
 
@@ -361,6 +400,13 @@ namespace MonoZombie {
 					switch (gameState) {
 						case GameState.Playing:
 							timer.Start( );
+
+							//Console.WriteLine($"{graph.GetPlayerVertex().TileAtVertex.X} {graph.GetPlayerVertex().TileAtVertex.Y}");
+							//foreach (Enemy zombie in ListOfZombies)
+							//{
+							//	Console.WriteLine($"{graph.GetZombieVertex(zombie).TileAtVertex.X} {graph.GetZombieVertex(zombie).TileAtVertex.Y}");
+							//}
+							//Console.WriteLine();
 
 							// Update all game objects
 							Player.Update(gameTime, currMouseState, currKeyboardState);
@@ -467,23 +513,86 @@ namespace MonoZombie {
 							gameObjectCameraTime = timer.ElapsedMilliseconds;
 							timer.Reset( );
 
-							/*
-							if (GetKeyDown(Keys.O)) {
-								if (archerTurretCharges > 0) {
-									ListOfTurrets.Add(new Turret(TurretType.Cannon, turretCannonBaseTexture, turretCannonHeadTexture, player.Position, parent: player));
-									--archerTurretCharges;
+							if (GetKeyDown(Keys.T)) {
+								if(turretsPurchased[0] > 0)
+								{
+									ListOfTurrets.Add(new Turret(TurretType.Archer, turretArcherBaseTexture, turretArcherHeadTexture, player.Position, parent: player));
+									--turretsPurchased[0];
 								}
 							}
-							*/
+							if (GetKeyDown(Keys.Y))
+                            {
+								if (turretsPurchased[1] > 0)
+                                {
+									ListOfTurrets.Add(new Turret(TurretType.Buff, turretArcherBaseTexture, buffTexture, player.Position, parent: player));
+                                }
+                            }
+							if (GetKeyDown(Keys.U))
+                            {
+								if (turretsPurchased[2] > 0)
+                                {
+									ListOfTurrets.Add(new Turret(TurretType.Cannon, turretArcherBaseTexture, turretArcherHeadTexture, player.Position, parent: player));
+									--turretsPurchased[2];
+                                }
+                            }
+							
 
 							if (GetKeyDown(Keys.Escape)) {
 								gameState = GameState.Pause;
 							}
 
-							if (GetKeyDown(Keys.Tab)) {
+							
+
+							break;
+
+						case GameState.InBetweenRounds:
+
+							player.Update(gameTime, currMouseState, currKeyboardState);
+
+							for (int i = ListOfTurrets.Count - 1; i >= 0; i--)
+							{
+								ListOfTurrets[i].UpdateCameraScreenPosition(camera);
+							}
+
+							// Update camera screen positions of all game objects
+							player.UpdateCameraScreenPosition(camera);
+
+							map.UpdateCameraScreenPosition(camera);
+
+							if (GetKeyDown(Keys.T))
+							{
+								if (turretsPurchased[0] > 0)
+								{
+									ListOfTurrets.Add(new Turret(TurretType.Archer, turretArcherBaseTexture, turretArcherHeadTexture, player.Position, parent: player));
+									--turretsPurchased[0];
+								}
+							}
+							if (GetKeyDown(Keys.Y))
+							{
+								if (turretsPurchased[1] > 0)
+								{
+									ListOfTurrets.Add(new Turret(TurretType.Buff, turretArcherBaseTexture, buffTexture, player.Position, parent: player));
+								}
+							}
+							if (GetKeyDown(Keys.U))
+							{
+								if (turretsPurchased[2] > 0)
+								{
+									ListOfTurrets.Add(new Turret(TurretType.Cannon, turretArcherBaseTexture, turretArcherHeadTexture, player.Position, parent: player));
+									--turretsPurchased[2];
+								}
+							}
+
+							if (GetKeyDown(Keys.Tab))
+							{
 								gameState = GameState.Shop;
 							}
 
+							if(GetKeyDown(Keys.Space))
+							{
+								StartNextRound();
+								gameState = GameState.Playing;
+							}
 							break;
 						case GameState.Pause:
 							if (GetKeyDown(Keys.Escape)) {
@@ -496,23 +605,26 @@ namespace MonoZombie {
 							break;
 						case GameState.Shop:
 							if (GetKeyDown(Keys.Tab)) {
-								gameState = GameState.Playing;
+								gameState = GameState.InBetweenRounds;
 							}
 
-							for (int i = 0; i < turretButtonList.Count; i++)
+							for (int i = 0; i < turretButtonList.Count; i++) {
 								if (currMouseState.X > turretButtonList[i].Rect.Left && currMouseState.X < turretButtonList[i].Rect.Right
-										&& currMouseState.Y > turretButtonList[i].Rect.Bottom) {
-									if (currMouseState.LeftButton == ButtonState.Pressed) {
-										turretInPurchase = turretButtonList[i];
-										gameState = GameState.ShopInPlacment;
-										break;
+										&& currMouseState.Y <= turretButtonList[i].Rect.Bottom && currMouseState.Y >= turretButtonList[i].Rect.Top)
+								{
+									Console.WriteLine(turretButtonList[i].Rect.Top + " " + turretButtonList[i].Rect.Bottom);
+									if (currMouseState.LeftButton == ButtonState.Pressed)
+									{
+										if (currency >= 30)
+										{
+											//turretsPurchased[i]++;
+											turretsPurchased[i]++;
+											currency -= 30;
+											break;
+										}
 									}
 								}
-							break;
-						case GameState.ShopInPlacment:
-							if (prevMouseState.LeftButton == ButtonState.Released && currMouseState.LeftButton == ButtonState.Pressed) {
-								turretList.Add(turretInPurchase);
-							}
+								}
 							break;
 					}
 					break;
@@ -580,22 +692,62 @@ namespace MonoZombie {
 							SpriteManager.DrawText(_spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 80), $"GO CamT: {Math.Round(gameObjectCameraTime, 3)}", Color.White, fontScale: 0.5f);
 
 							// Draw turret charges
-							SpriteManager.DrawImage(_spriteBatch, turretCannonBaseTexture, new Vector2(400, 30), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE);
-							SpriteManager.DrawImage(_spriteBatch, turretCannonHeadTexture, new Vector2(400, 30), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE);
-							SpriteManager.DrawText(_spriteBatch, new Vector2(500, 30), $"- {archerTurretCharges}", Color.White, fontScale: 2f);
+		// Archer
+							SpriteManager.DrawImage(_spriteBatch, turretArcherBaseTexture, new Vector2(400, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawImage(_spriteBatch, turretArcherHeadTexture, new Vector2(400, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(405, 100), turretsPurchased[0].ToString(), Color.White, fontScale: 1f);
+		// Buff
+							SpriteManager.DrawImage(_spriteBatch, turretArcherBaseTexture, new Vector2(475, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawImage(_spriteBatch, buffTexture, new Vector2(475, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(480, 100), turretsPurchased[1].ToString(), Color.White, fontScale: 1f);
+		// Canon
+							SpriteManager.DrawImage(_spriteBatch, turretArcherBaseTexture, new Vector2(550, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawImage(_spriteBatch, cannonTexture, new Vector2(550, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(555, 100), turretsPurchased[2].ToString(), Color.White, fontScale: 1f);
 
 							break;
-						case GameState.Pause:
-							DrawPauseMenu( );
+						case GameState.InBetweenRounds:
+							// Draw all game objects
+							map.Draw(gameTime, _spriteBatch);
 
+							for (int i = ListOfTurrets.Count - 1; i >= 0; i--)
+							{
+								ListOfTurrets[i].Draw(gameTime, _spriteBatch);
+							}
+
+							player.Draw(gameTime, _spriteBatch);
+
+							// Draw UI elements
+							SpriteManager.DrawImage(_spriteBatch, tabTexture, new Vector2(15, 15), Color.White, scale: SpriteManager.UI_SCALE);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 30), $"Currency: {currency}", Color.Black, fontScale: 0.5f);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 45), $"Round Number: {roundNumber}", Color.Black, fontScale: 0.5f);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(30, 60), $"Player Health: {player.Health}", Color.Black, fontScale: 0.5f);
+
+							// Draw FPS counter
+							SpriteManager.DrawText(_spriteBatch, new Vector2(10, SCREEN_DIMENSIONS.Y - 20), $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds)}", Color.Black, fontScale: 0.5f);
+
+							// Draw turret charges
+		// Archer
+							SpriteManager.DrawImage(_spriteBatch, turretArcherBaseTexture, new Vector2(400, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawImage(_spriteBatch, turretArcherHeadTexture, new Vector2(400, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(405, 100), turretsPurchased[0].ToString(), Color.White, fontScale: 1f);
+		// Buff
+							SpriteManager.DrawImage(_spriteBatch, turretArcherBaseTexture, new Vector2(475, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawImage(_spriteBatch, buffTexture, new Vector2(475, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(480, 100), turretsPurchased[1].ToString(), Color.White, fontScale: 1f);
+		// Canon
+							SpriteManager.DrawImage(_spriteBatch, turretArcherBaseTexture, new Vector2(550, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawImage(_spriteBatch, cannonTexture, new Vector2(550, 50), new Color(255, 255, 255, 255), scale: SpriteManager.UI_SCALE - 3);
+							SpriteManager.DrawText(_spriteBatch, new Vector2(555, 100), turretsPurchased[2].ToString(), Color.White, fontScale: 1f);
+							break;
+						case GameState.Pause:
+							DrawPauseMenu();
 							break;
 						case GameState.Shop:
 							DrawShop(gameTime);
-
 							break;
 						case GameState.ShopInPlacment:
 							turretInPurchase.Draw(gameTime, _spriteBatch);
-
 							break;
 					}
 
@@ -663,7 +815,6 @@ namespace MonoZombie {
 						break;
 				}
 
-				// GameObjectManager.CreateZombie(tile.Position, zombieHealth, zombieMoveSpeed, zombieAttackSpeed, tile);
 				ListOfZombies.Add(new Zombie(tile.Position, zombieHealth, zombieMoveSpeed, zombieAttackSpeed, tile));
 			}
 		}
@@ -699,7 +850,8 @@ namespace MonoZombie {
 
 			for (int i = 0; i < turretButtonList.Count; i++) {
 				turretButtonList[i].Draw(gameTime, _spriteBatch);
-				_spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].Position.Y, turretButtonList[i].Position.Y + 75), Color.White);
+				_spriteBatch.DrawString(font, turretNames[i], new Vector2(turretButtonList[i].X-75, turretButtonList[i].Y + 75), Color.White);
+				_spriteBatch.DrawString(font, "X"+turretsPurchased[i].ToString(), new Vector2(turretButtonList[i].X + 100, turretButtonList[i].Y + 75), Color.Gold);
 			}
 		}
 	}

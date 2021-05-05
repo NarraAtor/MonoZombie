@@ -42,8 +42,8 @@ namespace MapEditor
                 {
                     pictureBoxes[w, h] = new PictureBox();//creates a new picturebox
                     pictureBoxes[w, h].BackColor = Color.FromArgb(-16744448);
-                    pictureBoxes[w, h].Size = new Size(500 / height, 500 / height);//scales the size according to height
-                    pictureBoxes[w, h].Location = new Point(w * (500 / height) + 5, h * (500 / height) + 20);//scales location according to height
+                    pictureBoxes[w, h].Size = new Size(600 / height, 600 / height);//scales the size according to height
+                    pictureBoxes[w, h].Location = new Point(w * (600 / height) + 5, h * (600 / height) + 20);//scales location according to height
                     pictureBoxes[w, h].MouseDown += ChangeBackgroundColor;//assign the click event to the picturebox
                     pictureBoxes[w, h].MouseEnter += KeepColoring;//assign the drag event to the picturebox
                     groupBoxMap.Controls.Add(pictureBoxes[w, h]);//add it to the groupbox
@@ -51,8 +51,8 @@ namespace MapEditor
                 }
             }
             //adjust the group box and and client size according to the number of boxes wide
-            groupBoxMap.Size = new Size(width * (500 / height) + 10, 430);
-            ClientSize = new Size(130 + groupBoxMap.Width, 461);
+            groupBoxMap.Size = new Size(width * (600 / height) + 10, 625);
+            ClientSize = new Size(130 + groupBoxMap.Width, 663);
         }
 
         //Purpose: Loads a map from a file
@@ -174,8 +174,8 @@ namespace MapEditor
                                 pictureBoxes[w, h].BackColor = Color.FromArgb(-16777216);
                                 break;
                         }
-                        pictureBoxes[w, h].Size = new Size(410 / height, 410 / height);//scales size according to height
-                        pictureBoxes[w, h].Location = new Point(w * (410 / height) + 5, h * (410 / height) + 20);//scales location according to height
+                        pictureBoxes[w, h].Size = new Size(600 / height, 600 / height);//scales size according to height
+                        pictureBoxes[w, h].Location = new Point(w * (600 / height) + 5, h * (600 / height) + 20);//scales location according to height
                         pictureBoxes[w, h].MouseDown += ChangeBackgroundColor;//assigns the click event
                         pictureBoxes[w, h].MouseEnter += KeepColoring;//assign the drag event
                         groupBoxMap.Controls.Add(pictureBoxes[w, h]);//adds the picturebox
@@ -183,8 +183,8 @@ namespace MapEditor
                 }
                 reader.Close();
 
-                groupBoxMap.Size = new Size(width * (410 / height) + 10, 430);//adjusts the size of the 
-                ClientSize = new Size(130 + groupBoxMap.Width, 461);//groupbox and client respectively
+                groupBoxMap.Size = new Size(width * (600 / height) + 10, 625);//adjusts the size of the 
+                ClientSize = new Size(130 + groupBoxMap.Width, 663);//groupbox and client respectively
 
                 MessageBox.Show("File loaded successfully", "File loaded", MessageBoxButtons.OK, MessageBoxIcon.Information);//confirmation message
                 pendingChanges = false;//no pending changes
